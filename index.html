@@ -1,0 +1,3335 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Elettrauto Matteo · Gestionale Officina</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#0d0f14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+:root {
+  --bg-app: #0d0f14;
+  --bg-surface: #151922;
+  --bg-surface-2: #1c222e;
+  --bg-input: #10131a;
+  --border: #272f3f;
+  --border-focus: #ef4444;
+  
+  --text-main: #f3f5f8;
+  --text-muted: #94a0b8;
+  --text-dim: #647087;
+
+  --brand: #ef4444;
+  --brand-hover: #dc2626;
+  --brand-soft: rgba(239, 68, 68, 0.14);
+  
+  --accent-blue: #3b82f6;
+  --accent-blue-soft: rgba(59, 130, 246, 0.14);
+  
+  --ok: #10b981;
+  --ok-soft: rgba(16, 185, 129, 0.14);
+  
+  --warn: #f59e0b;
+  --warn-soft: rgba(245, 158, 11, 0.15);
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-float: 0 18px 48px rgba(0, 0, 0, 0.72);
+  
+  --font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-app);
+  color: var(--text-main);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.45;
+  min-height: 100vh;
+}
+
+/* --- HEADER --- */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(13, 15, 20, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+}
+
+.header-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.logo-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ef4444, #991b1b);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  display: block;
+  color: #fff;
+}
+
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+}
+
+.desktop-nav {
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (min-width: 860px) {
+  .desktop-nav { display: flex; }
+  .bottom-nav { display: none !important; }
+  main { padding-bottom: 40px !important; }
+}
+
+.desktop-nav button {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  padding: 8px 13px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 38px;
+}
+
+.desktop-nav button:hover {
+  background: var(--bg-surface-2);
+  color: var(--text-main);
+}
+
+.desktop-nav button.active {
+  background: var(--brand-soft);
+  color: #ff7b7b;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* --- MAIN --- */
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 20px 16px 110px;
+}
+
+section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+  box-shadow: var(--shadow-card);
+  animation: fadeIn 0.16s ease-out;
+}
+
+section.hidden { display: none !important; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.form-block {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-top: 16px;
+}
+
+.form-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.form-block-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.form-block-title svg {
+  color: var(--brand);
+  width: 18px;
+  height: 18px;
+}
+
+.muted { color: var(--text-muted); font-size: 13px; margin: 0; }
+.mini { color: var(--text-muted); font-size: 12px; }
+
+/* --- INPUTS & AUTOCOMPLETE --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.wide { grid-column: 1 / -1; }
+
+.field-wrap { position: relative; display: flex; flex-direction: column; }
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  position: relative;
+}
+
+input, select, textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 13px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 15px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  color-scheme: dark;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+input::placeholder, textarea::placeholder { color: var(--text-dim); }
+textarea { min-height: 76px; resize: vertical; }
+
+.plate-input {
+  font-family: var(--mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Inline Autocomplete Dropdown */
+.ac-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  min-width: 260px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #181e29;
+  border: 1px solid #3c4861;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+  z-index: 60;
+}
+
+.ac-menu.hidden { display: none; }
+
+.ac-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ac-item:last-child { border-bottom: 0; }
+.ac-item:hover { background: #232b3b; }
+.ac-item strong { color: #fff; font-size: 13px; display: block; }
+.ac-item small { color: var(--text-muted); font-size: 11px; display: block; }
+
+/* Client vehicle quick switcher bar */
+.vehicle-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.vehicle-pills.hidden { display: none; }
+
+.v-pill-btn {
+  background: var(--bg-surface-2);
+  border: 1px solid #374359;
+  color: #e2e8f0;
+  padding: 5px 10px;
+  min-height: 32px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.v-pill-btn:hover, .v-pill-btn.selected {
+  background: var(--accent-blue-soft);
+  border-color: var(--accent-blue);
+  color: #93c5fd;
+}
+
+
+.phone-row { display: flex; gap: 6px; align-items: stretch; }
+.phone-row input { flex: 1; }
+.call-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 44px; min-height: 44px; padding: 0 12px;
+  background: var(--ok-soft); border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399; border-radius: var(--radius-sm);
+  text-decoration: none; font-size: 13px; font-weight: 700; gap: 5px;
+}
+.call-btn:hover { background: rgba(16, 185, 129, 0.24); }
+.call-btn.sm { min-height: 36px; min-width: 36px; padding: 6px 10px; font-size: 13px; }
+
+
+/* Visibility tags & discreet internal notes */
+.vis-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-weight: 700; padding: 2px 7px;
+  border-radius: 6px; letter-spacing: 0.2px;
+}
+.vis-tag.client { background: var(--accent-blue-soft); color: #93c5fd; }
+.vis-tag.shop { background: var(--warn-soft); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.25); }
+.label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+
+details.shop-notes-box {
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px dashed rgba(245, 158, 11, 0.32);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-top: 12px;
+}
+details.shop-notes-box summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fbbf24;
+  user-select: none;
+}
+details.shop-notes-box summary::-webkit-details-marker { display: none; }
+details.shop-notes-box[open] summary { margin-bottom: 10px; }
+
+.shop-note-banner {
+  background: rgba(245, 158, 11, 0.09);
+  border-left: 3px solid var(--warn);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: #fde68a;
+}
+.shop-note-banner.hidden { display: none; }
+
+/* --- BUTTONS --- */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--brand);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s, border-color 0.15s;
+}
+
+button:hover { background: var(--brand-hover); }
+button:active { transform: scale(0.98); }
+
+button.secondary {
+  background: var(--bg-surface-2);
+  border-color: var(--border);
+  color: var(--text-main);
+}
+button.secondary:hover { background: #252d3d; border-color: #38445c; }
+
+button.green {
+  background: var(--ok);
+  color: #052e1e;
+  font-weight: 750;
+}
+button.green:hover { background: #0ea572; }
+
+button.blue {
+  background: var(--accent-blue);
+  color: #fff;
+}
+button.blue:hover { background: #2563eb; }
+
+button.danger-ghost {
+  background: var(--brand-soft);
+  color: #ff8585;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+button.danger-ghost:hover { background: rgba(239, 68, 68, 0.24); }
+
+button.sm {
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* --- HOME WORKSPACE --- */
+#home {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.hero-card {
+  background: linear-gradient(135deg, #1b1519 0%, #161b26 60%, #121722 100%);
+  border: 1px solid rgba(239, 68, 68, 0.32);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.hero-card::after {
+  content: "";
+  position: absolute;
+  right: -30px;
+  top: -30px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #ff8585;
+  background: var(--brand-soft);
+  padding: 4px 10px;
+  border-radius: 99px;
+  margin-bottom: 10px;
+}
+
+.hero-card h1 {
+  margin: 0 0 6px;
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.6px;
+}
+
+.hero-card p {
+  margin: 0 0 18px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.hero-cta-group { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.kpi-card:hover { border-color: #3b465e; transform: translateY(-2px); }
+
+.kpi-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.kpi-val {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: #fff;
+}
+
+.block-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 720px) {
+  .quick-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.quick-tile {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 12px;
+  min-height: 106px;
+}
+
+.quick-tile:hover { background: var(--bg-surface-2); border-color: #3a465e; }
+
+.tile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+}
+
+.tile-icon.red { background: var(--brand-soft); color: #ff7b7b; }
+.tile-icon.blue { background: var(--accent-blue-soft); color: #60a5fa; }
+.tile-icon.green { background: var(--ok-soft); color: #34d399; }
+.tile-icon.amber { background: var(--warn-soft); color: #fbbf24; }
+
+.quick-tile strong { font-size: 14px; font-weight: 700; color: #fff; display: block; }
+.quick-tile small { font-size: 12px; color: var(--text-muted); font-weight: 400; display: block; margin-top: 2px; }
+
+/* --- LISTS & CARDS --- */
+.list-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.recent-item:last-child { border-bottom: 0; }
+.recent-item:hover { background: var(--bg-surface-2); }
+
+.doc-card {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 15px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.doc-card.reminder-due { border-left: 4px solid var(--brand); }
+.doc-card.reminder-soon { border-left: 4px solid var(--warn); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.badge.pre { background: var(--accent-blue-soft); color: #60a5fa; }
+.badge.fat { background: var(--brand-soft); color: #ff8585; }
+.badge.ok { background: var(--ok-soft); color: #34d399; }
+.badge.soon { background: var(--warn-soft); color: #fbbf24; }
+.badge.due { background: var(--brand-soft); color: #ff8585; }
+.badge.neutral { background: rgba(148, 160, 184, 0.14); color: var(--text-muted); }
+
+.plate-tag {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  background: #0b0d12;
+  border: 1px solid #333c4f;
+  color: #e2e8f0;
+  padding: 2px 7px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* --- LINE ITEMS IN EDITOR --- */
+.line-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.line-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.line-nums {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.line-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.line-footer strong { color: #fff; font-size: 14px; }
+
+/* --- CLIENT VEHICLE SUB-FORM --- */
+.veh-edit-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1fr 0.7fr auto;
+  gap: 8px;
+  align-items: end;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+@media (max-width: 680px) {
+  .veh-edit-row { grid-template-columns: 1fr 1fr; }
+}
+
+/* --- TOTALS BOX --- */
+.summary-box {
+  background: linear-gradient(145deg, #181e29, #12161f);
+  border: 1px solid #323c52;
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-top: 18px;
+}
+
+.sum-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.sum-row b { color: var(--text-main); }
+
+.sum-total {
+  border-top: 1px solid var(--border);
+  margin-top: 10px;
+  padding-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.sum-total span:first-child { font-size: 15px; font-weight: 800; letter-spacing: 0.5px; color: #fff; }
+.sum-total span:last-child { font-size: clamp(26px, 4vw, 32px); font-weight: 850; color: #fff; letter-spacing: -0.8px; }
+
+/* --- BOTTOM NAVIGATION --- */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: rgba(18, 22, 30, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 6px 6px max(8px, env(safe-area-inset-bottom));
+}
+
+.bottom-nav button {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 2px;
+  min-height: 54px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.bottom-nav button svg { width: 22px; height: 22px; }
+.bottom-nav button.active { color: #ff7b7b; background: var(--brand-soft); }
+.bottom-nav button.create-btn { color: #fff; }
+
+.bottom-nav button.create-btn .plus-pill {
+  width: 42px;
+  height: 32px;
+  border-radius: 11px;
+  background: var(--brand);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45);
+}
+
+/* --- ACTION SHEETS --- */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 48;
+}
+.sheet-backdrop.hidden { display: none; }
+
+.action-sheet {
+  position: fixed;
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  left: 12px;
+  right: 12px;
+  max-width: 440px;
+  margin: 0 auto;
+  background: var(--bg-surface-2);
+  border: 1px solid #354057;
+  border-radius: var(--radius-xl);
+  padding: 12px;
+  box-shadow: var(--shadow-float);
+  z-index: 50;
+  animation: slideUp 0.16s ease-out;
+}
+.action-sheet.hidden { display: none; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+}
+
+.sheet-item {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  justify-content: flex-start;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  text-align: left;
+  gap: 12px;
+}
+
+.sheet-item:hover { background: rgba(255, 255, 255, 0.05); }
+
+.sheet-item .s-ico {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  color: #ff7b7b;
+  flex-shrink: 0;
+}
+
+.sheet-item div strong { display: block; font-size: 14px; }
+.sheet-item div small { display: block; font-size: 12px; color: var(--text-muted); font-weight: 400; }
+
+@media (max-width: 680px) {
+  main { padding: 14px 12px 105px; }
+  section { padding: 16px; border-radius: var(--radius-lg); }
+  .grid, .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .line-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi-val { font-size: 21px; }
+  .actions button { flex: 1 1 46%; }
+}
+
+
+/* Back-button exit confirmation toast */
+.exit-toast {
+  position: fixed;
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(24, 30, 41, 0.96);
+  color: #f3f5f8;
+  border: 1px solid #3c4861;
+  padding: 10px 18px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-float);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  white-space: nowrap;
+}
+.exit-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* Auto-draft banner & status badge */
+.draft-card {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(28, 34, 46, 0.95));
+  border: 1px solid rgba(245, 158, 11, 0.42);
+  border-radius: var(--radius-lg);
+  padding: 15px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.draft-card.hidden { display: none; }
+.draft-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fcd34d;
+  background: var(--warn-soft);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 3px 9px;
+  border-radius: 99px;
+}
+
+
+/* Cloud Sync & Login Overlay */
+.sync-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; padding: 5px 10px;
+  border-radius: 99px; cursor: pointer;
+  background: var(--bg-surface-2); border: 1px solid var(--border);
+  color: var(--text-muted); white-space: nowrap;
+}
+.sync-pill.online { background: var(--ok-soft); border-color: rgba(16, 185, 129, 0.35); color: #34d399; }
+.sync-pill.syncing { background: var(--accent-blue-soft); border-color: rgba(59, 130, 246, 0.35); color: #60a5fa; }
+.sync-pill.offline { background: var(--warn-soft); border-color: rgba(245, 158, 11, 0.35); color: #fbbf24; }
+
+.auth-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(10, 12, 16, 0.88);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.auth-overlay.hidden { display: none; }
+.auth-card {
+  width: 100%; max-width: 400px;
+  background: var(--bg-surface); border: 1px solid #354057;
+  border-radius: var(--radius-xl); padding: 24px;
+  box-shadow: var(--shadow-float);
+}
+.auth-card h3 { margin: 0 0 6px; font-size: 20px; color: #fff; }
+.auth-error {
+  background: var(--brand-soft); border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #ff9b9b; padding: 9px 12px; border-radius: var(--radius-sm);
+  font-size: 12.5px; margin-top: 10px;
+}
+.auth-error.hidden { display: none; }
+
+/* --- PRINT --- */
+#printArea { display: none; }
+@media print {
+  @page { size: A4; margin: 14mm; }
+  html, body { background: #fff !important; color: #111 !important; }
+  header, main, .bottom-nav, .action-sheet, .sheet-backdrop, #pwaInstall { display: none !important; }
+  #printArea { display: block !important; color: #111; font: 12px Arial, sans-serif; }
+  #printArea h1 { font-size: 22px; margin: 0 0 4px; }
+  #printArea table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+  #printArea th, #printArea td { padding: 8px; border-bottom: 1px solid #ccc; text-align: left; }
+  #printArea .p-total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 8px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-box" onclick="show('home')">
+      <div class="logo-badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div>
+        <span class="brand-title">ELETTRAUTO MATTEO</span>
+        <span class="brand-sub">Corso Siracusa 46 · Torino</span>
+      </div>
+    </div>
+
+    <button type="button" id="cloudSyncPill" class="sync-pill" onclick="openCloudPanel()" title="Stato sincronizzazione Cloud">
+      <span id="cloudSyncText">☁️ Solo locale</span>
+    </button>
+
+    <nav class="desktop-nav" aria-label="Menu principale">
+      <button type="button" data-nav="home" onclick="show('home')">Dashboard</button>
+      <button type="button" data-nav="editor" onclick="show('editor');newDoc('Preventivo')">+ Nuovo</button>
+      <button type="button" data-nav="archive" onclick="show('archive')">Documenti</button>
+      <button type="button" data-nav="clients" onclick="show('clients')">Clienti</button>
+      <button type="button" data-nav="history" onclick="show('history')">Storico Targa</button>
+      <button type="button" data-nav="reminders" onclick="show('reminders')">Tagliandi</button>
+      <button type="button" data-nav="catalog" onclick="show('catalog')">Listino</button>
+      <button type="button" data-nav="settings" onclick="show('settings')">Officina</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HOME / DASHBOARD -->
+  <section id="home">
+    <div class="hero-card">
+      <div>
+        <span class="hero-badge">● Banco Officina Attivo</span>
+        <h1>Gestione Preventivi e Fatture</h1>
+        <p>Ricerca rapida clienti e targhe, PDF tabellari e promemoria tagliandi WhatsApp.</p>
+        <div class="hero-cta-group">
+          <button type="button" onclick="show('editor');newDoc('Preventivo')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+            Nuovo Preventivo
+          </button>
+          <button type="button" class="secondary" onclick="show('editor');newDoc('Fattura')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+            Nuova Fattura
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="homeDraftBanner" class="draft-card hidden"></div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card" onclick="show('archive')">
+        <div class="kpi-label"><span>Documenti</span><span>→</span></div>
+        <div class="kpi-val" id="homeDocs">0</div>
+      </div>
+      <div class="kpi-card" onclick="show('clients')">
+        <div class="kpi-label"><span>Clienti</span><span>→</span></div>
+        <div class="kpi-val" id="homeClients">0</div>
+      </div>
+      <div class="kpi-card" onclick="show('reminders')">
+        <div class="kpi-label"><span>Tagliandi</span><span>→</span></div>
+        <div class="kpi-val" id="homeReminders">0</div>
+      </div>
+    </div>
+
+    <div class="block-heading">Accesso rapido</div>
+    <div class="quick-grid">
+      <button type="button" class="quick-tile" onclick="show('history')">
+        <span class="tile-icon blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14l1-6-2-5H6l-2 5 1 6ZM5 17v2M19 17v2M4 11h16"/><circle cx="7.5" cy="14" r="1"/><circle cx="16.5" cy="14" r="1"/></svg>
+        </span>
+        <div>
+          <strong>Storico Veicolo</strong>
+          <small>Cerca per targa</small>
+        </div>
+      </button>
+
+      <button type="button" class="quick-tile" onclick="show('reminders')">
+        <span class="tile-icon amber">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3M14 15h3"/></svg>
+        </span>
+        <div>
+          <strong>Promemoria</strong>
+          <small>Scadenze tagliandi</small>
+        </div>
+      </button>
+
+      <button type="button" class="quick-tile" onclick="show('catalog')">
+        <span class="tile-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </span>
+        <div>
+          <strong>Listino Prezzi</strong>
+          <small>Lavorazioni rapide</small>
+        </div>
+      </button>
+
+      <button type="button" class="quick-tile" onclick="show('clients');newClientForm()">
+        <span class="tile-icon red">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="8" r="3"/><path d="M4 20v-2a6 6 0 0 1 12 0v2M19 8v6M16 11h6"/></svg>
+        </span>
+        <div>
+          <strong>Nuovo Cliente</strong>
+          <small>Anagrafica + targhe</small>
+        </div>
+      </button>
+    </div>
+
+    <div class="block-heading">
+      <span>Documenti recenti</span>
+      <button type="button" class="secondary sm" onclick="show('archive')">Vedi tutti</button>
+    </div>
+    <div class="list-card" id="homeRecent"></div>
+  </section>
+
+  <!-- EDITOR -->
+  <section id="editor" class="hidden">
+    <div class="section-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <h2 id="heading" style="margin:0">Nuovo preventivo</h2>
+          <span id="draftStatusPill" class="draft-pill" style="display:none">● Bozza salvata</span>
+        </div>
+        <p class="muted" style="margin-top:4px">Salvataggio automatico bozza attivo · Digita nome o targa per cercare</p>
+      </div>
+      <button type="button" class="danger-ghost sm" onclick="discardAndNewDoc()">Svuota / Scarta bozza</button>
+    </div>
+
+    <div class="form-block">
+      <div class="form-block-header">
+        <h3 class="form-block-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+          Intestazione Documento
+        </h3>
+      </div>
+      <div class="grid">
+        <label>Tipo documento
+          <select id="kind">
+            <option>Preventivo</option>
+            <option>Fattura</option>
+          </select>
+        </label>
+        <label>Numero
+          <input id="number" placeholder="Es. PRE-001">
+        </label>
+        <label>Data emissione
+          <input id="date" type="date">
+        </label>
+        <label>Scadenza / Validità
+          <input id="expiry" type="date">
+        </label>
+        <label>Stato pagamento
+          <select id="status">
+            <option>Non pagata</option>
+            <option>Parzialmente pagata</option>
+            <option>Pagata</option>
+          </select>
+        </label>
+        <label>Acconto versato (€)
+          <input id="deposit" type="number" min="0" step="0.01" value="0">
+        </label>
+      </div>
+    </div>
+
+    <div class="form-block">
+      <div class="form-block-header">
+        <h3 class="form-block-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20v-2a8 8 0 0 1 16 0v2"/></svg>
+          Dati Cliente
+        </h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" class="secondary sm" onclick="show('clients')">Rubrica</button>
+          <button type="button" class="secondary sm" onclick="saveClientFromEditor()">+ Salva cliente e auto</button>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="field-wrap">
+          <label>Nome / Ragione sociale
+            <input id="client" placeholder="Digita nome per cercare..." autocomplete="off" oninput="onClientInput()" onfocus="onClientInput()">
+          </label>
+          <div id="clientAc" class="ac-menu hidden"></div>
+        </div>
+        <label>Telefono (WhatsApp / Chiama)
+          <div class="phone-row">
+            <input id="phone" type="tel" placeholder="333 1234567" oninput="updateEditorCallBtn()">
+            <a id="editorCallBtn" class="call-btn" href="tel:" title="Chiama cliente" style="display:none">📞</a>
+          </div>
+        </label>
+        <label>Email
+          <input id="email" type="email" placeholder="cliente@email.it">
+        </label>
+        <label class="wide">Indirizzo
+          <input id="address" placeholder="Via, CAP, Città">
+        </label>
+        <label>Codice Fiscale
+          <input id="taxcode" style="text-transform:uppercase">
+        </label>
+        <label>Partita IVA
+          <input id="vatid">
+        </label>
+      </div>
+      <div id="editorClientNoteBanner" class="shop-note-banner hidden"></div>
+    </div>
+
+    <div class="form-block">
+      <div class="form-block-header">
+        <h3 class="form-block-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14l1-6-2-5H6l-2 5 1 6ZM5 17v2M19 17v2M4 11h16"/><circle cx="7.5" cy="14" r="1"/><circle cx="16.5" cy="14" r="1"/></svg>
+          Scheda Veicolo
+        </h3>
+      </div>
+
+      <div id="clientVehicleBar" class="vehicle-pills hidden"></div>
+
+      <div class="grid">
+        <div class="field-wrap">
+          <label>Targa
+            <input id="plate" class="plate-input" placeholder="Digita targa..." autocomplete="off" oninput="onPlateInput()" onfocus="onPlateInput()">
+          </label>
+          <div id="plateAc" class="ac-menu hidden"></div>
+        </div>
+        <label>Marca
+          <input id="brand" placeholder="Es. Fiat">
+        </label>
+        <label>Modello
+          <input id="model" placeholder="Es. Panda 1.2">
+        </label>
+        <label>Anno
+          <input id="year" type="number" placeholder="2019">
+        </label>
+        <label>Chilometri (Km)
+          <input id="km" type="number" placeholder="78500">
+        </label>
+        <label>Alimentazione
+          <input id="fuel" placeholder="Benzina / Diesel / Ibrida">
+        </label>
+        <label class="wide">Numero Telaio (VIN)
+          <input id="vin" style="font-family:var(--mono);text-transform:uppercase">
+        </label>
+      </div>
+    </div>
+
+    <div class="form-block">
+      <div class="form-block-header">
+        <h3 class="form-block-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Lavorazioni e Ricambi
+        </h3>
+        <button type="button" class="secondary sm" onclick="show('catalog')">+ Dal listino</button>
+      </div>
+      <div id="lines"></div>
+      <button type="button" class="secondary" style="width:100%" onclick="addLine()">+ Aggiungi riga lavorazione / ricambio</button>
+
+      <div class="summary-box">
+        <div class="sum-row"><span>Imponibile netto</span><b id="subtotal">0,00 €</b></div>
+        <div class="sum-row"><span>Totale IVA</span><b id="tax">0,00 €</b></div>
+        <div class="sum-total"><span>TOTALE DOCUMENTO</span><span id="total">0,00 €</span></div>
+        <div class="sum-row" style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)">
+          <span>Saldo residuo da pagare</span><b id="balance" style="color:#34d399;font-size:16px">0,00 €</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-block">
+      <div class="form-block-header">
+        <h3 class="form-block-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg>
+          Prossimo Tagliando & Note
+        </h3>
+      </div>
+      <div class="grid">
+        <label>Data prossimo controllo
+          <input id="serviceDate" type="date">
+        </label>
+        <label>Km previsti
+          <input id="serviceKm" type="number" min="0" placeholder="Es. 95000">
+        </label>
+        <label>Tipo intervento futuro
+          <input id="serviceType" placeholder="Tagliando, revisione, batteria...">
+        </label>
+        <label class="wide">
+          <span class="label-row"><span>Note promemoria taglio/controllo</span><span class="vis-tag client">👁️ Lette dal cliente (WhatsApp)</span></span>
+          <input id="serviceNotes" placeholder="Es. Sostituzione olio e filtro abitacolo">
+        </label>
+        <label class="wide">
+          <span class="label-row"><span>Note documento</span><span class="vis-tag client">👁️ Lette dal cliente (PDF & WhatsApp)</span></span>
+          <textarea id="notes" placeholder="Garanzia ricambi, condizioni di pagamento, indicazioni per il cliente..."></textarea>
+        </label>
+      </div>
+
+      <details id="docInternalNotesDetails" class="shop-notes-box">
+        <summary>
+          <span>🔒 Note interne officina (codici errore, ricambi, appunti)</span>
+          <span class="vis-tag shop">Solo officina · Non inviate</span>
+        </summary>
+        <label>
+          <textarea id="internalNotes" placeholder="Es. Errore P0420 cancellato, pastiglie post. al 25% (cliente avvisato), codice batteria..."></textarea>
+        </label>
+      </details>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="green" onclick="saveDoc()">💾 Salva Documento</button>
+      <button type="button" class="blue" onclick="sharePdfWhatsApp()">📄 Invia PDF WhatsApp</button>
+      <button type="button" class="secondary" onclick="printDoc()">🖨️ Stampa / PDF</button>
+      <button type="button" class="secondary" onclick="shareWhatsApp()">💬 Riepilogo WhatsApp</button>
+      <button type="button" class="secondary" onclick="shareDoc()">📤 Altre condivisioni</button>
+    </div>
+  </section>
+
+  <!-- CLIENTI -->
+  <section id="clients" class="hidden">
+    <div class="section-header">
+      <div>
+        <h2>Rubrica Clienti & Veicoli</h2>
+        <p class="muted">Anagrafiche e auto associate salvate sul dispositivo</p>
+      </div>
+      <button type="button" onclick="newClientForm()">+ Nuovo Cliente</button>
+    </div>
+
+    <label>Cerca per nome, telefono, email o targa
+      <input id="clientSearch" placeholder="Digita per filtrare..." oninput="debouncedRenderClients()">
+    </label>
+
+    <div id="clientForm" class="form-block hidden" style="margin-bottom:16px">
+      <div class="form-block-header">
+        <h3 class="form-block-title" id="clientFormTitle">Nuovo cliente</h3>
+      </div>
+      <div class="grid two">
+        <label>Nome / Ragione sociale<input id="cName"></label>
+        <label>Telefono<input id="cPhone" type="tel"></label>
+        <label>Email<input id="cEmail" type="email"></label>
+        <label>Indirizzo<input id="cAddress"></label>
+        <label>Codice Fiscale<input id="cTaxcode"></label>
+        <label>Partita IVA<input id="cVatid"></label>
+      </div>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <div class="form-block-header" style="margin-bottom:10px">
+          <strong style="font-size:13px;color:#fff">Veicoli associati al cliente</strong>
+          <button type="button" class="secondary sm" onclick="addClientVehicleRow()">+ Aggiungi veicolo</button>
+        </div>
+        <div id="cVehiclesList"></div>
+      </div>
+
+      <details id="clientInternalNotesDetails" class="shop-notes-box">
+        <summary>
+          <span>🔒 Note riservate cliente / veicoli</span>
+          <span class="vis-tag shop">Solo officina</span>
+        </summary>
+        <label>
+          <textarea id="cNotes" placeholder="Es. Codici autoradio, difetti cronici, preferenze orari, bullone antifurto nel baule..."></textarea>
+        </label>
+      </details>
+
+      <div class="actions">
+        <button type="button" class="green" onclick="saveClient()">Salva Anagrafica</button>
+        <button type="button" class="secondary" onclick="document.getElementById('clientForm').classList.add('hidden')">Annulla</button>
+      </div>
+    </div>
+
+    <div id="clientList" style="margin-top:14px"></div>
+  </section>
+
+  <!-- ARCHIVIO -->
+  <section id="archive" class="hidden">
+    <div class="section-header">
+      <div>
+        <h2>Archivio Documenti</h2>
+        <p class="muted">Preventivi e fatture emessi</p>
+      </div>
+      <button type="button" onclick="show('editor');newDoc('Preventivo')">+ Nuovo</button>
+    </div>
+
+    <label>Cerca per cliente, targa o numero documento
+      <input id="search" oninput="debouncedRenderArchive()" placeholder="Es. AB123CD, Rossi, FAT-001...">
+    </label>
+
+    <div id="docs" style="margin-top:14px"></div>
+
+    <div class="form-block">
+      <div class="form-block-header">
+        <h3 class="form-block-title">Backup & Sicurezza Dati</h3>
+      </div>
+      <p class="muted" style="margin-bottom:12px">I dati risiedono nella memoria locale del browser. Esporta regolarmente una copia JSON.</p>
+      <div class="actions" style="margin-top:0">
+        <button type="button" class="secondary" onclick="backup()">⬇️ Esporta Backup JSON</button>
+        <label class="secondary" style="display:inline-flex;flex-direction:row;align-items:center;padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;min-height:44px;color:var(--text-main)">
+          ⬆️ Importa Backup
+          <input type="file" accept="application/json" onchange="restore(event)" style="display:none">
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORICO TARGA -->
+  <section id="history" class="hidden">
+    <div class="section-header">
+      <div>
+        <h2>Storico Veicolo per Targa</h2>
+        <p class="muted">Cronologia completa di tutti gli interventi e preventivi sul mezzo</p>
+      </div>
+    </div>
+    <label>Inserisci targa veicolo
+      <input id="historyPlate" class="plate-input" placeholder="Es. AB123CD" oninput="debouncedRenderHistory()" autocomplete="off">
+    </label>
+    <div id="historyResults" style="margin-top:14px"></div>
+  </section>
+
+  <!-- PROMEMORIA TAGLIANDI -->
+  <section id="reminders" class="hidden">
+    <div class="section-header">
+      <div>
+        <h2>Promemoria Tagliandi</h2>
+        <p class="muted">Controlli programmati e invio rapido avviso su WhatsApp</p>
+      </div>
+    </div>
+    <div class="grid two">
+      <label>Filtra cliente o targa
+        <input id="reminderSearch" oninput="debouncedRenderReminders()" placeholder="Nome o targa">
+      </label>
+      <label>Stato scadenza
+        <select id="reminderFilter" onchange="renderReminders()">
+          <option value="all">Tutti i promemoria</option>
+          <option value="due">Scaduti / Oggi</option>
+          <option value="soon">In scadenza (entro 30 gg)</option>
+          <option value="future">Futuri / Solo Km</option>
+        </select>
+      </label>
+    </div>
+    <div id="reminderResults" style="margin-top:14px"></div>
+  </section>
+
+  <!-- LISTINO -->
+  <section id="catalog" class="hidden">
+    <div class="section-header">
+      <div>
+        <h2>Listino Lavorazioni</h2>
+        <p class="muted">Voci preimpostate da inserire con un tocco nel documento attivo</p>
+      </div>
+    </div>
+
+    <div class="form-block" style="margin-top:0;margin-bottom:16px">
+      <div class="grid two">
+        <label>Descrizione voce
+          <input id="itemName" placeholder="Es. Ricarica clima R134a">
+        </label>
+        <label>Prezzo imponibile (€)
+          <input id="itemPrice" type="number" step="0.01" placeholder="50.00">
+        </label>
+      </div>
+      <div class="actions" style="margin-top:12px">
+        <button type="button" onclick="addCatalog()">+ Aggiungi al listino</button>
+      </div>
+    </div>
+
+    <div id="catalogItems"></div>
+  </section>
+
+  <!-- IMPOSTAZIONI -->
+  <section id="settings" class="hidden">
+    <div class="section-header">
+      <div>
+        <h2>Dati Intestazione Officina</h2>
+        <p class="muted">Compaiono nell'intestazione dei PDF e nei messaggi WhatsApp</p>
+      </div>
+    </div>
+    <div class="grid two">
+      <label>Ragione sociale<input id="company"></label>
+      <label>Indirizzo sede<input id="companyAddress"></label>
+      <label>Partita IVA<input id="companyVat"></label>
+      <label>Codice Fiscale<input id="companyTax"></label>
+      <label>Telefono<input id="companyPhone"></label>
+      <label>Email<input id="companyEmail"></label>
+      <label class="wide">IBAN per bonifici<input id="companyIban" style="font-family:var(--mono)"></label>
+    </div>
+    <div class="actions">
+      <button type="button" class="green" onclick="saveSettings()">💾 Salva Impostazioni</button>
+    </div>
+
+    <div class="form-block" id="cloudAccountBlock">
+      <div class="form-block-header">
+        <h3 class="form-block-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+          Sincronizzazione Cloud (Firebase)
+        </h3>
+        <span id="cloudSettingsBadge" class="badge neutral">Non connesso</span>
+      </div>
+      <p id="cloudUserInfo" class="muted" style="margin-bottom:12px">Accedi con il tuo account per sincronizzare automaticamente preventivi, fatture, clienti e listino tra telefono e PC.</p>
+      <div class="actions" style="margin-top:0">
+        <button type="button" id="btnOpenLogin" onclick="openAuthModal()">🔐 Accedi al Cloud</button>
+        <button type="button" id="btnUploadLocal" class="blue hidden" onclick="pushAllLocalToCloud(true)">⬆️ Carica dati locali sul Cloud</button>
+        <button type="button" id="btnForcePull" class="secondary hidden" onclick="pullAllFromCloud(true)">⬇️ Scarica dal Cloud</button>
+        <button type="button" id="btnLogoutCloud" class="danger-ghost hidden" onclick="cloudLogout()">Esci</button>
+      </div>
+    </div>
+
+    <p class="muted" style="margin-top:16px">Nota tecnica: il PDF generato è una copia di cortesia offline; non genera tracciato XML FatturaPA per lo SdI.</p>
+  </section>
+</main>
+
+<!-- BOTTOM NAVIGATION BAR (MOBILE) -->
+<nav class="bottom-nav" aria-label="Navigazione mobile">
+  <button type="button" data-tab="home" onclick="show('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>
+    <span>Home</span>
+  </button>
+
+  <button type="button" data-tab="archive" onclick="show('archive')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+    <span>Documenti</span>
+  </button>
+
+  <button type="button" data-tab="editor" class="create-btn" onclick="toggleCreate()">
+    <span class="plus-pill">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    </span>
+    <span>Crea</span>
+  </button>
+
+  <button type="button" data-tab="clients" onclick="show('clients')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v1"/></svg>
+    <span>Clienti</span>
+  </button>
+
+  <button type="button" data-tab="more" onclick="toggleMore()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+    <span>Menu</span>
+  </button>
+</nav>
+
+<!-- BACKDROP -->
+<div id="sheetBackdrop" class="sheet-backdrop hidden" onclick="closeSheets()"></div>
+
+<!-- CREATE ACTION SHEET -->
+<div id="premiumCreate" class="action-sheet hidden">
+  <div class="sheet-header">
+    <span>Crea nuovo</span>
+    <button type="button" class="secondary sm" style="min-height:28px;padding:0 8px" onclick="closeSheets()">✕</button>
+  </div>
+  <button type="button" class="sheet-item" onclick="closeSheets();show('editor');newDoc('Preventivo')">
+    <span class="s-ico" style="color:#60a5fa">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </span>
+    <div>
+      <strong>Nuovo Preventivo</strong>
+      <small>Stima costi ricambi e manodopera</small>
+    </div>
+  </button>
+  <button type="button" class="sheet-item" onclick="closeSheets();show('editor');newDoc('Fattura')">
+    <span class="s-ico">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>
+    </span>
+    <div>
+      <strong>Nuova Fattura</strong>
+      <small>Documento fiscale / copia di cortesia</small>
+    </div>
+  </button>
+  <button type="button" class="sheet-item" onclick="closeSheets();show('clients');newClientForm()">
+    <span class="s-ico" style="color:#34d399">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="8" r="3"/><path d="M4 20v-2a6 6 0 0 1 12 0v2M19 8v6M16 11h6"/></svg>
+    </span>
+    <div>
+      <strong>Nuovo Cliente</strong>
+      <small>Salva anagrafica e targhe in rubrica</small>
+    </div>
+  </button>
+</div>
+
+<!-- MORE TOOLS MENU SHEET -->
+<div id="premiumMore" class="action-sheet hidden">
+  <div class="sheet-header">
+    <span>Strumenti Officina</span>
+    <button type="button" class="secondary sm" style="min-height:28px;padding:0 8px" onclick="closeSheets()">✕</button>
+  </div>
+  <button type="button" class="sheet-item" onclick="closeSheets();show('history')">
+    <span class="s-ico" style="color:#60a5fa">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14l1-6-2-5H6l-2 5 1 6ZM5 17v2M19 17v2M4 11h16"/></svg>
+    </span>
+    <div>
+      <strong>Storico per Targa</strong>
+      <small>Cerca interventi passati su un veicolo</small>
+    </div>
+  </button>
+  <button type="button" class="sheet-item" onclick="closeSheets();show('reminders')">
+    <span class="s-ico" style="color:#fbbf24">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg>
+    </span>
+    <div>
+      <strong>Promemoria Tagliandi</strong>
+      <small>Scadenze e avvisi WhatsApp</small>
+    </div>
+  </button>
+  <button type="button" class="sheet-item" onclick="closeSheets();show('catalog')">
+    <span class="s-ico" style="color:#34d399">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    </span>
+    <div>
+      <strong>Listino Lavorazioni</strong>
+      <small>Gestisci prezzi e voci frequenti</small>
+    </div>
+  </button>
+  <button type="button" class="sheet-item" onclick="closeSheets();show('settings')">
+    <span class="s-ico">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </span>
+    <div>
+      <strong>Impostazioni Officina</strong>
+      <small>Ragione sociale, P.IVA e IBAN</small>
+    </div>
+  </button>
+</div>
+
+<div id="printArea"></div>
+
+<div id="pwaInstall" style="display:none;position:fixed;bottom:84px;left:12px;right:12px;z-index:45;background:#1c222e;color:#fff;padding:14px;border:1px solid #ef4444;border-radius:16px;box-shadow:0 12px 32px #0009;align-items:center;gap:10px;justify-content:space-between">
+  <div><strong>Installa Elettrauto Matteo</strong><div class="mini">Accesso rapido dalla schermata Home</div></div>
+  <div style="display:flex;gap:8px">
+    <button id="pwaInstallBtn" type="button" class="sm">Installa</button>
+    <button id="pwaDismiss" type="button" class="secondary sm">✕</button>
+  </div>
+</div>
+
+<div id="authModal" class="auth-overlay hidden">
+  <div class="auth-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <h3>☁️ Accesso Cloud Officina</h3>
+      <button type="button" class="secondary sm" style="min-height:30px;padding:0 9px" onclick="closeAuthModal()">✕</button>
+    </div>
+    <p class="muted" style="margin-bottom:14px">Inserisci email e password create su Firebase Authentication per sincronizzare i dati su tutti i dispositivi.</p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <label>Email
+        <input id="authEmail" type="email" placeholder="matteo@officina.it" autocomplete="username">
+      </label>
+      <label>Password
+        <input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')submitCloudLogin()">
+      </label>
+    </div>
+    <div id="authError" class="auth-error hidden"></div>
+    <div class="actions" style="margin-top:16px">
+      <button type="button" id="authSubmitBtn" class="green" style="flex:1" onclick="submitCloudLogin()">Accedi e Sincronizza</button>
+      <button type="button" class="secondary" onclick="closeAuthModal()">Continua offline</button>
+    </div>
+  </div>
+</div>
+
+<div id="exitToast" class="exit-toast" role="status" aria-live="polite">Premi ancora Indietro per uscire</div>
+
+<script>
+const $=id=>document.getElementById(id),
+      money=n=>Number(n||0).toLocaleString('it-IT',{style:'currency',currency:'EUR'}),
+      key='matteo_docs_v1',
+      cfgKey='matteo_cfg_v1',
+      catKey='matteo_catalog_v1',
+      clientKey='matteo_clients_v2',
+      draftKey='matteo_draft_v1';
+
+let currentId=null;
+let editingClientId=null;
+
+const fields=['kind','number','date','expiry','status','deposit','client','phone','email','address','taxcode','vatid','brand','model','plate','year','km','fuel','vin','serviceDate','serviceKm','serviceType','serviceNotes','notes','internalNotes'];
+
+let catalog=JSON.parse(localStorage.getItem(catKey)||'null')||[
+  {name:'Diagnosi elettronica',price:35},
+  {name:'Sostituzione batteria',price:45},
+  {name:'Manodopera elettrauto (1 ora)',price:45},
+  {name:'Manodopera meccanica (1 ora)',price:45},
+  {name:'Cambio olio e filtri',price:70}
+];
+
+let cfg=JSON.parse(localStorage.getItem(cfgKey)||'null')||{
+  company:'Elettrauto Matteo',
+  companyAddress:'Corso Siracusa 46, 10136 Torino (TO)',
+  companyVat:'',
+  companyTax:'',
+  companyPhone:'',
+  companyEmail:'',
+  companyIban:''
+};
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const normalizePlate=p=>String(p||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+
+let _docsCache=null;
+let _clientsCache=null;
+
+function docs(){
+  if(_docsCache) return _docsCache;
+  try{ _docsCache=JSON.parse(localStorage.getItem(key)||'[]'); }catch{ _docsCache=[]; }
+  return _docsCache;
+}
+function storeDocs(a, fromCloud=false){
+  _docsCache=a;
+  localStorage.setItem(key,JSON.stringify(a));
+  if(!fromCloud && window._cloudSyncSchedule) window._cloudSyncSchedule();
+}
+function clients(){
+  if(_clientsCache) return _clientsCache;
+  try{
+    _clientsCache=JSON.parse(localStorage.getItem(clientKey)||'[]').map(c=>({
+      ...c,
+      vehicles: Array.isArray(c.vehicles) ? c.vehicles : []
+    }));
+  }catch{ _clientsCache=[]; }
+  return _clientsCache;
+}
+function storeClients(a, fromCloud=false){
+  _clientsCache=a;
+  localStorage.setItem(clientKey,JSON.stringify(a));
+  if(!fromCloud && window._cloudSyncSchedule) window._cloudSyncSchedule();
+}
+const debounce=(fn,ms=120)=>{let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),ms);};};
+
+/* --- NAVIGATION, SHEETS & BACK-BUTTON PROTECTION --- */
+let currentView='home';
+let lastBackPress=0;
+let exitToastTimer=null;
+
+function hasOpenSheets(){
+  return !$('premiumCreate').classList.contains('hidden') || !$('premiumMore').classList.contains('hidden');
+}
+
+function hasOpenAcMenus(){
+  if(!$('clientAc').classList.contains('hidden') || !$('plateAc').classList.contains('hidden')) return true;
+  return [...document.querySelectorAll('.line-ac')].some(m=>!m.classList.contains('hidden'));
+}
+
+function showExitToast(){
+  const t=$('exitToast');
+  t.classList.add('show');
+  clearTimeout(exitToastTimer);
+  exitToastTimer=setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function pushAppState(view=currentView){
+  try{
+    window.history.pushState({app:'elettrauto',view},'',location.href);
+  }catch(e){}
+}
+
+function closeSheets(){
+  $('premiumCreate').classList.add('hidden');
+  $('premiumMore').classList.add('hidden');
+  $('sheetBackdrop').classList.add('hidden');
+}
+
+function toggleCreate(){
+  const target=$('premiumCreate');
+  const isHidden=target.classList.contains('hidden');
+  closeSheets();
+  if(isHidden){
+    target.classList.remove('hidden');
+    $('sheetBackdrop').classList.remove('hidden');
+    pushAppState(currentView);
+  }
+}
+
+function toggleMore(){
+  const target=$('premiumMore');
+  const isHidden=target.classList.contains('hidden');
+  closeSheets();
+  if(isHidden){
+    target.classList.remove('hidden');
+    $('sheetBackdrop').classList.remove('hidden');
+    pushAppState(currentView);
+  }
+}
+
+function show(id, fromHistory=false){
+  if(currentView==='editor' && id!=='editor') saveDraftNow();
+  closeSheets();
+  hideAcMenus();
+  const prevView=currentView;
+  currentView=id;
+
+  ['home','editor','clients','archive','history','reminders','catalog','settings'].forEach(x=>{
+    $(x).classList.toggle('hidden',x!==id);
+  });
+
+  document.querySelectorAll('.bottom-nav button').forEach(b=>{
+    const tab=b.dataset.tab;
+    const isMore=['history','reminders','catalog','settings'].includes(id);
+    b.classList.toggle('active', tab===(isMore?'more':id));
+  });
+
+  document.querySelectorAll('.desktop-nav button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.nav===id);
+  });
+
+  if(id==='home') renderHome();
+  if(id==='clients') renderClients();
+  if(id==='archive') renderArchive();
+  if(id==='history') renderHistory();
+  if(id==='reminders') renderReminders();
+  if(id==='catalog') renderCatalog();
+  if(id==='settings') Object.keys(cfg).forEach(k=>$(k).value=cfg[k]||'');
+
+  if(!fromHistory && id!==prevView){
+    pushAppState(id);
+  }
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function handleInternalBack(){
+  // 1. Chiudi eventuali tendine di autocompletamento aperte
+  if(hasOpenAcMenus()){
+    hideAcMenus();
+    pushAppState(currentView);
+    return true;
+  }
+  // 2. Chiudi menu Crea / Strumenti aperti
+  if(hasOpenSheets()){
+    closeSheets();
+    pushAppState(currentView);
+    return true;
+  }
+  // 3. Chiudi eventuale form cliente aperto nella rubrica
+  if(currentView==='clients' && !$('clientForm').classList.contains('hidden')){
+    $('clientForm').classList.add('hidden');
+    pushAppState('clients');
+    return true;
+  }
+  // 4. Se sei in una sottosezione (Editor, Clienti, Archivio, ecc.), torna alla Home
+  if(currentView!=='home'){
+    show('home', true);
+    pushAppState('home');
+    return true;
+  }
+  // 5. Sei già nella Home: chiedi doppio tocco entro 2 secondi prima di uscire
+  const now=Date.now();
+  if(now - lastBackPress < 2000){
+    return false; // Consente l'uscita al secondo tocco ravvicinato
+  }
+  lastBackPress=now;
+  showExitToast();
+  pushAppState('home');
+  return true;
+}
+
+window.addEventListener('popstate',()=>{
+  const handled=handleInternalBack();
+  if(!handled){
+    // Secondo "indietro" consecutivo nella Home: esce realmente
+    window.history.back();
+  }
+});
+
+// Hook opzionale per wrapper APK Android (onBackPressed)
+window.onAndroidBackPressed=function(){
+  return handleInternalBack();
+};
+
+// Salva automaticamente la bozza quando l'app va in background o viene chiusa
+window.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') saveDraftNow(); });
+window.addEventListener('pagehide', saveDraftNow);
+
+function renderHome(){
+  renderHomeDraftBanner();
+  const all=docs();
+  $('homeClients').textContent=clients().length;
+  $('homeDocs').textContent=all.length;
+  $('homeReminders').textContent=all.filter(d=>d.serviceDate||d.serviceKm).length;
+
+  const recent=all.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).slice(0,5);
+  $('homeRecent').innerHTML=recent.length
+    ? recent.map(d=>`
+      <div class="recent-item" onclick="loadDoc('${d.id}')">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge ${d.kind==='Fattura'?'fat':'pre'}">${esc(d.kind)}</span>
+            <strong>${esc(d.number||'')}</strong>
+            ${d.plate?`<span class="plate-tag">${esc(d.plate)}</span>`:''}
+          </div>
+          <div class="mini" style="margin-top:4px">${esc(d.client||'Cliente')} · ${esc(d.date||'-')}</div>
+        </div>
+        <strong style="font-size:15px;white-space:nowrap">${money(docTotal(d))}</strong>
+      </div>`).join('')
+    : '<div style="padding:20px;text-align:center" class="muted">Nessun documento presente. Tocca <b>Nuovo Preventivo</b> per iniziare.</div>';
+}
+
+/* --- INLINE AUTOCOMPLETE (CLIENT & PLATE) --- */
+function hideAcMenus(){
+  $('clientAc').classList.add('hidden');
+  $('plateAc').classList.add('hidden');
+  document.querySelectorAll('.line-ac').forEach(m=>m.classList.add('hidden'));
+}
+
+
+function showEditorClientNote(noteText){
+  const banner=$('editorClientNoteBanner');
+  if(noteText && noteText.trim()){
+    banner.innerHTML='<strong>🔒 Nota anagrafica officina:</strong> '+esc(noteText.trim());
+    banner.classList.remove('hidden');
+  }else{
+    banner.innerHTML='';
+    banner.classList.add('hidden');
+  }
+}
+
+function updateEditorCallBtn(){
+  const raw=($('phone').value||'').replace(/[^\d+]/g,'');
+  const btn=$('editorCallBtn');
+  if(raw.length>=5){
+    btn.href='tel:'+raw;
+    btn.style.display='inline-flex';
+  }else{
+    btn.style.display='none';
+  }
+}
+
+function telHref(phone){
+  const raw=String(phone||'').replace(/[^\d+]/g,'');
+  return raw.length>=5 ? 'tel:'+raw : '';
+}
+
+let currentBarVehicles=[];
+let currentPlateResults=[];
+
+document.addEventListener('pointerdown',e=>{
+  if(!e.target.closest('.field-wrap')) hideAcMenus();
+});
+
+function applyVehicleToEditor(v){
+  if(!v)return;
+  $('plate').value=v.plate||'';
+  $('brand').value=v.brand||'';
+  $('model').value=v.model||'';
+  $('year').value=v.year||'';
+  $('fuel').value=v.fuel||'';
+  $('vin').value=v.vin||'';
+}
+
+function renderClientVehicleBar(vehicles, activePlate=''){
+  const bar=$('clientVehicleBar');
+  currentBarVehicles=vehicles||[];
+  if(!currentBarVehicles.length){
+    bar.classList.add('hidden');
+    bar.innerHTML='';
+    return;
+  }
+  bar.classList.remove('hidden');
+  bar.innerHTML=`<span class="mini" style="font-weight:700">Auto del cliente:</span>` +
+    currentBarVehicles.map((v,idx)=>`
+      <button type="button" class="v-pill-btn ${normalizePlate(v.plate)===normalizePlate(activePlate)?'selected':''}"
+        onclick="selectBarVehicle(${idx})">
+        ${esc(v.plate||'N/D')} ${v.brand||v.model ? '· '+esc([v.brand,v.model].filter(Boolean).join(' ')) : ''}
+      </button>`).join('');
+}
+
+function selectBarVehicle(idx){
+  const v=currentBarVehicles[idx];
+  if(!v)return;
+  applyVehicleToEditor(v);
+  document.querySelectorAll('#clientVehicleBar .v-pill-btn').forEach((btn,i)=>{
+    btn.classList.toggle('selected', i===idx);
+  });
+}
+
+function onClientInput(){
+  const q=$('client').value.trim().toLowerCase();
+  const menu=$('clientAc');
+  if(!q){menu.classList.add('hidden');return}
+
+  const allClients=clients();
+  const matches=allClients.filter(c=>
+    c.name.toLowerCase().includes(q) ||
+    (c.phone||'').toLowerCase().includes(q) ||
+    (c.vehicles||[]).some(v=>normalizePlate(v.plate).includes(normalizePlate(q)))
+  ).slice(0,6);
+
+  if(!matches.length){menu.classList.add('hidden');return}
+
+  menu.innerHTML=matches.map(c=>{
+    const plates=(c.vehicles||[]).map(v=>v.plate).filter(Boolean).join(', ');
+    return `
+      <div class="ac-item" onpointerdown="event.preventDefault();pickAcClient('${c.id}')">
+        <div>
+          <strong>${esc(c.name)}</strong>
+          <small>${esc(c.phone||'Nessun tel.')} ${plates?'· Targhe: '+esc(plates):''}</small>
+        </div>
+        <span class="badge neutral">Rubrica</span>
+      </div>`;
+  }).join('');
+  menu.classList.remove('hidden');
+}
+
+function pickAcClient(id){
+  const c=clients().find(x=>x.id===id);
+  if(!c)return;
+  $('client').value=c.name||'';
+  $('phone').value=c.phone||'';
+  $('email').value=c.email||'';
+  $('address').value=c.address||'';
+  $('taxcode').value=c.taxcode||'';
+  $('vatid').value=c.vatid||'';
+
+  if(c.vehicles && c.vehicles.length){
+    applyVehicleToEditor(c.vehicles[0]);
+    renderClientVehicleBar(c.vehicles, c.vehicles[0].plate);
+  }else{
+    renderClientVehicleBar([]);
+  }
+  showEditorClientNote(c.notes||'');
+  updateEditorCallBtn();
+  hideAcMenus();
+}
+
+function onPlateInput(){
+  const q=normalizePlate($('plate').value);
+  const menu=$('plateAc');
+  if(q.length<2){menu.classList.add('hidden');return}
+
+  const results=[];
+  const seenPlates=new Set();
+
+  for(const c of clients()){
+    for(const v of (c.vehicles||[])){
+      const np=normalizePlate(v.plate);
+      if(np && np.includes(q) && !seenPlates.has(np)){
+        seenPlates.add(np);
+        results.push({source:'Rubrica', client:c, vehicle:v});
+      }
+    }
+  }
+
+  for(const d of docs().slice().reverse()){
+    const np=normalizePlate(d.plate);
+    if(np && np.includes(q) && !seenPlates.has(np)){
+      seenPlates.add(np);
+      results.push({
+        source:'Storico',
+        client:{name:d.client,phone:d.phone,email:d.email,address:d.address,taxcode:d.taxcode,vatid:d.vatid,vehicles:[]},
+        vehicle:{plate:d.plate,brand:d.brand,model:d.model,year:d.year,fuel:d.fuel,vin:d.vin}
+      });
+    }
+  }
+
+  currentPlateResults=results.slice(0,6);
+  if(!currentPlateResults.length){menu.classList.add('hidden');return}
+
+  menu.innerHTML=currentPlateResults.map((r,idx)=>`
+    <div class="ac-item" onpointerdown="event.preventDefault();pickAcPlate(${idx})">
+      <div>
+        <strong><span class="plate-tag">${esc(r.vehicle.plate)}</span> ${esc([r.vehicle.brand,r.vehicle.model].filter(Boolean).join(' '))}</strong>
+        <small>Cliente: ${esc(r.client.name||'-')} ${r.client.phone?'· '+esc(r.client.phone):''}</small>
+      </div>
+      <span class="badge ${r.source==='Rubrica'?'ok':'neutral'}">${r.source}</span>
+    </div>`).join('');
+  menu.classList.remove('hidden');
+}
+
+function pickAcPlate(idx){
+  const r=currentPlateResults[idx];
+  if(!r)return;
+  applyVehicleToEditor(r.vehicle);
+  if(r.client && r.client.name){
+    $('client').value=r.client.name||'';
+    $('phone').value=r.client.phone||'';
+    $('email').value=r.client.email||'';
+    $('address').value=r.client.address||'';
+    $('taxcode').value=r.client.taxcode||'';
+    $('vatid').value=r.client.vatid||'';
+    renderClientVehicleBar(r.client.vehicles||[], r.vehicle.plate);
+    showEditorClientNote(r.client.notes||'');
+  }
+  updateEditorCallBtn();
+  hideAcMenus();
+}
+
+/* --- EDITOR & CALCULATIONS --- */
+function newDoc(kind='Preventivo'){
+  const prevSuppress=_suppressDraftSave;
+  _suppressDraftSave=true;
+  currentId=null;
+  fields.forEach(k=>$(k).value='');
+  $('kind').value=kind;
+  $('date').value=new Date().toISOString().slice(0,10);
+  $('status').value='Non pagata';
+  $('deposit').value=0;
+  $('number').value=(kind==='Fattura'?'FAT-':'PRE-')+String(docs().filter(d=>d.kind===kind).length+1).padStart(3,'0');
+  $('lines').innerHTML='';
+  updateEditorCallBtn();
+  showEditorClientNote('');
+  $('docInternalNotesDetails').open=false;
+  renderClientVehicleBar([]);
+  addLine();
+  $('heading').textContent='Nuovo '+kind.toLowerCase();
+  calculate();
+  setDraftPillVisible(Boolean(getStoredDraft()), '● Bozza precedente in memoria');
+  _suppressDraftSave=prevSuppress;
+}
+
+function onLineDescInput(inp){
+  const q=inp.value.trim().toLowerCase();
+  const menu=inp.closest('.field-wrap').querySelector('.line-ac');
+  if(!q){menu.classList.add('hidden');return}
+  const matches=catalog.filter(item=>item.name.toLowerCase().includes(q)).slice(0,6);
+  if(!matches.length){menu.classList.add('hidden');return}
+  menu.innerHTML=matches.map(item=>{
+    const idx=catalog.indexOf(item);
+    return `<div class="ac-item" onpointerdown="event.preventDefault();pickLineCatalog(this,${idx})">
+      <div>
+        <strong>${esc(item.name)}</strong>
+        <small>Listino officina</small>
+      </div>
+      <span class="badge ok">${money(item.price)}</span>
+    </div>`;
+  }).join('');
+  menu.classList.remove('hidden');
+}
+
+function pickLineCatalog(el, catIdx){
+  const item=catalog[catIdx];
+  const lineEl=el.closest('.line-item');
+  if(!item || !lineEl)return;
+  lineEl.querySelector('.ld').value=item.name;
+  lineEl.querySelector('.lp').value=Number(item.price||0);
+  lineEl.querySelector('.line-ac').classList.add('hidden');
+  calculate();
+}
+
+function addLine(line={desc:'',qty:1,price:0,discount:0,vat:22}){
+  const div=document.createElement('div');
+  div.className='line-item';
+  div.innerHTML=`
+    <div class="line-top">
+      <div class="field-wrap">
+        <label>Descrizione lavorazione o ricambio
+          <input class="ld" value="${esc(line.desc)}" placeholder="Scrivi per cercare nel listino o inserisci voce..." autocomplete="off" oninput="onLineDescInput(this)" onfocus="onLineDescInput(this)">
+        </label>
+        <div class="ac-menu line-ac hidden"></div>
+      </div>
+      <button type="button" class="danger-ghost sm" title="Rimuovi riga" onclick="this.closest('.line-item').remove();calculate()">✕</button>
+    </div>
+    <div class="line-nums">
+      <label>Quantità
+        <input class="lq" type="number" min="0" step="0.01" value="${Number(line.qty)}">
+      </label>
+      <label>Prezzo (€)
+        <input class="lp" type="number" min="0" step="0.01" value="${Number(line.price)}">
+      </label>
+      <label>Sconto %
+        <input class="ls" type="number" min="0" max="100" step="0.01" value="${Number(line.discount)}">
+      </label>
+      <label>IVA %
+        <select class="lv">${[22,10,5,4,0].map(v=>`<option value="${v}" ${v===Number(line.vat)?'selected':''}>${v}%</option>`).join('')}</select>
+      </label>
+    </div>
+    <div class="line-footer">
+      <span>Imponibile riga</span>
+      <strong class="line-net">0,00 €</strong>
+    </div>`;
+  $('lines').appendChild(div);
+  div.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',calculate));
+  calculate();
+}
+
+function lines(){
+  return [...document.querySelectorAll('.line-item')].map(e=>({
+    desc:e.querySelector('.ld').value,
+    qty:+e.querySelector('.lq').value||0,
+    price:+e.querySelector('.lp').value||0,
+    discount:+e.querySelector('.ls').value||0,
+    vat:+e.querySelector('.lv').value||0
+  }));
+}
+
+function totals(){
+  let sub=0,tax=0;
+  document.querySelectorAll('.line-item').forEach(e=>{
+    const qty=+e.querySelector('.lq').value||0;
+    const price=+e.querySelector('.lp').value||0;
+    const discount=+e.querySelector('.ls').value||0;
+    const vat=+e.querySelector('.lv').value||0;
+    const net=Math.round(qty*price*(1-discount/100)*100)/100;
+    e.querySelector('.line-net').textContent=money(net);
+    sub+=net;
+    tax+=Math.round(net*vat)/100;
+  });
+  sub=Math.round(sub*100)/100;
+  tax=Math.round(tax*100)/100;
+  return{sub,tax,total:Math.round((sub+tax)*100)/100};
+}
+
+function calculate(){
+  let t=totals();
+  $('subtotal').textContent=money(t.sub);
+  $('tax').textContent=money(t.tax);
+  $('total').textContent=money(t.total);
+  $('balance').textContent=money(Math.max(0,t.total-(+$('deposit').value||0)));
+  if(typeof scheduleDraftSave==='function') scheduleDraftSave();
+}
+
+$('deposit').addEventListener('input',calculate);
+$('kind').addEventListener('change',()=>{$('heading').textContent='Modifica '+$('kind').value.toLowerCase()});
+
+function getDoc(){
+  let d={id:currentId||Date.now().toString(),lines:lines()};
+  fields.forEach(k=>d[k]=$(k).value);
+  return d;
+}
+
+function upsertClientWithVehicle(d, silent=true){
+  const name=(d.client||'').trim();
+  if(!name)return false;
+  let a=clients();
+  let idx=a.findIndex(x=>x.name.toLowerCase()===name.toLowerCase() && (x.phone===d.phone || !d.phone || !x.phone));
+
+  const vehPlate=normalizePlate(d.plate);
+  const currentVeh=(vehPlate || d.brand || d.model) ? {
+    plate: (d.plate||'').toUpperCase().trim(),
+    brand: (d.brand||'').trim(),
+    model: (d.model||'').trim(),
+    year: (d.year||'').trim(),
+    fuel: (d.fuel||'').trim(),
+    vin: (d.vin||'').toUpperCase().trim()
+  } : null;
+
+  if(idx>=0){
+    const existing=a[idx];
+    existing.name=name;
+    if(d.phone)existing.phone=d.phone.trim();
+    if(d.email)existing.email=d.email.trim();
+    if(d.address)existing.address=d.address.trim();
+    if(d.taxcode)existing.taxcode=d.taxcode.trim();
+    if(d.vatid)existing.vatid=d.vatid.trim();
+    existing.updatedAt=new Date().toISOString();
+
+    if(currentVeh && vehPlate){
+      const vIdx=existing.vehicles.findIndex(v=>normalizePlate(v.plate)===vehPlate);
+      if(vIdx>=0) existing.vehicles[vIdx]={...existing.vehicles[vIdx], ...currentVeh};
+      else existing.vehicles.push(currentVeh);
+    }
+    a[idx]=existing;
+  }else{
+    a.push({
+      id:String(Date.now()),
+      name,
+      phone:(d.phone||'').trim(),
+      email:(d.email||'').trim(),
+      address:(d.address||'').trim(),
+      taxcode:(d.taxcode||'').trim(),
+      vatid:(d.vatid||'').trim(),
+      vehicles: currentVeh ? [currentVeh] : [],
+      updatedAt:new Date().toISOString()
+    });
+  }
+  storeClients(a);
+  if(!silent) alert('Cliente e veicolo salvati in rubrica');
+  return true;
+}
+
+function saveDoc(){
+  const d=getDoc();
+  if(!d.client.trim()){alert('Inserisci il nome del cliente');return}
+  d.updatedAt=new Date().toISOString();
+  let all=docs(),i=all.findIndex(x=>x.id===d.id);
+  if(i<0){d.createdAt=d.updatedAt;all.push(d);}
+  else{d.createdAt=all[i].createdAt||d.updatedAt;all[i]=d;}
+  storeDocs(all);
+  currentId=d.id;
+  // Auto-sync client & vehicle to address book on document save
+  upsertClientWithVehicle(d, true);
+  clearDraft();
+  alert('Documento salvato e rubrica aggiornata');
+}
+
+function loadDoc(id){
+  let d=docs().find(x=>x.id===id);
+  if(!d)return;
+  const prevSuppress=_suppressDraftSave;
+  _suppressDraftSave=true;
+  currentId=d.id;
+  fields.forEach(k=>$(k).value=d[k]||'');
+  $('lines').innerHTML='';
+  (d.lines||[]).forEach(addLine);
+  calculate();
+  $('heading').textContent='Modifica '+d.kind.toLowerCase();
+
+  // Check if client in address book has multiple vehicles
+  const c=clients().find(x=>x.name.toLowerCase()===(d.client||'').toLowerCase());
+  updateEditorCallBtn();
+  showEditorClientNote(c?c.notes:'');
+  $('docInternalNotesDetails').open=Boolean((d.internalNotes||'').trim());
+  renderClientVehicleBar(c?c.vehicles:[], d.plate);
+  setDraftPillVisible(false);
+  _suppressDraftSave=prevSuppress;
+  show('editor');
+}
+
+function convertDoc(id){
+  let d=docs().find(x=>x.id===id);
+  if(!d)return;
+  loadDoc(id);
+  currentId=null;
+  $('kind').value='Fattura';
+  $('number').value='FAT-'+String(docs().filter(x=>x.kind==='Fattura').length+1).padStart(3,'0');
+  $('heading').textContent='Fattura da preventivo';
+  alert('Fattura creata come bozza. Premi "Salva Documento" per archiviarla.');
+}
+
+function duplicateDoc(id){
+  let d=docs().find(x=>x.id===id);
+  if(!d)return;
+  loadDoc(id);
+  currentId=null;
+  const kind=d.kind||'Preventivo';
+  $('date').value=new Date().toISOString().slice(0,10);
+  $('expiry').value='';
+  $('status').value='Non pagata';
+  $('deposit').value=0;
+  $('number').value=(kind==='Fattura'?'FAT-':'PRE-')+String(docs().filter(x=>x.kind===kind).length+1).padStart(3,'0');
+  $('heading').textContent='Copia '+kind.toLowerCase();
+  calculate();
+  alert('Documento duplicato con data odierna. Aggiorna eventuali Km o voci e premi "Salva Documento".');
+}
+
+function removeDoc(id){
+  if(!confirm('Eliminare definitivamente questo documento?'))return;
+  storeDocs(docs().filter(d=>d.id!==id));
+  renderArchive();
+}
+
+function docTotal(d){
+  let sub=0,tax=0;
+  for(const l of d.lines||[]){
+    const net=Math.round((+l.qty||0)*(+l.price||0)*(1-(+l.discount||0)/100)*100)/100;
+    sub+=net;
+    tax+=Math.round(net*(+l.vat||0))/100;
+  }
+  return Math.round((sub+tax)*100)/100;
+}
+
+function renderArchive(){
+  let q=$('search').value.toLowerCase(),
+      arr=docs().filter(d=>[d.client,d.plate,d.number].some(v=>String(v||'').toLowerCase().includes(q))).reverse();
+  $('docs').innerHTML=arr.length
+    ? arr.map(d=>{
+        const stBadge=d.status==='Pagata'?'ok':d.status==='Parzialmente pagata'?'soon':'neutral';
+        return `
+        <div class="doc-card">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span class="badge ${d.kind==='Fattura'?'fat':'pre'}">${esc(d.kind)}</span>
+              <strong>${esc(d.number)}</strong>
+              ${d.plate?`<span class="plate-tag">${esc(d.plate)}</span>`:''}
+              <span class="badge ${stBadge}">${esc(d.status||'Non pagata')}</span>
+            </div>
+            <div class="mini" style="margin-top:6px">
+              <b>${esc(d.client)}</b> · ${esc(d.date)} · Totale: <b style="color:#fff">${money(docTotal(d))}</b>
+              ${d.internalNotes?`<span class="vis-tag shop" style="margin-left:6px" title="${esc(d.internalNotes)}">🔒 Note officina</span>`:''}
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button type="button" class="sm" onclick="loadDoc('${d.id}')">Apri</button>
+            <button type="button" class="secondary sm" onclick="duplicateDoc('${d.id}')">Duplica</button>
+            <button type="button" class="green sm" onclick="shareSavedWhatsApp('${d.id}')">WhatsApp</button>
+            ${d.kind==='Preventivo'?`<button type="button" class="secondary sm" onclick="convertDoc('${d.id}')">→ Fattura</button>`:''}
+            <button type="button" class="danger-ghost sm" onclick="removeDoc('${d.id}')">✕</button>
+          </div>
+        </div>`;
+      }).join('')
+    : '<p class="muted" style="margin-top:12px">Nessun documento trovato.</p>';
+}
+
+/* --- CLIENTS & VEHICLES MANAGEMENT --- */
+const clientProps=['Name','Phone','Email','Address','Taxcode','Vatid'];
+const editorProps=['client','phone','email','address','taxcode','vatid'];
+
+function addClientVehicleRow(v={plate:'',brand:'',model:'',year:''}){
+  const row=document.createElement('div');
+  row.className='veh-edit-row';
+  row.innerHTML=`
+    <label>Targa<input class="vp plate-input" value="${esc(v.plate||'')}" placeholder="AB123CD"></label>
+    <label>Marca<input class="vb" value="${esc(v.brand||'')}" placeholder="Fiat"></label>
+    <label>Modello<input class="vm" value="${esc(v.model||'')}" placeholder="Panda"></label>
+    <label>Anno<input class="vy" type="number" value="${esc(v.year||'')}" placeholder="2020"></label>
+    <button type="button" class="danger-ghost sm" onclick="this.closest('.veh-edit-row').remove()" title="Rimuovi auto">✕</button>
+  `;
+  $('cVehiclesList').appendChild(row);
+}
+
+function newClientForm(id){
+  const c=clients().find(x=>x.id===id);
+  editingClientId=c?.id||null;
+  clientProps.forEach(k=>$('c'+k).value=c?.[k.toLowerCase()]||'');
+  $('cNotes').value=c?.notes||'';
+  $('clientInternalNotesDetails').open=Boolean((c?.notes||'').trim());
+  $('cVehiclesList').innerHTML='';
+  const vehs=c?.vehicles||[];
+  if(vehs.length) vehs.forEach(addClientVehicleRow);
+  else addClientVehicleRow();
+  $('clientFormTitle').textContent=c?'Modifica cliente e veicoli':'Nuovo cliente';
+  $('clientForm').classList.remove('hidden');
+  pushAppState('clients');
+  $('cName').focus();
+}
+
+function saveClient(){
+  let name=$('cName').value.trim();
+  if(!name){alert('Inserisci il nome del cliente');return}
+  const vehicles=[...document.querySelectorAll('#cVehiclesList .veh-edit-row')].map(r=>({
+    plate:r.querySelector('.vp').value.toUpperCase().trim(),
+    brand:r.querySelector('.vb').value.trim(),
+    model:r.querySelector('.vm').value.trim(),
+    year:r.querySelector('.vy').value.trim()
+  })).filter(v=>v.plate||v.brand||v.model);
+
+  const c={
+    id:editingClientId||String(Date.now()),
+    ...Object.fromEntries(clientProps.map(k=>[k.toLowerCase(),$('c'+k).value.trim()])),
+    notes:$('cNotes').value.trim(),
+    vehicles,
+    updatedAt:new Date().toISOString()
+  };
+  let a=clients(),i=a.findIndex(x=>x.id===c.id);
+  if(i>=0)a[i]=c;else a.push(c);
+  storeClients(a);
+  $('clientForm').classList.add('hidden');
+  renderClients();
+}
+
+function saveClientFromEditor(){
+  const d=getDoc();
+  if(!d.client.trim()){alert('Inserisci il nome del cliente');return}
+  upsertClientWithVehicle(d, false);
+}
+
+function useClient(id){
+  const c=clients().find(x=>x.id===id);
+  if(!c)return;
+  clientProps.forEach((k,i)=>$(editorProps[i]).value=c[k.toLowerCase()]||'');
+  if(c.vehicles && c.vehicles.length){
+    applyVehicleToEditor(c.vehicles[0]);
+    renderClientVehicleBar(c.vehicles, c.vehicles[0].plate);
+  }else{
+    renderClientVehicleBar([]);
+  }
+  showEditorClientNote(c.notes||'');
+  updateEditorCallBtn();
+  show('editor');
+}
+
+function removeClient(id){
+  if(!confirm('Eliminare questo cliente dalla rubrica? I documenti resteranno salvati.'))return;
+  storeClients(clients().filter(c=>c.id!==id));
+  renderClients();
+}
+
+function renderClients(){
+  let q=($('clientSearch').value||'').toLowerCase();
+  let a=clients().filter(c=>
+    (c.name+' '+c.phone+' '+c.email).toLowerCase().includes(q) ||
+    (c.vehicles||[]).some(v=>(v.plate+' '+v.brand+' '+v.model).toLowerCase().includes(q))
+  );
+  $('clientList').innerHTML=a.length
+    ? a.map(c=>`
+      <div class="doc-card">
+        <div>
+          <strong>${esc(c.name)}</strong>
+          <div class="mini">${esc(c.phone||'Nessun telefono')} ${c.email?'· '+esc(c.email):''}</div>
+          ${(c.vehicles&&c.vehicles.length)?`
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+              ${c.vehicles.map(v=>`<span class="plate-tag">${esc(v.plate||'N/D')} ${v.brand||v.model?'· '+esc([v.brand,v.model].filter(Boolean).join(' ')):''}</span>`).join('')}
+            </div>`:''}
+          ${c.notes?`<div class="mini" style="color:#fbbf24;margin-top:6px">🔒 ${esc(c.notes)}</div>`:''}
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${telHref(c.phone)?`<a class="call-btn sm" href="${telHref(c.phone)}" title="Chiama ${esc(c.name)}">📞 Chiama</a>`:''}
+          <button type="button" class="sm" onclick="useClient('${c.id}')">Usa nel doc</button>
+          <button type="button" class="secondary sm" onclick="newClientForm('${c.id}')">Modifica</button>
+          <button type="button" class="danger-ghost sm" onclick="removeClient('${c.id}')">✕</button>
+        </div>
+      </div>`).join('')
+    : '<p class="muted">Nessun cliente trovato. Premi <b>+ Nuovo Cliente</b>.</p>';
+}
+
+/* --- HISTORY & REMINDERS --- */
+function renderHistory(){
+  const q=normalizePlate($('historyPlate').value);
+  if(!q){$('historyResults').innerHTML='<p class="muted">Digita una targa per visualizzare lo storico interventi.</p>';return}
+  const arr=docs().filter(d=>normalizePlate(d.plate).includes(q)).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+  if(!arr.length){$('historyResults').innerHTML='<p class="muted">Nessun intervento trovato per questa targa.</p>';return}
+  const groups={};
+  for(const d of arr){const plate=normalizePlate(d.plate)||'SENZA TARGA';(groups[plate]??=[]).push(d)}
+  $('historyResults').innerHTML=Object.entries(groups).map(([plate,items])=>`
+    <div class="form-block">
+      <div class="form-block-header">
+        <div>
+          <span class="plate-tag">${esc(plate)}</span>
+          <strong style="margin-left:8px">${esc(items[0].brand||'')} ${esc(items[0].model||'')}</strong>
+          <div class="mini" style="margin-top:4px">Proprietario: ${esc(items[0].client||'-')} · ${items.length} documenti</div>
+        </div>
+      </div>
+      ${items.map(d=>`
+        <div class="doc-card">
+          <div>
+            <div><span class="badge ${d.kind==='Fattura'?'fat':'pre'}">${esc(d.kind)}</span> <b>${esc(d.number)}</b> · <span class="mini">${esc(d.date||'-')} · Km ${esc(d.km||'-')}</span></div>
+            <div class="mini" style="margin-top:4px">${esc((d.lines||[]).map(l=>l.desc).filter(Boolean).join(' · ')||'Nessuna lavorazione')}</div>
+            ${d.internalNotes?`<div class="mini" style="color:#fbbf24;margin-top:4px">🔒 Note officina: ${esc(d.internalNotes)}</div>`:''}
+            <div style="margin-top:4px;font-weight:700">${money(docTotal(d))}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button type="button" class="sm" onclick="loadDoc('${d.id}')">Apri</button>
+            <button type="button" class="secondary sm" onclick="duplicateDoc('${d.id}')">Duplica</button>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function reminderState(d){
+  if(!d.serviceDate)return 'future';
+  const today=new Date();today.setHours(0,0,0,0);
+  const target=new Date(d.serviceDate+'T00:00:00');
+  const diff=Math.ceil((target-today)/86400000);
+  return diff<=0?'due':diff<=30?'soon':'future';
+}
+
+function latestReminders(){
+  const byPlate=new Map();
+  for(const d of docs()){
+    if(!d.serviceDate&&!d.serviceKm)continue;
+    const k=normalizePlate(d.plate)||'cliente:'+String(d.client||'').trim().toLowerCase();
+    const prev=byPlate.get(k);
+    if(!prev||String(d.date||'')>String(prev.date||'')||(d.date===prev.date&&String(d.id)>String(prev.id)))byPlate.set(k,d);
+  }
+  return [...byPlate.values()].sort((a,b)=>(a.serviceDate||'9999').localeCompare(b.serviceDate||'9999'));
+}
+
+function renderReminders(){
+  const q=$('reminderSearch').value.toLowerCase().trim(),filter=$('reminderFilter').value;
+  const arr=latestReminders().filter(d=>[d.client,d.plate,d.brand,d.model].some(x=>String(x||'').toLowerCase().includes(q))).filter(d=>filter==='all'||reminderState(d)===filter);
+  $('reminderResults').innerHTML=arr.length
+    ? arr.map(d=>{
+        const st=reminderState(d),
+              label=st==='due'?'Scaduto / Oggi':st==='soon'?'Entro 30 giorni':'Programmato',
+              badgeCls=st==='due'?'due':st==='soon'?'soon':'ok';
+        return `
+        <div class="doc-card ${st==='due'?'reminder-due':st==='soon'?'reminder-soon':''}">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <strong>${esc(d.client||'Cliente')}</strong>
+              <span class="badge ${badgeCls}">${label}</span>
+              ${d.plate?`<span class="plate-tag">${esc(d.plate)}</span>`:''}
+            </div>
+            <div style="margin-top:4px;font-weight:600">${esc(d.serviceType||'Controllo / Tagliando')} (${esc(d.brand||'')} ${esc(d.model||'')})</div>
+            <div class="mini" style="margin-top:4px">Data: <b>${esc(d.serviceDate||'Non impostata')}</b> · Km previsti: <b>${esc(d.serviceKm||'Non impostati')}</b></div>
+            ${d.serviceNotes?`<div class="mini">${esc(d.serviceNotes)}</div>`:''}
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${telHref(d.phone)?`<a class="call-btn sm" href="${telHref(d.phone)}">📞 Chiama</a>`:''}
+            <button type="button" class="sm" onclick="loadDoc('${d.id}')">Apri</button>
+            <button type="button" class="green sm" onclick="sendReminderWhatsApp('${d.id}')">Avvisa WhatsApp</button>
+          </div>
+        </div>`;
+      }).join('')
+    : '<p class="muted">Nessun promemoria trovato. Imposta data o km del prossimo tagliando dentro un documento.</p>';
+}
+
+function sendReminderWhatsApp(id){
+  const d=docs().find(x=>x.id===id);if(!d)return;
+  const msg=`Buongiorno ${d.client||''}, ti ricordiamo il prossimo ${d.serviceType||'controllo'} per il veicolo ${[d.brand,d.model,d.plate].filter(Boolean).join(' ')}.${d.serviceDate?'\nData prevista: '+new Date(d.serviceDate+'T00:00:00').toLocaleDateString('it-IT'):''}${d.serviceKm?'\nChilometraggio previsto: '+d.serviceKm+' km':''}${d.serviceNotes?'\nNote: '+d.serviceNotes:''}\n\nElettrauto Matteo\nCorso Siracusa 46, Torino\nPer fissare un appuntamento contattaci.`;
+  const raw=String(d.phone||'').replace(/[^\d+]/g,'');
+  let phone=raw.startsWith('00')?raw.slice(2):raw.startsWith('+')?raw.slice(1):raw.startsWith('3')&&raw.length===10?'39'+raw:raw;
+  window.open('https://wa.me/'+(phone||'')+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer');
+}
+
+/* --- CATALOG & SETTINGS --- */
+function renderCatalog(){
+  $('catalogItems').innerHTML=catalog.map((x,i)=>`
+    <div class="doc-card">
+      <div>
+        <strong>${esc(x.name)}</strong>
+        <div class="mini">${money(x.price)} + IVA</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button type="button" class="sm" onclick="addFromCatalog(${i})">+ Inserisci nel doc</button>
+        <button type="button" class="danger-ghost sm" onclick="catalog.splice(${i},1);persistCatalog()">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function persistCatalog(fromCloud=false){localStorage.setItem(catKey,JSON.stringify(catalog));renderCatalog();if(!fromCloud && window._cloudSyncSchedule) window._cloudSyncSchedule();}
+function addCatalog(){
+  if(!$('itemName').value.trim())return;
+  catalog.push({id:String(Date.now()),name:$('itemName').value.trim(),price:+$('itemPrice').value||0,updatedAt:new Date().toISOString()});
+  $('itemName').value='';$('itemPrice').value='';
+  persistCatalog();
+}
+function addFromCatalog(i){
+  show('editor');
+  addLine({desc:catalog[i].name,qty:1,price:catalog[i].price,discount:0,vat:22});
+}
+
+function saveSettings(){
+  Object.keys(cfg).forEach(k=>cfg[k]=$(k).value);
+  cfg.updatedAt=new Date().toISOString();
+  localStorage.setItem(cfgKey,JSON.stringify(cfg));
+  if(window._cloudSyncSchedule) window._cloudSyncSchedule();
+  alert('Impostazioni officina salvate');
+}
+
+/* --- BACKUP & RESTORE --- */
+function backup(){
+  let data={documents:docs(),catalog,cfg,clients:clients()};
+  let a=document.createElement('a'),u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.href=u;a.download='elettrauto-matteo-backup.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
+
+async function restore(ev){
+  let f=ev.target.files?.[0];if(!f)return;
+  try{
+    let d=JSON.parse(await f.text());
+    if(!Array.isArray(d.documents))throw Error('Formato backup non valido');
+    if(!confirm('Sostituire i dati attuali con quelli del backup?'))return;
+    storeDocs(d.documents);
+    if(Array.isArray(d.catalog)){catalog=d.catalog;localStorage.setItem(catKey,JSON.stringify(catalog))}
+    if(d.cfg){cfg=d.cfg;localStorage.setItem(cfgKey,JSON.stringify(cfg))}
+    if(Array.isArray(d.clients))storeClients(d.clients);
+    renderArchive();renderClients();
+    alert('Backup ripristinato con successo');
+  }catch(e){alert('Errore: '+e.message)}
+}
+
+/* --- PRINT, WHATSAPP & TABULAR OFFLINE PDF --- */
+function printDoc(){
+  let d=getDoc(),t=totals();
+  let rows=d.lines.map(l=>{
+    let n=Math.round(l.qty*l.price*(1-l.discount/100)*100)/100;
+    return `<tr><td>${esc(l.desc)}</td><td>${l.qty}</td><td>${money(l.price)}</td><td>${l.discount}%</td><td>${l.vat}%</td><td>${money(n)}</td></tr>`;
+  }).join('');
+  $('printArea').innerHTML=`<h1>${esc(cfg.company)}</h1><div>${esc(cfg.companyAddress)}<br>${cfg.companyVat?'P.IVA '+esc(cfg.companyVat)+'<br>':''}${cfg.companyTax?'CF '+esc(cfg.companyTax)+'<br>':''}${esc(cfg.companyPhone)} ${esc(cfg.companyEmail)}</div><hr><h2>${esc(d.kind)} n. ${esc(d.number)}</h2><p>Data: ${esc(d.date)} · Scadenza: ${esc(d.expiry)}</p><p><b>Cliente:</b> ${esc(d.client)}<br>${esc(d.address)}<br>CF: ${esc(d.taxcode)} · P.IVA: ${esc(d.vatid)}<br>${esc(d.phone)} ${esc(d.email)}</p><p><b>Veicolo:</b> ${esc(d.brand)} ${esc(d.model)} · Targa: ${esc(d.plate)} · Km: ${esc(d.km)} · Telaio: ${esc(d.vin)}</p><table><thead><tr><th>Descrizione</th><th>Q.tà</th><th>Prezzo</th><th>Sconto</th><th>IVA</th><th>Imponibile</th></tr></thead><tbody>${rows}</tbody></table><p style="text-align:right">Imponibile: ${money(t.sub)}<br>IVA: ${money(t.tax)}</p><div class="p-total">TOTALE: ${money(t.total)}</div><p style="text-align:right">Acconto: ${money(d.deposit)} · Saldo: ${money(Math.max(0,t.total-(+d.deposit||0)))}</p><p>Note: ${esc(d.notes)}</p>${d.serviceDate||d.serviceKm?`<p><b>Prossimo controllo:</b> ${esc(d.serviceType||"Tagliando / controllo")} · Data: ${esc(d.serviceDate||"-")} · Km: ${esc(d.serviceKm||"-")}<br>${esc(d.serviceNotes||"")}</p>`:""}<p>${cfg.companyIban?'IBAN: '+esc(cfg.companyIban):''}</p><small>${d.kind==='Fattura'?'Copia di cortesia: non sostituisce la fattura elettronica ove obbligatoria.':''}</small>`;
+  (window.AndroidOfficina ? window.AndroidOfficina.printDocument() : window.print());
+}
+
+function whatsappText(d){
+  const euro=n=>money(n);let sub=0,tax=0;
+  const items=(d.lines||[]).map(l=>{
+    const net=Math.round((Number(l.qty)||0)*(Number(l.price)||0)*(1-(Number(l.discount)||0)/100)*100)/100;
+    sub+=net;tax+=Math.round(net*(Number(l.vat)||0))/100;
+    return `• ${l.desc||'Lavorazione'} — ${l.qty} × ${euro(l.price)} = ${euro(net)}`;
+  });
+  const total=Math.round((sub+tax)*100)/100;
+  return `${cfg.company||'Elettrauto Matteo'}\n${cfg.companyAddress||'Corso Siracusa 46, Torino'}\n\n${d.kind} n. ${d.number}\nData: ${d.date||'-'}\nCliente: ${d.client||'-'}\nVeicolo: ${[d.brand,d.model,d.plate].filter(Boolean).join(' ')||'-'}\n\n${items.join('\n')}\n\nImponibile: ${euro(sub)}\nIVA: ${euro(tax)}\n*TOTALE: ${euro(total)}*${d.notes?'\n\nNote: '+d.notes:''}\n\nMessaggio riepilogativo. Per il documento PDF chiedere la copia allegata.`;
+}
+
+function openWhatsApp(d){
+  if(!d.client?.trim()){alert('Inserisci prima il nome del cliente.');return}
+  const phone=String(d.phone||'').replace(/[^\d+]/g,'');
+  let normalized=phone.startsWith('00')?phone.slice(2):phone.startsWith('+')?phone.slice(1):phone.startsWith('3')&&phone.length===10?'39'+phone:phone;
+  window.open('https://wa.me/'+(normalized||'')+'?text='+encodeURIComponent(whatsappText(d)),'_blank','noopener,noreferrer');
+}
+
+function shareWhatsApp(){openWhatsApp(getDoc())}
+function shareSavedWhatsApp(id){const d=docs().find(x=>x.id===id);if(d)openWhatsApp(d)}
+
+async function shareDoc(){
+  let d=getDoc(),t=totals(),s=`${d.kind} ${d.number}\nElettrauto Matteo\nCliente: ${d.client}\nVeicolo: ${d.brand} ${d.model} ${d.plate}\nTotale: ${money(t.total)}`;
+  if(navigator.share)try{await navigator.share({title:'Elettrauto Matteo',text:s})}catch(e){}
+  else{await navigator.clipboard.writeText(s);alert('Riepilogo copiato negli appunti.')}
+}
+
+/* --- TABULAR VECTOR PDF GENERATOR (A4, ZERO EXTERNAL DEPENDENCIES) --- */
+function pdfSafe(value){
+  return String(value??'')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/€/g,' EUR')
+    .replace(/[\u2018\u2019]/g,"'")
+    .replace(/[\u2013\u2014]/g,'-')
+    .replace(/[^\x20-\x7E]/g,'?');
+}
+function pdfEscape(value){
+  return pdfSafe(value).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+}
+function pdfWrap(value,max=46){
+  let output=[];
+  for(const paragraph of String(value??'').split('\n')){
+    let words=pdfSafe(paragraph).split(/\s+/),line='';
+    for(const w of words){
+      if((line+' '+w).trim().length>max&&line){output.push(line);line=''}
+      if(w.length>max){
+        if(line){output.push(line);line=''}
+        for(let i=0;i<w.length;i+=max)output.push(w.slice(i,i+max));
+      }else line+=(line?' ':'')+w;
+    }
+    output.push(line);
+  }
+  return output.filter((x,i,a)=>x!=='' || a.length===1);
+}
+
+function makePdf(d){
+  const vals=(d.lines||[]).map(l=>{
+    let net=Math.round((+l.qty||0)*(+l.price||0)*(1-(+l.discount||0)/100)*100)/100;
+    return {...l,net};
+  });
+  let sub=vals.reduce((n,l)=>n+l.net,0),
+      vat=vals.reduce((n,l)=>n+Math.round(l.net*(+l.vat||0)*100)/100,0),
+      total=Math.round((sub+vat)*100)/100;
+  sub=Math.round(sub*100)/100;
+  vat=Math.round(vat*100)/100;
+
+  const fmt=n=>Number(n||0).toFixed(2).replace('.',',');
+  const pages=[];
+  let ops=[];
+  let y=800;
+
+  const newPage=()=>{
+    if(ops.length) pages.push(ops.join('\n'));
+    ops=[];
+    y=800;
+  };
+
+  // Drawing helpers (A4 = 595 x 842 pt, margins = 40 pt)
+  const rect=(x,yTop,w,h,fillGray=null,strokeGray=0.78)=>{
+    const yBot=yTop-h;
+    if(fillGray!==null){
+      ops.push(`${fillGray} g ${x} ${yBot} ${w} ${h} re f 0 g`);
+    }
+    if(strokeGray!==null){
+      ops.push(`${strokeGray} G 0.6 w ${x} ${yBot} ${w} ${h} re S 0 G`);
+    }
+  };
+  const hline=(x1,x2,yPos,gray=0.8)=>{
+    ops.push(`${gray} G 0.5 w ${x1} ${yPos} m ${x2} ${yPos} l S 0 G`);
+  };
+  const text=(str,x,yPos,size=9.5,bold=false,gray=0.1)=>{
+    ops.push(`${gray} g BT /F${bold?2:1} ${size} Tf ${x} ${yPos} Td (${pdfEscape(str)}) Tj ET 0 g`);
+  };
+  const textRight=(str,xRight,yPos,size=9.5,bold=false,gray=0.1)=>{
+    const safe=pdfSafe(str);
+    // Approximate width for Helvetica (avg char width ~0.52 * fontSize)
+    const approxW=safe.length*size*(bold?0.55:0.50);
+    text(safe, Math.max(40, xRight-approxW), yPos, size, bold, gray);
+  };
+
+  // 1. HEADER BANNER
+  rect(40, 805, 515, 74, 0.96, 0.82);
+  rect(40, 805, 5, 74, 0.15, null); // Dark accent bar left
+  text(cfg.company||'ELETTRAUTO MATTEO', 55, 784, 15, true, 0.08);
+  text(cfg.companyAddress||'Corso Siracusa 46, 10136 Torino (TO)', 55, 769, 9, false, 0.3);
+  const fiscalLine=[cfg.companyVat?'P.IVA '+cfg.companyVat:'', cfg.companyTax?'CF '+cfg.companyTax:''].filter(Boolean).join(' · ');
+  if(fiscalLine) text(fiscalLine, 55, 756, 8.5, false, 0.35);
+  const contactLine=[cfg.companyPhone, cfg.companyEmail].filter(Boolean).join(' · ');
+  if(contactLine) text(contactLine, 55, 744, 8.5, false, 0.35);
+
+  // Document type box on right
+  textRight(String(d.kind||'PREVENTIVO').toUpperCase(), 542, 783, 14, true, 0.1);
+  textRight('N. '+(d.number||'-'), 542, 767, 10.5, true, 0.25);
+  textRight('Data: '+(d.date||'-'), 542, 753, 8.5, false, 0.35);
+  if(d.expiry) textRight('Scadenza: '+d.expiry, 542, 742, 8.5, false, 0.35);
+
+  y=718;
+
+  // 2. TWO-COLUMN CLIENT & VEHICLE CARDS
+  const clientLines=[
+    d.client||'-',
+    d.address||'',
+    [d.taxcode?'CF: '+d.taxcode:'', d.vatid?'P.IVA: '+d.vatid:''].filter(Boolean).join(' · '),
+    [d.phone?'Tel: '+d.phone:'', d.email||''].filter(Boolean).join(' · ')
+  ].filter(Boolean);
+
+  const vehLines=[
+    [d.brand, d.model].filter(Boolean).join(' ') || 'Veicolo non specificato',
+    'Targa: '+(d.plate||'-') + (d.km ? '   ·   Km: '+d.km : ''),
+    [d.year?'Anno: '+d.year:'', d.fuel?'Alim.: '+d.fuel:''].filter(Boolean).join('   ·   '),
+    d.vin ? 'Telaio: '+d.vin : ''
+  ].filter(Boolean);
+
+  const boxRows=Math.max(clientLines.length, vehLines.length, 3);
+  const boxH=26 + boxRows*13;
+
+  // Left: Cliente
+  rect(40, y, 250, boxH, 0.985, 0.82);
+  text('SPETT.LE CLIENTE', 50, y-15, 8, true, 0.45);
+  clientLines.forEach((ln,i)=>text(pdfWrap(ln,40)[0], 50, y-30-(i*13), i===0?10:8.8, i===0, 0.12));
+
+  // Right: Veicolo
+  rect(305, y, 250, boxH, 0.985, 0.82);
+  text('DATI VEICOLO', 315, y-15, 8, true, 0.45);
+  vehLines.forEach((ln,i)=>text(pdfWrap(ln,40)[0], 315, y-30-(i*13), i===0?10:8.8, i===0, 0.12));
+
+  y -= (boxH + 16);
+
+  // 3. ITEMS TABLE
+  const drawTableHeader=()=>{
+    rect(40, y, 515, 22, 0.91, 0.78);
+    text('DESCRIZIONE LAVORAZIONE / RICAMBIO', 48, y-14, 8, true, 0.2);
+    textRight('Q.TA', 330, y-14, 8, true, 0.2);
+    textRight('PREZZO', 392, y-14, 8, true, 0.2);
+    textRight('SC.%', 432, y-14, 8, true, 0.2);
+    textRight('IVA', 470, y-14, 8, true, 0.2);
+    textRight('IMPONIBILE', 547, y-14, 8, true, 0.2);
+    y -= 22;
+  };
+
+  drawTableHeader();
+
+  vals.forEach((l,idx)=>{
+    const descLines=pdfWrap(l.desc||'Lavorazione', 44);
+    const rowH=Math.max(22, descLines.length*12 + 10);
+    if(y - rowH < 120){
+      newPage();
+      drawTableHeader();
+    }
+    if(idx%2===1) rect(40, y, 515, rowH, 0.985, null);
+    // Vertical light separators
+    hline(40, 555, y-rowH, 0.88);
+    ops.push(`0.85 G 0.5 w 40 ${y} m 40 ${y-rowH} l 555 ${y} m 555 ${y-rowH} l S 0 G`);
+
+    descLines.forEach((dl,li)=>{
+      text(dl, 48, y-14-(li*12), 9, li===0, 0.12);
+    });
+    textRight(String(l.qty||0), 330, y-14, 9, false, 0.15);
+    textRight(fmt(l.price), 392, y-14, 9, false, 0.15);
+    textRight((l.discount||0)+'%', 432, y-14, 9, false, 0.25);
+    textRight((l.vat||0)+'%', 470, y-14, 9, false, 0.25);
+    textRight(fmt(l.net)+' EUR', 547, y-14, 9, true, 0.1);
+    y -= rowH;
+  });
+
+  y -= 14;
+  if(y < 145) newPage();
+
+  // 4. TOTALS SUMMARY BOX (RIGHT ALIGNED)
+  const hasDeposit=(+d.deposit)>0;
+  const totBoxH=hasDeposit ? 96 : 68;
+  rect(325, y, 230, totBoxH, 0.97, 0.78);
+
+  text('Imponibile Netto', 337, y-16, 9, false, 0.3);
+  textRight(fmt(sub)+' EUR', 545, y-16, 9.5, true, 0.15);
+
+  text('Totale IVA', 337, y-31, 9, false, 0.3);
+  textRight(fmt(vat)+' EUR', 545, y-31, 9.5, true, 0.15);
+
+  rect(325, y-40, 230, 26, 0.90, 0.75);
+  text('TOTALE DOCUMENTO', 337, y-57, 9.5, true, 0.08);
+  textRight(fmt(total)+' EUR', 545, y-57, 11.5, true, 0.05);
+
+  if(hasDeposit){
+    const saldo=Math.max(0, total-(+d.deposit||0));
+    text('Acconto versato', 337, y-77, 8.5, false, 0.35);
+    textRight(fmt(d.deposit)+' EUR', 545, y-77, 8.5, false, 0.25);
+    text('Saldo da pagare', 337, y-90, 9, true, 0.15);
+    textRight(fmt(saldo)+' EUR', 545, y-90, 9.5, true, 0.1);
+  }
+
+  // 5. LEFT NOTES, REMINDER & IBAN
+  let ny=y;
+  if(d.serviceDate || d.serviceKm){
+    text('PROSSIMO CONTROLLO CONSIGLIATO', 40, ny-12, 8, true, 0.35);
+    const remTxt=[
+      d.serviceType||'Tagliando / controllo',
+      d.serviceDate?'Data: '+d.serviceDate:'',
+      d.serviceKm?'Km: '+d.serviceKm:''
+    ].filter(Boolean).join(' · ');
+    text(remTxt, 40, ny-24, 8.8, true, 0.15);
+    ny -= 38;
+  }
+
+  if(d.notes){
+    text('NOTE INTERVENTO', 40, ny-12, 8, true, 0.35);
+    pdfWrap(d.notes, 48).slice(0,4).forEach((nl,i)=>{
+      text(nl, 40, ny-24-(i*11), 8.5, false, 0.2);
+    });
+    ny -= 55;
+  }
+
+  y = Math.min(y - totBoxH - 18, ny - 10);
+  if(y < 60) newPage();
+
+  if(cfg.companyIban){
+    text('Coordinate bancarie (IBAN): ' + cfg.companyIban, 40, y, 8.5, true, 0.25);
+    y -= 14;
+  }
+  if(d.kind==='Fattura'){
+    text('Copia di cortesia non valida ai fini fiscali ai sensi dell\'art. 21 DPR 633/72. Documento originale inviato allo SdI.', 40, y, 7.8, false, 0.45);
+  }
+
+  newPage();
+
+  // Assemble PDF 1.4 structure
+  const objs=[null],obj=s=>{objs.push(s);return objs.length-1};
+  const fontNormal=obj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+  const fontBold=obj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+  const catalog=obj('');const pagesRoot=obj('');let pageIds=[];
+
+  for(const stream of pages){
+    const s=stream+'\n';
+    const bytes=new TextEncoder().encode(s);
+    const content=obj(`<< /Length ${bytes.length} >>\nstream\n${s}endstream`);
+    pageIds.push(obj(`<< /Type /Page /Parent ${pagesRoot} 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 ${fontNormal} 0 R /F2 ${fontBold} 0 R >> >> /Contents ${content} 0 R >>`));
+  }
+
+  objs[pagesRoot]=`<< /Type /Pages /Count ${pageIds.length} /Kids [${pageIds.map(x=>x+' 0 R').join(' ')}] >>`;
+  objs[catalog]=`<< /Type /Catalog /Pages ${pagesRoot} 0 R >>`;
+
+  let output='%PDF-1.4\n',offsets=[0];
+  for(let i=1;i<objs.length;i++){
+    offsets.push(new TextEncoder().encode(output).length);
+    output+=`${i} 0 obj\n${objs[i]}\nendobj\n`;
+  }
+  const xref=new TextEncoder().encode(output).length;
+  output+=`xref\n0 ${objs.length}\n0000000000 65535 f \n`;
+  for(let i=1;i<objs.length;i++) output+=`${String(offsets[i]).padStart(10,'0')} 00000 n \n`;
+  output+=`trailer\n<< /Size ${objs.length} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+
+  return new Blob([output],{type:'application/pdf'});
+}
+
+function downloadPdf(file){
+  const url=URL.createObjectURL(file),a=document.createElement('a');
+  a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+
+async function sharePdfWhatsApp(){
+  const d=getDoc();if(!d.client?.trim()){alert('Inserisci il nome del cliente prima di condividere il PDF.');return}
+  const filename=`${pdfSafe(d.kind||'Documento').replace(/[^a-zA-Z]/g,'')}_${pdfSafe(d.number||'matteo').replace(/[^a-zA-Z0-9_-]/g,'_')}.pdf`;
+  const blob=makePdf(d),file=new File([blob],filename,{type:'application/pdf'});
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:`${d.kind} ${d.number} - Elettrauto Matteo`});return}catch(e){if(e.name==='AbortError')return}
+  }
+  downloadPdf(file);alert('PDF scaricato: apri WhatsApp e allega il file al cliente.');
+}
+
+/* --- PWA INSTALL --- */
+if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+let deferredInstallPrompt;
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredInstallPrompt=event;$('pwaInstall').style.display='flex'});
+$('pwaInstallBtn').addEventListener('click',async()=>{if(!deferredInstallPrompt)return;deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;$('pwaInstall').style.display='none'});
+$('pwaDismiss').addEventListener('click',()=>{$('pwaInstall').style.display='none'});
+window.addEventListener('appinstalled',()=>{$('pwaInstall').style.display='none'});
+
+const debouncedRenderClients=debounce(renderClients,110);
+const debouncedRenderArchive=debounce(renderArchive,110);
+const debouncedRenderHistory=debounce(renderHistory,110);
+const debouncedRenderReminders=debounce(renderReminders,110);
+
+
+/* --- AUTO-DRAFT PROTECTION --- */
+let _suppressDraftSave=false;
+
+function hasMeaningfulDraftData(d){
+  if(!d) return false;
+  const textFields=['client','phone','email','address','taxcode','vatid','brand','model','plate','vin','serviceDate','serviceKm','serviceType','serviceNotes','notes','internalNotes'];
+  if(textFields.some(k=>String(d[k]||'').trim().length>0)) return true;
+  if((+d.deposit||0)>0) return true;
+  return (d.lines||[]).some(l=>String(l.desc||'').trim().length>0 || (+l.price||0)>0);
+}
+
+function getStoredDraft(){
+  try{
+    const raw=localStorage.getItem(draftKey);
+    return raw ? JSON.parse(raw) : null;
+  }catch{ return null; }
+}
+
+function setDraftPillVisible(visible, label='● Bozza salvata'){
+  const pill=$('draftStatusPill');
+  if(!pill) return;
+  pill.textContent=label;
+  pill.style.display=visible?'inline-flex':'none';
+}
+
+function saveDraftNow(){
+  if(_suppressDraftSave) return;
+  const d=getDoc();
+  if(!hasMeaningfulDraftData(d)){
+    return;
+  }
+  d.savedAt=new Date().toISOString();
+  try{
+    localStorage.setItem(draftKey, JSON.stringify(d));
+    setDraftPillVisible(true, '● Bozza salvata');
+  }catch(e){}
+}
+
+const scheduleDraftSave=debounce(saveDraftNow, 300);
+
+function clearDraft(){
+  try{ localStorage.removeItem(draftKey); }catch(e){}
+  setDraftPillVisible(false);
+  renderHomeDraftBanner();
+}
+
+function discardAndNewDoc(){
+  const d=getDoc();
+  if(hasMeaningfulDraftData(d) || getStoredDraft()){
+    if(!confirm('Svuotare i campi ed eliminare la bozza corrente?')) return;
+  }
+  clearDraft();
+  newDoc($('kind').value || 'Preventivo');
+}
+
+function restoreDraft(openEditor=true){
+  const d=getStoredDraft();
+  if(!d) return false;
+  _suppressDraftSave=true;
+  currentId=d.id && docs().some(x=>x.id===d.id) ? d.id : null;
+  fields.forEach(k=>$(k).value=d[k]||'');
+  $('lines').innerHTML='';
+  if(d.lines && d.lines.length) d.lines.forEach(addLine);
+  else addLine();
+  calculate();
+  $('heading').textContent=(currentId?'Modifica ':'Bozza ')+String(d.kind||'preventivo').toLowerCase();
+  const c=clients().find(x=>x.name.toLowerCase()===(d.client||'').toLowerCase());
+  updateEditorCallBtn();
+  showEditorClientNote(c?c.notes:'');
+  $('docInternalNotesDetails').open=Boolean((d.internalNotes||'').trim());
+  renderClientVehicleBar(c?c.vehicles:[], d.plate);
+  setDraftPillVisible(true, '● Bozza ripristinata');
+  _suppressDraftSave=false;
+  if(openEditor) show('editor');
+  return true;
+}
+
+function renderHomeDraftBanner(){
+  const banner=$('homeDraftBanner');
+  if(!banner) return;
+  const d=getStoredDraft();
+  if(!d || !hasMeaningfulDraftData(d)){
+    banner.classList.add('hidden');
+    banner.innerHTML='';
+    return;
+  }
+  const timeStr=d.savedAt ? new Date(d.savedAt).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) : '';
+  const who=[d.client||'Cliente non indicato', d.plate?d.plate.toUpperCase():''].filter(Boolean).join(' · ');
+  banner.classList.remove('hidden');
+  banner.innerHTML=`
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="draft-pill">● Bozza in sospeso ${timeStr?'('+timeStr+')':''}</span>
+        <strong>${esc(d.kind||'Preventivo')} ${esc(d.number||'')}</strong>
+      </div>
+      <div class="mini" style="margin-top:5px">${esc(who)} · Totale stimato: <b style="color:#fff">${money(docTotal(d))}</b></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="sm" onclick="restoreDraft(true)">Riprendi bozza</button>
+      <button type="button" class="secondary sm" onclick="if(confirm('Eliminare la bozza salvata?'))clearDraft()">Scarta</button>
+    </div>`;
+}
+
+// Listen to any input/change inside #editor to auto-save draft immediately
+$('editor').addEventListener('input', scheduleDraftSave);
+$('editor').addEventListener('change', scheduleDraftSave);
+
+_suppressDraftSave=true;
+newDoc();
+_suppressDraftSave=false;
+if(getStoredDraft()){
+  restoreDraft(false);
+}
+try{ window.history.replaceState({app:'elettrauto',view:'home'},'',location.href); }catch(e){}
+pushAppState('home');
+show('home', true);
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAnJM-ZcuMvPv-tRXaI_014AywphsJ08Nw",
+  authDomain: "elettrauto-matteo.firebaseapp.com",
+  projectId: "elettrauto-matteo",
+  storageBucket: "elettrauto-matteo.firebasestorage.app",
+  messagingSenderId: "132025274790",
+  appId: "1:132025274790:web:19eee33faf5b8847afbf67",
+  measurementId: "G-L17KDE3QLN"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+let db;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+  });
+} catch (e) {
+  db = getFirestore(app);
+}
+
+let currentUser = null;
+let unsubscribeDoc = null;
+let isApplyingRemote = false;
+
+function setSyncUI(state, label) {
+  const pill = document.getElementById('cloudSyncPill');
+  const txt = document.getElementById('cloudSyncText');
+  if (!pill || !txt) return;
+  pill.className = 'sync-pill ' + (state || '');
+  txt.textContent = label;
+}
+
+function updateSettingsCloudUI(user) {
+  const badge = document.getElementById('cloudSettingsBadge');
+  const info = document.getElementById('cloudUserInfo');
+  const btnLogin = document.getElementById('btnOpenLogin');
+  const btnUp = document.getElementById('btnUploadLocal');
+  const btnPull = document.getElementById('btnForcePull');
+  const btnOut = document.getElementById('btnLogoutCloud');
+  if (!badge) return;
+
+  if (user) {
+    badge.className = 'badge ok';
+    badge.textContent = 'Connesso';
+    info.innerHTML = `Connesso come <b style="color:#fff">${esc(user.email)}</b>. I dati si sincronizzano automaticamente in tempo reale tra i dispositivi.`;
+    btnLogin.classList.add('hidden');
+    btnUp.classList.remove('hidden');
+    btnPull.classList.remove('hidden');
+    btnOut.classList.remove('hidden');
+  } else {
+    badge.className = 'badge neutral';
+    badge.textContent = 'Non connesso';
+    info.textContent = 'Accedi con il tuo account per sincronizzare automaticamente preventivi, fatture, clienti e listino tra telefono e PC.';
+    btnLogin.classList.remove('hidden');
+    btnUp.classList.add('hidden');
+    btnPull.classList.add('hidden');
+    btnOut.classList.add('hidden');
+  }
+}
+
+window.openAuthModal = function() {
+  document.getElementById('authError').classList.add('hidden');
+  document.getElementById('authModal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('authEmail').focus(), 50);
+};
+
+window.closeAuthModal = function() {
+  document.getElementById('authModal').classList.add('hidden');
+};
+
+window.openCloudPanel = function() {
+  if (!currentUser) {
+    window.openAuthModal();
+  } else {
+    show('settings');
+  }
+};
+
+window.submitCloudLogin = async function() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPassword').value;
+  const errBox = document.getElementById('authError');
+  const btn = document.getElementById('authSubmitBtn');
+  if (!email || !pass) {
+    errBox.textContent = 'Inserisci sia email che password.';
+    errBox.classList.remove('hidden');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Accesso in corso...';
+  errBox.classList.add('hidden');
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    window.closeAuthModal();
+  } catch (e) {
+    let msg = 'Errore di accesso: ' + e.message;
+    if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
+      msg = 'Email o password non corretti. Verifica le credenziali create su Firebase Authentication.';
+    } else if (e.code === 'auth/too-many-requests') {
+      msg = 'Troppi tentativi falliti. Riprova tra qualche minuto.';
+    }
+    errBox.textContent = msg;
+    errBox.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Accedi e Sincronizza';
+  }
+};
+
+window.cloudLogout = async function() {
+  if (!confirm('Disconnettere la sincronizzazione Cloud su questo dispositivo? I dati locali resteranno comunque salvati.')) return;
+  if (unsubscribeDoc) { unsubscribeDoc(); unsubscribeDoc = null; }
+  await signOut(auth);
+};
+
+// Merge arrays by id keeping newest updatedAt
+function mergeById(localArr, remoteArr) {
+  const map = new Map();
+  for (const item of (remoteArr || [])) {
+    if (item && item.id) map.set(String(item.id), item);
+  }
+  for (const item of (localArr || [])) {
+    if (!item || !item.id) continue;
+    const id = String(item.id);
+    const existing = map.get(id);
+    if (!existing) {
+      map.set(id, item);
+    } else {
+      const locTime = String(item.updatedAt || '');
+      const remTime = String(existing.updatedAt || '');
+      if (locTime >= remTime) map.set(id, item);
+    }
+  }
+  return [...map.values()];
+}
+
+function refreshActiveScreen() {
+  if (currentView === 'home') renderHome();
+  else if (currentView === 'archive') renderArchive();
+  else if (currentView === 'clients') renderClients();
+  else if (currentView === 'history') renderHistory();
+  else if (currentView === 'reminders') renderReminders();
+  else if (currentView === 'catalog') renderCatalog();
+  else if (currentView === 'settings') Object.keys(cfg).forEach(k => { if ($(k)) $(k).value = cfg[k] || ''; });
+}
+
+window.pushAllLocalToCloud = async function(interactive = false) {
+  if (!currentUser) {
+    if (interactive) alert('Effettua prima il login al Cloud.');
+    return;
+  }
+  setSyncUI('syncing', '☁️ Salvataggio...');
+  try {
+    const userDocRef = doc(db, 'users', currentUser.uid, 'officina', 'state_v1');
+    const payload = {
+      documents: docs(),
+      clients: clients(),
+      catalog: catalog,
+      cfg: cfg,
+      updatedAt: new Date().toISOString()
+    };
+    await setDoc(userDocRef, payload, { merge: true });
+    setSyncUI(navigator.onLine ? 'online' : 'offline', navigator.onLine ? '☁️ Sincronizzato' : '☁️ Offline (in coda)');
+    if (interactive) alert('Tutti i dati locali sono stati caricati sul Cloud!');
+  } catch (e) {
+    console.warn('Cloud push error:', e);
+    setSyncUI('offline', '⚠️ Errore sync');
+    if (interactive) alert('Errore durante il caricamento: ' + e.message);
+  }
+};
+
+window.pullAllFromCloud = async function(interactive = false) {
+  if (!currentUser) return;
+  setSyncUI('syncing', '☁️ Sincronizzo...');
+  try {
+    const userDocRef = doc(db, 'users', currentUser.uid, 'officina', 'state_v1');
+    const snap = await getDoc(userDocRef);
+    if (snap.exists()) {
+      applyRemoteSnapshot(snap.data(), true);
+      if (interactive) alert('Dati scaricati e uniti dal Cloud.');
+    } else {
+      // First time ever on cloud: upload existing local data automatically
+      await window.pushAllLocalToCloud(false);
+      if (interactive) alert('Archivio Cloud inizializzato con i tuoi dati locali.');
+    }
+  } catch (e) {
+    console.warn('Cloud pull error:', e);
+    setSyncUI('offline', '⚠️ Offline');
+  }
+};
+
+function applyRemoteSnapshot(remote, pushMergedBack = false) {
+  if (!remote) return;
+  isApplyingRemote = true;
+  try {
+    const mergedDocs = mergeById(docs(), remote.documents || []);
+    const mergedClients = mergeById(clients(), remote.clients || []);
+    const mergedCatalog = (Array.isArray(remote.catalog) && remote.catalog.length)
+      ? remote.catalog
+      : catalog;
+    const mergedCfg = (remote.cfg && String(remote.cfg.updatedAt || '') > String(cfg.updatedAt || ''))
+      ? remote.cfg
+      : cfg;
+
+    storeDocs(mergedDocs, true);
+    storeClients(mergedClients, true);
+    catalog = mergedCatalog;
+    localStorage.setItem(catKey, JSON.stringify(catalog));
+    cfg = mergedCfg;
+    localStorage.setItem(cfgKey, JSON.stringify(cfg));
+
+    refreshActiveScreen();
+    setSyncUI(navigator.onLine ? 'online' : 'offline', navigator.onLine ? '☁️ Sincronizzato' : '☁️ Offline');
+
+    // If local had newer/extra items not yet in remote, push merged state back
+    if (pushMergedBack && (mergedDocs.length > (remote.documents || []).length || mergedClients.length > (remote.clients || []).length)) {
+      window.pushAllLocalToCloud(false);
+    }
+  } finally {
+    isApplyingRemote = false;
+  }
+}
+
+window._cloudSyncSchedule = debounce(() => {
+  if (currentUser && !isApplyingRemote) {
+    window.pushAllLocalToCloud(false);
+  }
+}, 800);
+
+window.addEventListener('online', () => {
+  if (currentUser) {
+    setSyncUI('syncing', '☁️ Riallineamento...');
+    window.pushAllLocalToCloud(false);
+  }
+});
+
+window.addEventListener('offline', () => {
+  if (currentUser) setSyncUI('offline', '☁️ Offline');
+});
+
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  updateSettingsCloudUI(user);
+  if (unsubscribeDoc) { unsubscribeDoc(); unsubscribeDoc = null; }
+
+  if (user) {
+    setSyncUI('syncing', '☁️ Connessione...');
+    const userDocRef = doc(db, 'users', user.uid, 'officina', 'state_v1');
+
+    // Initial merge
+    await window.pullAllFromCloud(false);
+
+    // Real-time listener for instant updates from other devices
+    unsubscribeDoc = onSnapshot(userDocRef, (snap) => {
+      if (snap.exists() && !snap.metadata.hasPendingWrites) {
+        applyRemoteSnapshot(snap.data(), false);
+      }
+    }, (err) => {
+      console.warn('Snapshot error:', err);
+      setSyncUI('offline', '⚠️ Verifica regole DB');
+    });
+  } else {
+    setSyncUI('', '☁️ Accedi Cloud');
+  }
+});
+</script>
+</body>
+</html>

@@ -718,7 +718,7 @@ button.sm {
 /* --- CLIENT VEHICLE SUB-FORM --- */
 .veh-edit-row {
   display: grid;
-  grid-template-columns: 1.1fr 1fr 1fr 0.7fr auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
   gap: 8px;
   align-items: end;
   background: var(--bg-surface);
@@ -1218,23 +1218,38 @@ button.sm {
           </label>
           <div id="plateAc" class="ac-menu hidden"></div>
         </div>
-        <label>Marca
-          <input id="brand" placeholder="Es. Fiat">
-        </label>
-        <label>Modello
-          <input id="model" placeholder="Es. Panda 1.2">
-        </label>
+        <div class="field-wrap">
+          <label>Marca
+            <input id="brand" placeholder="Cerca o scrivi marca..." autocomplete="off" oninput="onBrandInput()" onfocus="onBrandInput()">
+          </label>
+          <div id="brandAc" class="ac-menu hidden"></div>
+        </div>
+        <div class="field-wrap">
+          <label>Modello
+            <input id="model" placeholder="Cerca o scrivi modello..." autocomplete="off" oninput="onModelInput()" onfocus="onModelInput()">
+          </label>
+          <div id="modelAc" class="ac-menu hidden"></div>
+        </div>
+        <div class="field-wrap">
+          <label>Motorizzazione / Cod. Motore
+            <input id="engine" placeholder="Es. 1.3 MultiJet 95cv / 199B1000" autocomplete="off" oninput="onEngineInput()" onfocus="onEngineInput()">
+          </label>
+          <div id="engineAc" class="ac-menu hidden"></div>
+        </div>
+        <div class="field-wrap">
+          <label>Alimentazione
+            <input id="fuel" placeholder="Benzina, Diesel, Ibrida..." autocomplete="off" oninput="onFuelInput()" onfocus="onFuelInput()">
+          </label>
+          <div id="fuelAc" class="ac-menu hidden"></div>
+        </div>
         <label>Anno
           <input id="year" type="number" placeholder="2019">
         </label>
         <label>Chilometri (Km)
           <input id="km" type="number" placeholder="78500">
         </label>
-        <label>Alimentazione
-          <input id="fuel" placeholder="Benzina / Diesel / Ibrida">
-        </label>
-        <label class="wide">Numero Telaio (VIN)
-          <input id="vin" style="font-family:var(--mono);text-transform:uppercase">
+        <label style="grid-column: span 2">Numero Telaio (VIN)
+          <input id="vin" style="font-family:var(--mono);text-transform:uppercase" placeholder="17 caratteri">
         </label>
       </div>
     </div>
@@ -1658,7 +1673,7 @@ const $=id=>document.getElementById(id),
 let currentId=null;
 let editingClientId=null;
 
-const fields=['kind','number','date','expiry','status','deposit','client','phone','email','address','taxcode','vatid','brand','model','plate','year','km','fuel','vin','serviceDate','serviceKm','serviceType','serviceNotes','notes','internalNotes'];
+const fields=['kind','number','date','expiry','status','deposit','client','phone','email','address','taxcode','vatid','brand','model','engine','plate','year','km','fuel','vin','serviceDate','serviceKm','serviceType','serviceNotes','notes','internalNotes'];
 
 const cfgFields=['company','companyAddress','companyVat','companyTax','companyPhone','companyEmail','companyIban'];
 const defaultCatalog=[
@@ -1726,7 +1741,7 @@ function hasOpenSheets(){
 }
 
 function hasOpenAcMenus(){
-  if(!$('clientAc').classList.contains('hidden') || !$('plateAc').classList.contains('hidden')) return true;
+  if(['clientAc','plateAc','brandAc','modelAc','engineAc','fuelAc'].some(id=>$(id) && !$(id).classList.contains('hidden'))) return true;
   return [...document.querySelectorAll('.line-ac')].some(m=>!m.classList.contains('hidden'));
 }
 
@@ -1892,8 +1907,7 @@ function renderHome(){
 
 /* --- INLINE AUTOCOMPLETE (CLIENT & PLATE) --- */
 function hideAcMenus(){
-  $('clientAc').classList.add('hidden');
-  $('plateAc').classList.add('hidden');
+  ['clientAc','plateAc','brandAc','modelAc','engineAc','fuelAc'].forEach(id=>{if($(id)) $(id).classList.add('hidden');});
   document.querySelectorAll('.line-ac').forEach(m=>m.classList.add('hidden'));
 }
 
@@ -1937,6 +1951,7 @@ function applyVehicleToEditor(v){
   $('plate').value=v.plate||'';
   $('brand').value=v.brand||'';
   $('model').value=v.model||'';
+  $('engine').value=v.engine||'';
   $('year').value=v.year||'';
   $('fuel').value=v.fuel||'';
   $('vin').value=v.vin||'';
@@ -2044,7 +2059,7 @@ function onPlateInput(){
       results.push({
         source:'Storico',
         client:{name:d.client,phone:d.phone,email:d.email,address:d.address,taxcode:d.taxcode,vatid:d.vatid,vehicles:[]},
-        vehicle:{plate:d.plate,brand:d.brand,model:d.model,year:d.year,fuel:d.fuel,vin:d.vin}
+        vehicle:{plate:d.plate,brand:d.brand,model:d.model,engine:d.engine||'',year:d.year,fuel:d.fuel,vin:d.vin}
       });
     }
   }
@@ -2079,6 +2094,660 @@ function pickAcPlate(idx){
   }
   updateEditorCallBtn();
   hideAcMenus();
+  if(typeof scheduleDraftSave==='function') scheduleDraftSave();
+}
+
+
+/* --- DATABASE MARCHE, MODELLI E MOTORIZZAZIONI ITALIA --- */
+const FUEL_TYPES = [
+  'Benzina',
+  'Diesel',
+  'Mild Hybrid Benzina',
+  'Mild Hybrid Diesel',
+  'Full Hybrid (HEV)',
+  'Plug-in Hybrid (PHEV)',
+  'GPL (Casa madre / Impianto)',
+  'Metano (CNG)',
+  'Elettrica (BEV)'
+];
+
+const AUTO_DB = {
+  'Fiat': {
+    'Panda': [
+      {e:'1.2 Fire 69cv (169A4000)', f:'Benzina'},
+      {e:'1.0 FireFly Hybrid 70cv (46341162)', f:'Mild Hybrid Benzina'},
+      {e:'0.9 TwinAir 85cv (312A2000)', f:'Benzina'},
+      {e:'1.3 MultiJet 75cv / 95cv (199A9000 / 330A1000)', f:'Diesel'},
+      {e:'1.2 EasyPower 69cv', f:'GPL (Casa madre / Impianto)'},
+      {e:'0.9 Natural Power 80cv', f:'Metano (CNG)'}
+    ],
+    '500': [
+      {e:'1.2 Fire 69cv (169A4000)', f:'Benzina'},
+      {e:'1.0 FireFly Hybrid 70cv', f:'Mild Hybrid Benzina'},
+      {e:'0.9 TwinAir 85cv / 105cv', f:'Benzina'},
+      {e:'1.3 MultiJet 95cv (199B1000)', f:'Diesel'},
+      {e:'500e Elettrica 95cv / 118cv', f:'Elettrica (BEV)'}
+    ],
+    '500X': [
+      {e:'1.0 FireFly Turbo 120cv (55282151)', f:'Benzina'},
+      {e:'1.3 FireFly Turbo 150cv', f:'Benzina'},
+      {e:'1.5 Hybrid 130cv DCT', f:'Mild Hybrid Benzina'},
+      {e:'1.6 E-Torq 110cv', f:'Benzina'},
+      {e:'1.3 MultiJet 95cv (55266963)', f:'Diesel'},
+      {e:'1.6 MultiJet 120cv / 130cv (55260384)', f:'Diesel'},
+      {e:'2.0 MultiJet 140cv / 150cv 4x4', f:'Diesel'}
+    ],
+    '500L': [
+      {e:'1.4 16V 95cv (843A1000)', f:'Benzina'},
+      {e:'1.4 T-Jet 120cv (198A4000)', f:'Benzina'},
+      {e:'1.3 MultiJet 85cv / 95cv', f:'Diesel'},
+      {e:'1.6 MultiJet 105cv / 120cv', f:'Diesel'}
+    ],
+    'Punto / Grande Punto / Evo': [
+      {e:'1.2 8V 65cv / 69cv (199A4000)', f:'Benzina'},
+      {e:'1.4 8V 77cv (350A1000)', f:'Benzina'},
+      {e:'1.4 16V MultiAir 105cv / 135cv', f:'Benzina'},
+      {e:'1.3 MultiJet 75cv / 85cv / 90cv / 95cv', f:'Diesel'},
+      {e:'1.4 EasyPower 77cv', f:'GPL (Casa madre / Impianto)'},
+      {e:'1.4 Natural Power 70cv', f:'Metano (CNG)'}
+    ],
+    'Tipo': [
+      {e:'1.4 16V 95cv (843A1000)', f:'Benzina'},
+      {e:'1.4 T-Jet 120cv (198A4000)', f:'Benzina'},
+      {e:'1.0 FireFly 100cv', f:'Benzina'},
+      {e:'1.5 Hybrid 130cv', f:'Mild Hybrid Benzina'},
+      {e:'1.3 MultiJet 95cv', f:'Diesel'},
+      {e:'1.6 MultiJet 120cv / 130cv', f:'Diesel'}
+    ],
+    '600': [
+      {e:'1.2 Hybrid 100cv / 136cv eDCT', f:'Mild Hybrid Benzina'},
+      {e:'600e Elettrica 156cv', f:'Elettrica (BEV)'}
+    ],
+    'Ducato': [
+      {e:'2.2 MultiJet3 120cv / 140cv / 160cv / 180cv', f:'Diesel'},
+      {e:'2.3 MultiJet 130cv / 150cv / 180cv (F1AE / F1AGL)', f:'Diesel'},
+      {e:'3.0 MultiJet 160cv / 180cv (F1CE)', f:'Diesel'}
+    ],
+    'Doblò / Fiorino / Scudo': [
+      {e:'1.3 MultiJet 75cv / 80cv / 90cv / 95cv', f:'Diesel'},
+      {e:'1.5 BlueHDi 100cv / 130cv', f:'Diesel'},
+      {e:'1.6 MultiJet 105cv / 120cv', f:'Diesel'},
+      {e:'2.0 MultiJet 135cv / 145cv / 180cv', f:'Diesel'},
+      {e:'1.4 8V / T-Jet Natural Power', f:'Metano (CNG)'}
+    ]
+  },
+  'Lancia': {
+    'Ypsilon': [
+      {e:'1.2 Fire 69cv (169A4000)', f:'Benzina'},
+      {e:'1.0 FireFly Hybrid 70cv', f:'Mild Hybrid Benzina'},
+      {e:'1.2 Hybrid 100cv eDCT (Nuova Ypsilon)', f:'Mild Hybrid Benzina'},
+      {e:'0.9 TwinAir 85cv', f:'Benzina'},
+      {e:'1.3 MultiJet 75cv / 95cv', f:'Diesel'},
+      {e:'1.2 Ecochic GPL 69cv', f:'GPL (Casa madre / Impianto)'},
+      {e:'Elettrica 156cv', f:'Elettrica (BEV)'}
+    ],
+    'Delta / Musa': [
+      {e:'1.4 T-Jet 120cv / 150cv', f:'Benzina'},
+      {e:'1.3 MultiJet 90cv / 95cv', f:'Diesel'},
+      {e:'1.6 MultiJet 105cv / 120cv', f:'Diesel'},
+      {e:'1.9 TwinTurbo MultiJet 190cv', f:'Diesel'}
+    ]
+  },
+  'Alfa Romeo': {
+    'Giulietta': [
+      {e:'1.4 TB 105cv / 120cv (940B7000 / 198A4000)', f:'Benzina'},
+      {e:'1.4 TB MultiAir 150cv / 170cv', f:'Benzina'},
+      {e:'1.6 JTDm 105cv / 120cv (940A3000 / 55260384)', f:'Diesel'},
+      {e:'2.0 JTDm 140cv / 150cv / 170cv / 175cv', f:'Diesel'},
+      {e:'1.4 TB GPL 120cv', f:'GPL (Casa madre / Impianto)'}
+    ],
+    'Mito': [
+      {e:'1.4 8V 70cv / 78cv (350A1000)', f:'Benzina'},
+      {e:'1.4 TB / MultiAir 120cv / 135cv / 170cv', f:'Benzina'},
+      {e:'0.9 TwinAir 85cv / 105cv', f:'Benzina'},
+      {e:'1.3 JTDm 85cv / 90cv / 95cv', f:'Diesel'},
+      {e:'1.6 JTDm 120cv', f:'Diesel'}
+    ],
+    'Giulia': [
+      {e:'2.0 Turbo Benzina 200cv / 280cv', f:'Benzina'},
+      {e:'2.2 Turbo Diesel 136cv / 150cv / 160cv / 180cv / 190cv / 210cv', f:'Diesel'},
+      {e:'2.9 V6 Bi-Turbo Quadrifoglio 510cv / 520cv', f:'Benzina'}
+    ],
+    'Stelvio': [
+      {e:'2.0 Turbo Benzina 200cv / 280cv Q4', f:'Benzina'},
+      {e:'2.2 Turbo Diesel 160cv / 180cv / 190cv / 210cv', f:'Diesel'}
+    ],
+    'Tonale / Junior': [
+      {e:'1.5 Hybrid 130cv / 160cv TCT7', f:'Mild Hybrid Benzina'},
+      {e:'1.2 Hybrid 136cv eDCT6 (Junior)', f:'Mild Hybrid Benzina'},
+      {e:'1.3 Plug-in Hybrid Q4 280cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.6 Diesel 130cv TCT6', f:'Diesel'},
+      {e:'Junior Elettrica 156cv / 280cv', f:'Elettrica (BEV)'}
+    ]
+  },
+  'Jeep': {
+    'Renegade': [
+      {e:'1.0 T3 120cv (55282151)', f:'Benzina'},
+      {e:'1.3 T4 150cv / 180cv', f:'Benzina'},
+      {e:'1.5 e-Hybrid 130cv DCT7', f:'Mild Hybrid Benzina'},
+      {e:'1.3 4xe Plug-in Hybrid 190cv / 240cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.6 MultiJet 120cv / 130cv', f:'Diesel'},
+      {e:'2.0 MultiJet 140cv / 170cv 4WD', f:'Diesel'}
+    ],
+    'Compass': [
+      {e:'1.3 T4 130cv / 150cv', f:'Benzina'},
+      {e:'1.5 e-Hybrid 130cv DCT7', f:'Mild Hybrid Benzina'},
+      {e:'1.3 4xe Plug-in Hybrid 190cv / 240cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.6 MultiJet 120cv / 130cv', f:'Diesel'},
+      {e:'2.0 MultiJet 140cv / 170cv 4WD', f:'Diesel'}
+    ],
+    'Avenger': [
+      {e:'1.2 Turbo 100cv', f:'Benzina'},
+      {e:'1.2 e-Hybrid 100cv / 136cv 4xe', f:'Mild Hybrid Benzina'},
+      {e:'Elettrica 156cv', f:'Elettrica (BEV)'}
+    ]
+  },
+  'Volkswagen': {
+    'Polo': [
+      {e:'1.0 MPI 65cv / 75cv / 80cv (CHYC / DFNA)', f:'Benzina'},
+      {e:'1.0 TSI 95cv / 110cv / 115cv (DKLA / DLAA)', f:'Benzina'},
+      {e:'1.2 TSI 90cv / 110cv (CJZC)', f:'Benzina'},
+      {e:'1.4 TDI 75cv / 90cv (CUSA / CUSB)', f:'Diesel'},
+      {e:'1.6 TDI 80cv / 95cv (DGTC / DGTD)', f:'Diesel'},
+      {e:'1.0 TGI 90cv', f:'Metano (CNG)'}
+    ],
+    'Golf': [
+      {e:'1.0 TSI / eTSI 110cv / 115cv', f:'Mild Hybrid Benzina'},
+      {e:'1.5 TSI / eTSI 115cv / 130cv / 150cv (DADA / DPCA)', f:'Mild Hybrid Benzina'},
+      {e:'1.4 TSI 122cv / 125cv / 140cv / 150cv', f:'Benzina'},
+      {e:'2.0 TSI GTI / R 245cv / 300cv / 320cv', f:'Benzina'},
+      {e:'1.4 eHybrid / GTE 204cv / 245cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.6 TDI 105cv / 110cv / 115cv (CLHA / CXXB / DDYA)', f:'Diesel'},
+      {e:'2.0 TDI 115cv / 150cv / 184cv / 200cv (CRLB / DTSB)', f:'Diesel'},
+      {e:'1.5 TGI 130cv', f:'Metano (CNG)'}
+    ],
+    'T-Roc / T-Cross / Taigo': [
+      {e:'1.0 TSI 95cv / 110cv / 115cv', f:'Benzina'},
+      {e:'1.5 TSI 150cv (DADA / DPCA)', f:'Benzina'},
+      {e:'1.6 TDI 115cv (DGTE)', f:'Diesel'},
+      {e:'2.0 TDI 115cv / 150cv DSG 4Motion', f:'Diesel'}
+    ],
+    'Tiguan / Passat': [
+      {e:'1.5 TSI / eTSI 130cv / 150cv', f:'Mild Hybrid Benzina'},
+      {e:'1.4 / 1.5 eHybrid 204cv / 218cv / 245cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.6 TDI 120cv', f:'Diesel'},
+      {e:'2.0 TDI 122cv / 150cv / 190cv / 200cv', f:'Diesel'}
+    ],
+    'Up! / Caddy / Transporter': [
+      {e:'1.0 MPI 60cv / 65cv / 75cv', f:'Benzina'},
+      {e:'1.0 EcoFuel 68cv', f:'Metano (CNG)'},
+      {e:'2.0 TDI 75cv / 102cv / 122cv / 150cv / 204cv', f:'Diesel'}
+    ]
+  },
+  'Audi': {
+    'A1': [
+      {e:'25 / 30 TFSI 1.0 95cv / 110cv / 116cv', f:'Benzina'},
+      {e:'35 TFSI 1.5 150cv', f:'Benzina'},
+      {e:'1.4 / 1.6 TDI 90cv / 105cv / 116cv', f:'Diesel'}
+    ],
+    'A3': [
+      {e:'30 TFSI 1.0 110cv / 116cv', f:'Mild Hybrid Benzina'},
+      {e:'35 TFSI 1.5 150cv S tronic', f:'Mild Hybrid Benzina'},
+      {e:'40 / 45 TFSI e 204cv / 245cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'30 TDI 1.6 / 2.0 116cv', f:'Diesel'},
+      {e:'35 TDI 2.0 150cv S tronic', f:'Diesel'}
+    ],
+    'A4 / A5 / A6': [
+      {e:'35 / 40 / 45 TFSI 2.0 150cv / 204cv / 265cv', f:'Mild Hybrid Benzina'},
+      {e:'35 TDI 2.0 150cv / 163cv', f:'Mild Hybrid Diesel'},
+      {e:'40 TDI 2.0 190cv / 204cv quattro', f:'Mild Hybrid Diesel'},
+      {e:'45 / 50 TDI 3.0 V6 231cv / 286cv', f:'Mild Hybrid Diesel'}
+    ],
+    'Q2 / Q3 / Q5': [
+      {e:'30 / 35 TFSI 1.0 / 1.5 110cv / 150cv', f:'Benzina'},
+      {e:'45 TFSI e 245cv / 299cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'30 / 35 TDI 2.0 116cv / 150cv', f:'Diesel'},
+      {e:'40 TDI 2.0 190cv / 204cv quattro', f:'Mild Hybrid Diesel'}
+    ]
+  },
+  'BMW': {
+    'Serie 1': [
+      {e:'116i / 118i 1.5 109cv / 136cv / 140cv (B38)', f:'Benzina'},
+      {e:'120i 1.5 Mild Hybrid 170cv', f:'Mild Hybrid Benzina'},
+      {e:'116d 1.5 116cv (B37)', f:'Diesel'},
+      {e:'118d 2.0 150cv (B47 / N47)', f:'Diesel'},
+      {e:'120d 2.0 163cv / 190cv xDrive', f:'Diesel'}
+    ],
+    'Serie 2 Active Tourer / Gran Coupé': [
+      {e:'218i / 220i 1.5 136cv / 170cv', f:'Mild Hybrid Benzina'},
+      {e:'225e / 230e xDrive Plug-in Hybrid', f:'Plug-in Hybrid (PHEV)'},
+      {e:'216d / 218d / 220d 116cv / 150cv / 190cv', f:'Diesel'}
+    ],
+    'Serie 3 / Serie 4 / Serie 5': [
+      {e:'318i / 320i / 330i 2.0 156cv / 184cv / 245cv (B48)', f:'Benzina'},
+      {e:'320e / 330e 204cv / 292cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'318d / 320d 2.0 150cv / 190cv (B47 / N47)', f:'Mild Hybrid Diesel'},
+      {e:'330d / 530d 3.0 265cv / 286cv (B57)', f:'Mild Hybrid Diesel'}
+    ],
+    'X1 / X2 / X3 / X5': [
+      {e:'sDrive18i / sDrive20i 1.5 136cv / 170cv', f:'Mild Hybrid Benzina'},
+      {e:'xDrive25e / xDrive30e Plug-in Hybrid', f:'Plug-in Hybrid (PHEV)'},
+      {e:'sDrive18d / xDrive20d 150cv / 163cv / 190cv', f:'Mild Hybrid Diesel'},
+      {e:'xDrive25d / xDrive30d 218cv / 231cv / 286cv', f:'Mild Hybrid Diesel'}
+    ]
+  },
+  'Mercedes-Benz': {
+    'Classe A / Classe B / CLA': [
+      {e:'A 180 / A 200 1.3 Turbo 136cv / 163cv (M282)', f:'Mild Hybrid Benzina'},
+      {e:'A 250 e Plug-in Hybrid 218cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'A 160 d / A 180 d 1.5 95cv / 116cv (OM608)', f:'Diesel'},
+      {e:'A 180 d / A 200 d / A 220 d 2.0 116cv / 150cv / 190cv (OM654)', f:'Diesel'}
+    ],
+    'Classe C / Classe E': [
+      {e:'C 180 / C 200 / C 300 1.5 / 2.0 EQ Boost 170cv / 204cv / 258cv', f:'Mild Hybrid Benzina'},
+      {e:'C 300 e / C 300 de Plug-in Hybrid', f:'Plug-in Hybrid (PHEV)'},
+      {e:'C 200 d / C 220 d / C 300 d 2.0 163cv / 200cv / 265cv (OM654)', f:'Mild Hybrid Diesel'}
+    ],
+    'GLA / GLB / GLC': [
+      {e:'GLA 180 / 200 1.3 136cv / 163cv', f:'Mild Hybrid Benzina'},
+      {e:'GLA / GLC 250 e / 300 e / 300 de Plug-in', f:'Plug-in Hybrid (PHEV)'},
+      {e:'GLA / GLB / GLC 200 d / 220 d 150cv / 190cv / 197cv', f:'Mild Hybrid Diesel'}
+    ],
+    'Sprinter / Vito': [
+      {e:'110 / 114 / 116 / 119 CDI 2.0 / 2.1 102cv / 136cv / 163cv / 190cv', f:'Diesel'}
+    ]
+  },
+  'Ford': {
+    'Fiesta': [
+      {e:'1.1 70cv / 75cv / 85cv', f:'Benzina'},
+      {e:'1.0 EcoBoost 100cv / 125cv / 140cv', f:'Benzina'},
+      {e:'1.0 EcoBoost Hybrid 125cv / 155cv', f:'Mild Hybrid Benzina'},
+      {e:'1.5 TDCi / EcoBlue 75cv / 85cv / 95cv / 120cv', f:'Diesel'},
+      {e:'1.1 GPL 75cv', f:'GPL (Casa madre / Impianto)'}
+    ],
+    'Focus': [
+      {e:'1.0 EcoBoost / Hybrid 100cv / 125cv / 155cv', f:'Mild Hybrid Benzina'},
+      {e:'1.5 TDCi / EcoBlue 95cv / 115cv / 120cv', f:'Diesel'},
+      {e:'2.0 EcoBlue 150cv', f:'Diesel'}
+    ],
+    'Puma': [
+      {e:'1.0 EcoBoost Hybrid 125cv / 155cv / 170cv', f:'Mild Hybrid Benzina'},
+      {e:'1.5 EcoBlue 120cv', f:'Diesel'},
+      {e:'Puma Gen-E Elettrica 168cv', f:'Elettrica (BEV)'}
+    ],
+    'Kuga': [
+      {e:'1.5 EcoBoost 120cv / 150cv', f:'Benzina'},
+      {e:'2.5 Full Hybrid (FHEV) 180cv / 190cv', f:'Full Hybrid (HEV)'},
+      {e:'2.5 Plug-in Hybrid (PHEV) 225cv / 243cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.5 / 2.0 EcoBlue 120cv / 150cv / 190cv', f:'Diesel'}
+    ],
+    'Transit / Transit Custom': [
+      {e:'2.0 EcoBlue 105cv / 130cv / 150cv / 170cv', f:'Diesel'}
+    ]
+  },
+  'Peugeot': {
+    '208': [
+      {e:'1.2 PureTech 75cv / 82cv / 100cv / 130cv (HM01 / HN05)', f:'Benzina'},
+      {e:'1.2 Hybrid 100cv / 136cv e-DCS6', f:'Mild Hybrid Benzina'},
+      {e:'1.5 BlueHDi 100cv / 102cv (YH01)', f:'Diesel'},
+      {e:'1.6 BlueHDi 75cv / 100cv / 120cv (BH01)', f:'Diesel'},
+      {e:'e-208 Elettrica 136cv / 156cv', f:'Elettrica (BEV)'}
+    ],
+    '2008': [
+      {e:'1.2 PureTech 100cv / 130cv', f:'Benzina'},
+      {e:'1.2 Hybrid 136cv e-DCS6', f:'Mild Hybrid Benzina'},
+      {e:'1.5 BlueHDi 110cv / 130cv', f:'Diesel'},
+      {e:'1.6 BlueHDi 100cv / 120cv', f:'Diesel'},
+      {e:'e-2008 Elettrica 136cv / 156cv', f:'Elettrica (BEV)'}
+    ],
+    '308 / 3008 / 5008': [
+      {e:'1.2 PureTech 110cv / 130cv', f:'Benzina'},
+      {e:'1.2 Hybrid 136cv e-DCS6', f:'Mild Hybrid Benzina'},
+      {e:'1.6 Plug-in Hybrid 180cv / 225cv / 300cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.5 BlueHDi 130cv (YH01)', f:'Diesel'},
+      {e:'1.6 / 2.0 BlueHDi 120cv / 150cv / 180cv', f:'Diesel'}
+    ]
+  },
+  'Citroën': {
+    'C3': [
+      {e:'1.2 PureTech 82cv / 83cv / 100cv / 110cv', f:'Benzina'},
+      {e:'1.2 Hybrid 100cv e-DCS6', f:'Mild Hybrid Benzina'},
+      {e:'1.5 BlueHDi 100cv / 102cv', f:'Diesel'},
+      {e:'1.6 BlueHDi 75cv / 100cv', f:'Diesel'},
+      {e:'ë-C3 Elettrica 113cv', f:'Elettrica (BEV)'}
+    ],
+    'C3 Aircross / C4 / C5 Aircross': [
+      {e:'1.2 PureTech 110cv / 130cv', f:'Benzina'},
+      {e:'1.2 Hybrid 136cv e-DCS6', f:'Mild Hybrid Benzina'},
+      {e:'1.6 Plug-in Hybrid 180cv / 225cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.5 BlueHDi 110cv / 130cv', f:'Diesel'}
+    ],
+    'Berlingo / Jumpy / Jumper': [
+      {e:'1.5 BlueHDi 75cv / 100cv / 130cv', f:'Diesel'},
+      {e:'2.0 / 2.2 BlueHDi 120cv / 140cv / 145cv / 165cv / 180cv', f:'Diesel'}
+    ]
+  },
+  'Opel': {
+    'Corsa': [
+      {e:'1.2 75cv / Turbo 100cv / 130cv', f:'Benzina'},
+      {e:'1.2 Hybrid 100cv / 136cv eDCT6', f:'Mild Hybrid Benzina'},
+      {e:'1.2 / 1.4 70cv / 90cv (Corsa D/E)', f:'Benzina'},
+      {e:'1.5 Diesel 102cv', f:'Diesel'},
+      {e:'1.3 CDTI 75cv / 95cv', f:'Diesel'},
+      {e:'Corsa-e Elettrica 136cv / 156cv', f:'Elettrica (BEV)'}
+    ],
+    'Mokka / Crossland / Grandland': [
+      {e:'1.2 Turbo 100cv / 110cv / 130cv', f:'Benzina'},
+      {e:'1.2 Hybrid 136cv eDCT6', f:'Mild Hybrid Benzina'},
+      {e:'1.6 Plug-in Hybrid 225cv / 300cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.5 Diesel 110cv / 120cv / 130cv', f:'Diesel'},
+      {e:'1.6 CDTI 110cv / 136cv', f:'Diesel'}
+    ],
+    'Astra': [
+      {e:'1.2 Turbo 110cv / 130cv', f:'Benzina'},
+      {e:'1.2 Hybrid 136cv', f:'Mild Hybrid Benzina'},
+      {e:'1.6 Plug-in Hybrid 180cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.5 Diesel 130cv', f:'Diesel'},
+      {e:'1.6 CDTI 110cv / 136cv', f:'Diesel'}
+    ]
+  },
+  'Renault': {
+    'Clio': [
+      {e:'1.0 SCe 65cv / 75cv', f:'Benzina'},
+      {e:'1.0 TCe 90cv / 100cv (H4D)', f:'Benzina'},
+      {e:'1.0 TCe 100cv GPL', f:'GPL (Casa madre / Impianto)'},
+      {e:'1.6 E-Tech Full Hybrid 140cv / 145cv', f:'Full Hybrid (HEV)'},
+      {e:'1.5 dCi / Blue dCi 75cv / 85cv / 90cv / 100cv / 115cv (K9K)', f:'Diesel'}
+    ],
+    'Captur': [
+      {e:'1.0 TCe 90cv / 100cv', f:'Benzina'},
+      {e:'1.0 TCe 100cv GPL', f:'GPL (Casa madre / Impianto)'},
+      {e:'1.3 TCe Mild Hybrid 140cv / 160cv', f:'Mild Hybrid Benzina'},
+      {e:'1.6 E-Tech Full Hybrid 145cv / Plug-in 160cv', f:'Full Hybrid (HEV)'},
+      {e:'1.5 dCi / Blue dCi 90cv / 95cv / 115cv (K9K)', f:'Diesel'}
+    ],
+    'Mégane / Austral / Arkana': [
+      {e:'1.3 TCe 140cv / 160cv', f:'Mild Hybrid Benzina'},
+      {e:'1.2 / 1.6 E-Tech Full Hybrid 145cv / 200cv', f:'Full Hybrid (HEV)'},
+      {e:'1.5 Blue dCi 115cv (K9K)', f:'Diesel'}
+    ],
+    'Kangoo / Trafic / Master': [
+      {e:'1.5 Blue dCi 95cv / 115cv', f:'Diesel'},
+      {e:'2.0 / 2.3 Blue dCi 110cv / 130cv / 150cv / 170cv', f:'Diesel'}
+    ]
+  },
+  'Dacia': {
+    'Sandero / Sandero Stepway': [
+      {e:'1.0 SCe 65cv / 75cv', f:'Benzina'},
+      {e:'1.0 TCe 90cv / 110cv', f:'Benzina'},
+      {e:'1.0 TCe 100cv ECO-G', f:'GPL (Casa madre / Impianto)'},
+      {e:'1.5 dCi / Blue dCi 75cv / 90cv / 95cv', f:'Diesel'}
+    ],
+    'Duster': [
+      {e:'1.0 TCe 90cv / 100cv ECO-G', f:'GPL (Casa madre / Impianto)'},
+      {e:'1.2 TCe Mild Hybrid 130cv 4x4', f:'Mild Hybrid Benzina'},
+      {e:'1.3 TCe 130cv / 150cv', f:'Benzina'},
+      {e:'1.6 Hybrid 140cv', f:'Full Hybrid (HEV)'},
+      {e:'1.5 dCi / Blue dCi 95cv / 110cv / 115cv', f:'Diesel'}
+    ],
+    'Jogger / Spring': [
+      {e:'1.0 TCe 100cv ECO-G', f:'GPL (Casa madre / Impianto)'},
+      {e:'1.6 Hybrid 140cv', f:'Full Hybrid (HEV)'},
+      {e:'Spring Electric 45cv / 65cv', f:'Elettrica (BEV)'}
+    ]
+  },
+  'Toyota': {
+    'Yaris / Yaris Cross': [
+      {e:'1.0 VVT-i 69cv / 72cv (1KR-FE)', f:'Benzina'},
+      {e:'1.5 VVT-i 111cv / 125cv', f:'Benzina'},
+      {e:'1.5 Hybrid 100cv / 116cv / 130cv (1NZ-FXE / M15A-FXE)', f:'Full Hybrid (HEV)'},
+      {e:'1.4 D-4D 90cv (1ND-TV)', f:'Diesel'}
+    ],
+    'Corolla / C-HR': [
+      {e:'1.8 Hybrid 122cv / 140cv (2ZR-FXE)', f:'Full Hybrid (HEV)'},
+      {e:'2.0 Hybrid 180cv / 184cv / 196cv (M20A-FXS)', f:'Full Hybrid (HEV)'},
+      {e:'2.0 Plug-in Hybrid 223cv', f:'Plug-in Hybrid (PHEV)'}
+    ],
+    'RAV4 / Aygo / Aygo X': [
+      {e:'1.0 VVT-i 69cv / 72cv (Aygo / Aygo X)', f:'Benzina'},
+      {e:'2.5 Hybrid 218cv / 222cv AWD-i (A25A-FXS)', f:'Full Hybrid (HEV)'},
+      {e:'2.5 Plug-in Hybrid 306cv', f:'Plug-in Hybrid (PHEV)'}
+    ]
+  },
+  'Hyundai': {
+    'i10 / i20 / Bayon': [
+      {e:'1.0 MPI / 1.2 MPI 67cv / 79cv / 84cv', f:'Benzina'},
+      {e:'1.0 T-GDI / 48V Hybrid 100cv / 120cv', f:'Mild Hybrid Benzina'},
+      {e:'1.0 / 1.2 MPI GPL', f:'GPL (Casa madre / Impianto)'}
+    ],
+    'Tucson / Kona': [
+      {e:'1.6 T-GDI / 48V Hybrid 150cv / 160cv / 180cv', f:'Mild Hybrid Benzina'},
+      {e:'1.6 Full Hybrid 215cv / 230cv', f:'Full Hybrid (HEV)'},
+      {e:'1.6 Plug-in Hybrid 252cv / 265cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.6 CRDi / 48V 115cv / 136cv', f:'Mild Hybrid Diesel'}
+    ]
+  },
+  'Kia': {
+    'Picanto / Rio / Stonic': [
+      {e:'1.0 / 1.2 DPI / MPI 67cv / 79cv / 84cv', f:'Benzina'},
+      {e:'1.0 T-GDI / MHEV 100cv / 120cv', f:'Mild Hybrid Benzina'},
+      {e:'1.0 / 1.2 GPL', f:'GPL (Casa madre / Impianto)'}
+    ],
+    'Sportage / Niro': [
+      {e:'1.6 T-GDI MHEV 150cv / 160cv / 180cv', f:'Mild Hybrid Benzina'},
+      {e:'1.6 Full Hybrid 141cv / 215cv / 230cv', f:'Full Hybrid (HEV)'},
+      {e:'1.6 Plug-in Hybrid 183cv / 252cv / 265cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'1.6 CRDi MHEV 115cv / 136cv', f:'Mild Hybrid Diesel'}
+    ]
+  },
+  'Nissan': {
+    'Qashqai': [
+      {e:'1.3 DIG-T Mild Hybrid 140cv / 158cv', f:'Mild Hybrid Benzina'},
+      {e:'1.5 e-Power 190cv', f:'Full Hybrid (HEV)'},
+      {e:'1.5 dCi 110cv / 115cv (K9K)', f:'Diesel'},
+      {e:'1.6 / 1.7 dCi 130cv / 150cv', f:'Diesel'}
+    ],
+    'Juke / Micra': [
+      {e:'1.0 DIG-T 92cv / 114cv / 117cv', f:'Benzina'},
+      {e:'1.6 Hybrid 143cv', f:'Full Hybrid (HEV)'},
+      {e:'1.5 dCi 90cv / 110cv (K9K)', f:'Diesel'}
+    ]
+  },
+  'Seat / Cupra': {
+    'Ibiza / Arona': [
+      {e:'1.0 MPI 80cv', f:'Benzina'},
+      {e:'1.0 TSI 95cv / 110cv / 115cv', f:'Benzina'},
+      {e:'1.5 TSI 150cv', f:'Benzina'},
+      {e:'1.0 TGI 90cv', f:'Metano (CNG)'},
+      {e:'1.6 TDI 95cv / 115cv', f:'Diesel'}
+    ],
+    'Leon / Formentor / Ateca': [
+      {e:'1.0 / 1.5 TSI / eTSI 110cv / 115cv / 150cv', f:'Mild Hybrid Benzina'},
+      {e:'1.4 / 1.5 e-Hybrid 204cv / 245cv', f:'Plug-in Hybrid (PHEV)'},
+      {e:'2.0 TDI 115cv / 150cv DSG', f:'Diesel'}
+    ]
+  },
+  'Skoda': {
+    'Fabia / Kamiq / Scala': [
+      {e:'1.0 MPI 65cv / 80cv', f:'Benzina'},
+      {e:'1.0 TSI 95cv / 110cv / 115cv', f:'Benzina'},
+      {e:'1.5 TSI 150cv', f:'Benzina'},
+      {e:'1.6 TDI 95cv / 115cv', f:'Diesel'}
+    ],
+    'Octavia / Karoq / Kodiaq': [
+      {e:'1.0 / 1.5 TSI / e-TEC 110cv / 115cv / 150cv', f:'Mild Hybrid Benzina'},
+      {e:'2.0 TDI 115cv / 150cv / 200cv DSG', f:'Diesel'}
+    ]
+  },
+  'Mini': {
+    'One / Cooper / Countryman': [
+      {e:'1.2 / 1.5 Turbo 75cv / 102cv / 136cv (B38)', f:'Benzina'},
+      {e:'2.0 Cooper S / JCW 178cv / 192cv / 231cv (B48)', f:'Benzina'},
+      {e:'1.5 One D / Cooper D 95cv / 116cv (B37)', f:'Diesel'},
+      {e:'2.0 Cooper D / SD 150cv / 190cv (B47)', f:'Diesel'},
+      {e:'Cooper SE Elettrica 184cv / 218cv', f:'Elettrica (BEV)'}
+    ]
+  },
+  'Smart': {
+    'ForTwo / ForFour': [
+      {e:'1.0 60cv / 71cv (M281)', f:'Benzina'},
+      {e:'0.9 Turbo 90cv / 109cv Brabus', f:'Benzina'},
+      {e:'EQ Elettrica 82cv', f:'Elettrica (BEV)'}
+    ]
+  },
+  'Volvo': {
+    'XC40 / XC60 / V40 / V60': [
+      {e:'T2 / T3 / B3 / B4 1.5 / 2.0 129cv / 163cv / 197cv', f:'Mild Hybrid Benzina'},
+      {e:'T4 / T5 / T6 / T8 Recharge Plug-in', f:'Plug-in Hybrid (PHEV)'},
+      {e:'D2 / D3 / D4 / B4 Diesel 120cv / 150cv / 190cv / 197cv', f:'Diesel'}
+    ]
+  },
+  'Suzuki': {
+    'Swift / Ignis / Vitara / S-Cross': [
+      {e:'1.2 DualJet Hybrid 83cv / 90cv', f:'Mild Hybrid Benzina'},
+      {e:'1.4 BoosterJet Hybrid 129cv / 140cv AllGrip', f:'Mild Hybrid Benzina'},
+      {e:'1.5 DualJet Full Hybrid 115cv', f:'Full Hybrid (HEV)'}
+    ]
+  },
+  'Mazda': {
+    'Mazda2 / Mazda3 / CX-30 / CX-5': [
+      {e:'1.5 / 2.0 / 2.5 e-Skyactiv G / X 75cv / 90cv / 122cv / 150cv / 186cv', f:'Mild Hybrid Benzina'},
+      {e:'1.5 / 1.8 / 2.2 Skyactiv-D 105cv / 116cv / 150cv / 184cv', f:'Diesel'}
+    ]
+  },
+  'Tesla': {
+    'Model 3 / Model Y': [
+      {e:'RWD Standard Range', f:'Elettrica (BEV)'},
+      {e:'Long Range Dual Motor AWD', f:'Elettrica (BEV)'},
+      {e:'Performance Dual Motor AWD', f:'Elettrica (BEV)'}
+    ]
+  }
+};
+
+function findBrandKey(brandInput){
+  const q=String(brandInput||'').trim().toLowerCase();
+  if(!q)return null;
+  const keys=Object.keys(AUTO_DB);
+  return keys.find(k=>k.toLowerCase()===q) || keys.find(k=>k.toLowerCase().includes(q) || q.includes(k.toLowerCase())) || null;
+}
+
+function findModelKey(brandKey, modelInput){
+  if(!brandKey || !AUTO_DB[brandKey])return null;
+  const q=String(modelInput||'').trim().toLowerCase();
+  if(!q)return null;
+  const models=Object.keys(AUTO_DB[brandKey]);
+  return models.find(m=>m.toLowerCase()===q) || models.find(m=>m.toLowerCase().includes(q) || q.includes(m.toLowerCase())) || null;
+}
+
+function onBrandInput(){
+  const q=$('brand').value.trim().toLowerCase();
+  const menu=$('brandAc');
+  const allBrands=Object.keys(AUTO_DB);
+  const matches=q ? allBrands.filter(b=>b.toLowerCase().includes(q)) : allBrands;
+  if(!matches.length){menu.classList.add('hidden');return}
+  menu.innerHTML=matches.slice(0,10).map(b=>{
+    const mCount=Object.keys(AUTO_DB[b]).length;
+    return `<div class="ac-item" onpointerdown="event.preventDefault();pickBrand('${esc(b)}')">
+      <div><strong>${esc(b)}</strong><small>${mCount} famiglie modelli</small></div>
+      <span class="badge neutral">Marca</span>
+    </div>`;
+  }).join('');
+  menu.classList.remove('hidden');
+}
+
+function pickBrand(brandName){
+  $('brand').value=brandName;
+  $('brandAc').classList.add('hidden');
+  if(typeof scheduleDraftSave==='function') scheduleDraftSave();
+  setTimeout(()=>{ $('model').focus(); onModelInput(); }, 30);
+}
+
+function onModelInput(){
+  const bKey=findBrandKey($('brand').value);
+  const q=$('model').value.trim().toLowerCase();
+  const menu=$('modelAc');
+  if(!bKey){menu.classList.add('hidden');return}
+  const allModels=Object.keys(AUTO_DB[bKey]);
+  const matches=q ? allModels.filter(m=>m.toLowerCase().includes(q)) : allModels;
+  if(!matches.length){menu.classList.add('hidden');return}
+  menu.innerHTML=matches.slice(0,10).map(m=>{
+    const engCount=AUTO_DB[bKey][m].length;
+    return `<div class="ac-item" onpointerdown="event.preventDefault();pickModel('${esc(bKey)}','${esc(m)}')">
+      <div><strong>${esc(m)}</strong><small>${engCount} motorizzazioni disponibili</small></div>
+      <span class="badge ok">${esc(bKey)}</span>
+    </div>`;
+  }).join('');
+  menu.classList.remove('hidden');
+}
+
+function pickModel(bKey, modelName){
+  $('brand').value=bKey;
+  $('model').value=modelName;
+  $('modelAc').classList.add('hidden');
+  if(typeof scheduleDraftSave==='function') scheduleDraftSave();
+  setTimeout(()=>{ $('engine').focus(); onEngineInput(); }, 30);
+}
+
+let currentEngineOptions=[];
+
+function onEngineInput(){
+  const bKey=findBrandKey($('brand').value);
+  const mKey=findModelKey(bKey, $('model').value);
+  const q=$('engine').value.trim().toLowerCase();
+  const menu=$('engineAc');
+
+  let list=[];
+  if(bKey && mKey){
+    list=AUTO_DB[bKey][mKey];
+  }else if(bKey){
+    for(const [mod, engs] of Object.entries(AUTO_DB[bKey])){
+      for(const item of engs) list.push({e:`${mod} · ${item.e}`, rawE:item.e, mod, f:item.f});
+    }
+  }else{
+    menu.classList.add('hidden');
+    return;
+  }
+
+  const filtered=q ? list.filter(x=>(x.e+' '+x.f).toLowerCase().includes(q)) : list;
+  currentEngineOptions=filtered.slice(0,12);
+  if(!currentEngineOptions.length){menu.classList.add('hidden');return}
+
+  menu.innerHTML=currentEngineOptions.map((item,idx)=>`
+    <div class="ac-item" onpointerdown="event.preventDefault();pickEngine(${idx})">
+      <div>
+        <strong>${esc(item.rawE||item.e)}</strong>
+        <small>${item.mod?esc(item.mod)+' · ':''}${esc(item.f)}</small>
+      </div>
+      <span class="badge neutral">${esc(item.f.split(' ')[0])}</span>
+    </div>`).join('');
+  menu.classList.remove('hidden');
+}
+
+function pickEngine(idx){
+  const item=currentEngineOptions[idx];
+  if(!item)return;
+  if(item.mod && !$('model').value.trim()) $('model').value=item.mod;
+  $('engine').value=item.rawE||item.e;
+  if(item.f) $('fuel').value=item.f;
+  $('engineAc').classList.add('hidden');
+  if(typeof scheduleDraftSave==='function') scheduleDraftSave();
+}
+
+function onFuelInput(){
+  const q=$('fuel').value.trim().toLowerCase();
+  const menu=$('fuelAc');
+  const matches=q ? FUEL_TYPES.filter(f=>f.toLowerCase().includes(q)) : FUEL_TYPES;
+  if(!matches.length){menu.classList.add('hidden');return}
+  menu.innerHTML=matches.map(f=>`
+    <div class="ac-item" onpointerdown="event.preventDefault();pickFuel('${esc(f)}')">
+      <div><strong>${esc(f)}</strong></div>
+    </div>`).join('');
+  menu.classList.remove('hidden');
+}
+
+function pickFuel(fuelVal){
+  $('fuel').value=fuelVal;
+  $('fuelAc').classList.add('hidden');
   if(typeof scheduleDraftSave==='function') scheduleDraftSave();
 }
 
@@ -2244,6 +2913,7 @@ function upsertClientWithVehicle(d, silent=true){
     plate: (d.plate||'').toUpperCase().trim(),
     brand: (d.brand||'').trim(),
     model: (d.model||'').trim(),
+    engine: (d.engine||'').trim(),
     year: (d.year||'').trim(),
     fuel: (d.fuel||'').trim(),
     vin: (d.vin||'').toUpperCase().trim()
@@ -2401,15 +3071,18 @@ function renderArchive(){
 const clientProps=['Name','Phone','Email','Address','Taxcode','Vatid'];
 const editorProps=['client','phone','email','address','taxcode','vatid'];
 
-function addClientVehicleRow(v={plate:'',brand:'',model:'',year:''}){
+function addClientVehicleRow(v={plate:'',brand:'',model:'',engine:'',fuel:'',year:'',vin:''}){
   const row=document.createElement('div');
   row.className='veh-edit-row';
   row.innerHTML=`
     <label>Targa<input class="vp plate-input" value="${esc(v.plate||'')}" placeholder="AB123CD"></label>
     <label>Marca<input class="vb" value="${esc(v.brand||'')}" placeholder="Fiat"></label>
     <label>Modello<input class="vm" value="${esc(v.model||'')}" placeholder="Panda"></label>
-    <label>Anno<input class="vy" type="number" value="${esc(v.year||'')}" placeholder="2020"></label>
     <button type="button" class="danger-ghost sm" onclick="this.closest('.veh-edit-row').remove()" title="Rimuovi auto">✕</button>
+    <label>Motorizzazione<input class="ve" value="${esc(v.engine||'')}" placeholder="1.2 69cv / 1.3 MJT"></label>
+    <label>Alimentazione<input class="vf" value="${esc(v.fuel||'')}" placeholder="Benzina / Diesel"></label>
+    <label>Anno<input class="vy" type="number" value="${esc(v.year||'')}" placeholder="2020"></label>
+    <label>Telaio (VIN)<input class="vv" style="font-family:var(--mono);text-transform:uppercase" value="${esc(v.vin||'')}" placeholder="VIN"></label>
   `;
   $('cVehiclesList').appendChild(row);
 }
@@ -2437,7 +3110,10 @@ function saveClient(){
     plate:r.querySelector('.vp').value.toUpperCase().trim(),
     brand:r.querySelector('.vb').value.trim(),
     model:r.querySelector('.vm').value.trim(),
-    year:r.querySelector('.vy').value.trim()
+    engine:r.querySelector('.ve').value.trim(),
+    fuel:r.querySelector('.vf').value.trim(),
+    year:r.querySelector('.vy').value.trim(),
+    vin:r.querySelector('.vv').value.toUpperCase().trim()
   })).filter(v=>v.plate||v.brand||v.model);
 
   const c={
@@ -2496,7 +3172,7 @@ function renderClients(){
           <div class="mini">${esc(c.phone||'Nessun telefono')} ${c.email?'· '+esc(c.email):''}</div>
           ${(c.vehicles&&c.vehicles.length)?`
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
-              ${c.vehicles.map(v=>`<span class="plate-tag">${esc(v.plate||'N/D')} ${v.brand||v.model?'· '+esc([v.brand,v.model].filter(Boolean).join(' ')):''}</span>`).join('')}
+              ${c.vehicles.map(v=>`<span class="plate-tag">${esc(v.plate||'N/D')} ${v.brand||v.model||v.engine?'· '+esc([v.brand,v.model,v.engine].filter(Boolean).join(' ')):''}</span>`).join('')}
             </div>`:''}
           ${c.notes?`<div class="mini" style="color:#fbbf24;margin-top:6px">🔒 ${esc(c.notes)}</div>`:''}
         </div>
@@ -2523,7 +3199,7 @@ function renderHistory(){
       <div class="form-block-header">
         <div>
           <span class="plate-tag">${esc(plate)}</span>
-          <strong style="margin-left:8px">${esc(items[0].brand||'')} ${esc(items[0].model||'')}</strong>
+          <strong style="margin-left:8px">${esc(items[0].brand||'')} ${esc(items[0].model||'')} ${items[0].engine?'· '+esc(items[0].engine):''}</strong>
           <div class="mini" style="margin-top:4px">Proprietario: ${esc(items[0].client||'-')} · ${items.length} documenti</div>
         </div>
       </div>
@@ -2706,7 +3382,7 @@ function printDoc(){
     let n=Math.round(l.qty*l.price*(1-l.discount/100)*100)/100;
     return `<tr><td>${esc(l.desc)}</td><td>${l.qty}</td><td>${money(l.price)}</td><td>${l.discount}%</td><td>${l.vat}%</td><td>${money(n)}</td></tr>`;
   }).join('');
-  $('printArea').innerHTML=`<h1>${esc(cfg.company)}</h1><div>${esc(cfg.companyAddress)}<br>${cfg.companyVat?'P.IVA '+esc(cfg.companyVat)+'<br>':''}${cfg.companyTax?'CF '+esc(cfg.companyTax)+'<br>':''}${esc(cfg.companyPhone)} ${esc(cfg.companyEmail)}</div><hr><h2>${esc(d.kind)} n. ${esc(d.number)}</h2><p>Data: ${esc(d.date)} · Scadenza: ${esc(d.expiry)}</p><p><b>Cliente:</b> ${esc(d.client)}<br>${esc(d.address)}<br>CF: ${esc(d.taxcode)} · P.IVA: ${esc(d.vatid)}<br>${esc(d.phone)} ${esc(d.email)}</p><p><b>Veicolo:</b> ${esc(d.brand)} ${esc(d.model)} · Targa: ${esc(d.plate)} · Km: ${esc(d.km)} · Telaio: ${esc(d.vin)}</p><table><thead><tr><th>Descrizione</th><th>Q.tà</th><th>Prezzo</th><th>Sconto</th><th>IVA</th><th>Imponibile</th></tr></thead><tbody>${rows}</tbody></table><p style="text-align:right">Imponibile: ${money(t.sub)}<br>IVA: ${money(t.tax)}</p><div class="p-total">TOTALE: ${money(t.total)}</div><p style="text-align:right">Acconto: ${money(d.deposit)} · Saldo: ${money(Math.max(0,t.total-(+d.deposit||0)))}</p><p>Note: ${esc(d.notes)}</p>${d.serviceDate||d.serviceKm?`<p><b>Prossimo controllo:</b> ${esc(d.serviceType||"Tagliando / controllo")} · Data: ${esc(d.serviceDate||"-")} · Km: ${esc(d.serviceKm||"-")}<br>${esc(d.serviceNotes||"")}</p>`:""}<p>${cfg.companyIban?'IBAN: '+esc(cfg.companyIban):''}</p><small>${d.kind==='Fattura'?'Copia di cortesia: non sostituisce la fattura elettronica ove obbligatoria.':''}</small>`;
+  $('printArea').innerHTML=`<h1>${esc(cfg.company)}</h1><div>${esc(cfg.companyAddress)}<br>${cfg.companyVat?'P.IVA '+esc(cfg.companyVat)+'<br>':''}${cfg.companyTax?'CF '+esc(cfg.companyTax)+'<br>':''}${esc(cfg.companyPhone)} ${esc(cfg.companyEmail)}</div><hr><h2>${esc(d.kind)} n. ${esc(d.number)}</h2><p>Data: ${esc(d.date)} · Scadenza: ${esc(d.expiry)}</p><p><b>Cliente:</b> ${esc(d.client)}<br>${esc(d.address)}<br>CF: ${esc(d.taxcode)} · P.IVA: ${esc(d.vatid)}<br>${esc(d.phone)} ${esc(d.email)}</p><p><b>Veicolo:</b> ${esc(d.brand)} ${esc(d.model)} ${d.engine?'('+esc(d.engine)+')':''} · Targa: ${esc(d.plate)} · Km: ${esc(d.km)} · Telaio: ${esc(d.vin)}</p><table><thead><tr><th>Descrizione</th><th>Q.tà</th><th>Prezzo</th><th>Sconto</th><th>IVA</th><th>Imponibile</th></tr></thead><tbody>${rows}</tbody></table><p style="text-align:right">Imponibile: ${money(t.sub)}<br>IVA: ${money(t.tax)}</p><div class="p-total">TOTALE: ${money(t.total)}</div><p style="text-align:right">Acconto: ${money(d.deposit)} · Saldo: ${money(Math.max(0,t.total-(+d.deposit||0)))}</p><p>Note: ${esc(d.notes)}</p>${d.serviceDate||d.serviceKm?`<p><b>Prossimo controllo:</b> ${esc(d.serviceType||"Tagliando / controllo")} · Data: ${esc(d.serviceDate||"-")} · Km: ${esc(d.serviceKm||"-")}<br>${esc(d.serviceNotes||"")}</p>`:""}<p>${cfg.companyIban?'IBAN: '+esc(cfg.companyIban):''}</p><small>${d.kind==='Fattura'?'Copia di cortesia: non sostituisce la fattura elettronica ove obbligatoria.':''}</small>`;
   (window.AndroidOfficina ? window.AndroidOfficina.printDocument() : window.print());
 }
 
@@ -2718,7 +3394,7 @@ function whatsappText(d){
     return `• ${l.desc||'Lavorazione'} — ${l.qty} × ${euro(l.price)} = ${euro(net)}`;
   });
   const total=Math.round((sub+tax)*100)/100;
-  return `${cfg.company||'Elettrauto Matteo'}\n${cfg.companyAddress||'Corso Siracusa 46, Torino'}\n\n${d.kind} n. ${d.number}\nData: ${d.date||'-'}\nCliente: ${d.client||'-'}\nVeicolo: ${[d.brand,d.model,d.plate].filter(Boolean).join(' ')||'-'}\n\n${items.join('\n')}\n\nImponibile: ${euro(sub)}\nIVA: ${euro(tax)}\n*TOTALE: ${euro(total)}*${d.notes?'\n\nNote: '+d.notes:''}\n\nMessaggio riepilogativo. Per il documento PDF chiedere la copia allegata.`;
+  return `${cfg.company||'Elettrauto Matteo'}\n${cfg.companyAddress||'Corso Siracusa 46, Torino'}\n\n${d.kind} n. ${d.number}\nData: ${d.date||'-'}\nCliente: ${d.client||'-'}\nVeicolo: ${[d.brand,d.model,d.engine,d.plate].filter(Boolean).join(' ')||'-'}\n\n${items.join('\n')}\n\nImponibile: ${euro(sub)}\nIVA: ${euro(tax)}\n*TOTALE: ${euro(total)}*${d.notes?'\n\nNote: '+d.notes:''}\n\nMessaggio riepilogativo. Per il documento PDF chiedere la copia allegata.`;
 }
 
 function openWhatsApp(d){
@@ -2839,6 +3515,7 @@ function makePdf(d){
 
   const vehLines=[
     [d.brand, d.model].filter(Boolean).join(' ') || 'Veicolo non specificato',
+    d.engine ? 'Motore: '+d.engine : '',
     'Targa: '+(d.plate||'-') + (d.km ? '   ·   Km: '+d.km : ''),
     [d.year?'Anno: '+d.year:'', d.fuel?'Alim.: '+d.fuel:''].filter(Boolean).join('   ·   '),
     d.vin ? 'Telaio: '+d.vin : ''

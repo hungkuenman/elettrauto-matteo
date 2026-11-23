@@ -802,18 +802,23 @@ button.sm {
 /* --- CLIENT VEHICLE SUB-FORM --- */
 .veh-edit-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-  gap: 8px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 10px;
   align-items: end;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  margin-bottom: 8px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  margin-bottom: 10px;
 }
-
-@media (max-width: 680px) {
-  .veh-edit-row { grid-template-columns: 1fr 1fr; }
+.veh-edit-header {
+  grid-column: span 12;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--border);
 }
 
 /* --- TOTALS BOX --- */
@@ -1441,13 +1446,13 @@ button.sm {
       <div class="form-block-header">
         <h3 class="form-block-title" id="clientFormTitle">Nuovo cliente</h3>
       </div>
-      <div class="grid two">
-        <label>Nome / Ragione sociale<input id="cName"></label>
-        <label>Telefono<input id="cPhone" type="tel"></label>
-        <label>Email<input id="cEmail" type="email"></label>
-        <label>Indirizzo<input id="cAddress"></label>
-        <label>Codice Fiscale<input id="cTaxcode"></label>
-        <label>Partita IVA<input id="cVatid"></label>
+      <div class="form-grid">
+        <label class="col-6 sm-12">Nome / Ragione sociale<input id="cName" placeholder="Mario Rossi / Azienda Srl"></label>
+        <label class="col-6 sm-12">Telefono<input id="cPhone" type="tel" placeholder="333 1234567"></label>
+        <label class="col-7 sm-12">Indirizzo<input id="cAddress" placeholder="Via, CAP, Città"></label>
+        <label class="col-5 sm-12">Email<input id="cEmail" type="email" placeholder="cliente@email.it"></label>
+        <label class="col-6 sm-6">Codice Fiscale<input id="cTaxcode" style="text-transform:uppercase"></label>
+        <label class="col-6 sm-6">Partita IVA<input id="cVatid"></label>
       </div>
 
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
@@ -1843,7 +1848,7 @@ function hasOpenSheets(){
 
 function hasOpenAcMenus(){
   if(['clientAc','plateAc','brandAc','modelAc','engineAc','fuelAc'].some(id=>$(id) && !$(id).classList.contains('hidden'))) return true;
-  return [...document.querySelectorAll('.line-ac')].some(m=>!m.classList.contains('hidden'));
+  return [...document.querySelectorAll('.line-ac,.cli-ac')].some(m=>!m.classList.contains('hidden'));
 }
 
 function showExitToast(){
@@ -2009,7 +2014,7 @@ function renderHome(){
 /* --- INLINE AUTOCOMPLETE (CLIENT & PLATE) --- */
 function hideAcMenus(){
   ['clientAc','plateAc','brandAc','modelAc','engineAc','fuelAc'].forEach(id=>{if($(id)) $(id).classList.add('hidden');});
-  document.querySelectorAll('.line-ac').forEach(m=>m.classList.add('hidden'));
+  document.querySelectorAll('.line-ac,.cli-ac').forEach(m=>m.classList.add('hidden'));
 }
 
 
@@ -14178,17 +14183,279 @@ const editorProps=['client','phone','email','address','taxcode','vatid'];
 function addClientVehicleRow(v={plate:'',brand:'',model:'',engine:'',fuel:'',year:'',vin:''}){
   const row=document.createElement('div');
   row.className='veh-edit-row';
+  const idx=$('cVehiclesList').children.length + 1;
   row.innerHTML=`
-    <label>Targa<input class="vp plate-input" value="${esc(v.plate||'')}" placeholder="AB123CD"></label>
-    <label>Marca<input class="vb" value="${esc(v.brand||'')}" placeholder="Fiat"></label>
-    <label>Modello<input class="vm" value="${esc(v.model||'')}" placeholder="Panda"></label>
-    <button type="button" class="danger-ghost sm" onclick="this.closest('.veh-edit-row').remove()" title="Rimuovi auto">✕</button>
-    <label>Motorizzazione<input class="ve" value="${esc(v.engine||'')}" placeholder="1.2 69cv / 1.3 MJT"></label>
-    <label>Alimentazione<input class="vf" value="${esc(v.fuel||'')}" placeholder="Benzina / Diesel"></label>
-    <label>Anno<input class="vy" type="number" value="${esc(v.year||'')}" placeholder="2020"></label>
-    <label>Telaio (VIN)<input class="vv" style="font-family:var(--mono);text-transform:uppercase" value="${esc(v.vin||'')}" placeholder="VIN"></label>
+    <div class="veh-edit-header">
+      <span class="mini" style="font-weight:700;color:#e2e8f0">Veicolo #${idx}</span>
+      <button type="button" class="danger-ghost sm" style="min-height:28px;padding:0 9px" onclick="this.closest('.veh-edit-row').remove();renumberClientVehicles()" title="Rimuovi auto">✕ Rimuovi</button>
+    </div>
+    <label class="col-4 sm-5">Targa
+      <input class="vp plate-input" value="${esc(v.plate||'')}" placeholder="AB123CD">
+    </label>
+    <div class="field-wrap col-4 sm-7">
+      <label>Marca
+        <div class="combo-wrap">
+          <input class="vb" value="${esc(v.brand||'')}" placeholder="Scegli o scrivi..." autocomplete="off" oninput="onCliVehInput(this,'brand',false)" onfocus="onCliVehInput(this,'brand',true)">
+          <button type="button" class="combo-btn" tabindex="-1" title="Mostra tutte le marche" onclick="toggleCliVehDropdown(this,'brand')">▾</button>
+        </div>
+      </label>
+      <div class="ac-menu cli-ac cli-brand-ac hidden"></div>
+    </div>
+    <div class="field-wrap col-4 sm-12">
+      <label>Modello
+        <div class="combo-wrap">
+          <input class="vm" value="${esc(v.model||'')}" placeholder="Scegli o scrivi modello..." autocomplete="off" oninput="onCliVehInput(this,'model',false)" onfocus="onCliVehInput(this,'model',true)">
+          <button type="button" class="combo-btn" tabindex="-1" title="Mostra tutti i modelli" onclick="toggleCliVehDropdown(this,'model')">▾</button>
+        </div>
+      </label>
+      <div class="ac-menu cli-ac cli-model-ac hidden"></div>
+    </div>
+    <div class="field-wrap col-7 sm-12">
+      <label>Motorizzazione / Cod. Motore
+        <div class="combo-wrap">
+          <input class="ve" value="${esc(v.engine||'')}" placeholder="Scegli o scrivi motorizzazione..." autocomplete="off" oninput="onCliVehInput(this,'engine',false)" onfocus="onCliVehInput(this,'engine',true)">
+          <button type="button" class="combo-btn" tabindex="-1" title="Mostra tutte le motorizzazioni" onclick="toggleCliVehDropdown(this,'engine')">▾</button>
+        </div>
+      </label>
+      <div class="ac-menu cli-ac cli-engine-ac hidden"></div>
+    </div>
+    <div class="field-wrap col-5 sm-12">
+      <label>Alimentazione
+        <div class="combo-wrap">
+          <input class="vf" value="${esc(v.fuel||'')}" placeholder="Benzina, Diesel, Ibrida..." autocomplete="off" oninput="onCliVehInput(this,'fuel',false)" onfocus="onCliVehInput(this,'fuel',true)">
+          <button type="button" class="combo-btn" tabindex="-1" title="Mostra alimentazioni" onclick="toggleCliVehDropdown(this,'fuel')">▾</button>
+        </div>
+      </label>
+      <div class="ac-menu cli-ac cli-fuel-ac hidden"></div>
+    </div>
+    <label class="col-3 sm-6">Anno
+      <input class="vy" type="number" value="${esc(v.year||'')}" placeholder="2020">
+    </label>
+    <label class="col-9 sm-6">Telaio (VIN)
+      <input class="vv" style="font-family:var(--mono);text-transform:uppercase" value="${esc(v.vin||'')}" placeholder="17 caratteri">
+    </label>
   `;
   $('cVehiclesList').appendChild(row);
+}
+
+function renumberClientVehicles(){
+  [...$('cVehiclesList').children].forEach((row,i)=>{
+    const lbl=row.querySelector('.veh-edit-header span');
+    if(lbl) lbl.textContent='Veicolo #'+(i+1);
+  });
+}
+
+let _activeCliRow=null;
+let _activeCliModelOpts=[];
+let _activeCliEngineOpts=[];
+
+function toggleCliVehDropdown(btn, field){
+  dismissMobileKeyboard();
+  const row=btn.closest('.veh-edit-row');
+  if(!row)return;
+  const menu=row.querySelector('.cli-'+field+'-ac');
+  const inp=row.querySelector({brand:'.vb',model:'.vm',engine:'.ve',fuel:'.vf'}[field]);
+  if(!menu || !inp)return;
+  const wasOpen=!menu.classList.contains('hidden');
+  hideAcMenus();
+  if(!wasOpen) onCliVehInput(inp, field, true);
+}
+
+function onCliVehInput(inp, field, showAll=false){
+  hideAcMenus();
+  const row=inp.closest('.veh-edit-row');
+  if(!row)return;
+  _activeCliRow=row;
+  const bInp=row.querySelector('.vb');
+  const mInp=row.querySelector('.vm');
+  const eInp=row.querySelector('.ve');
+  const fInp=row.querySelector('.vf');
+  const menu=row.querySelector('.cli-'+field+'-ac');
+  if(!menu)return;
+
+  if(field==='brand'){
+    const rawVal=bInp.value.trim();
+    const q=showAll ? '' : rawVal.toLowerCase();
+    const allBrands=Object.keys(AUTO_DB);
+    const matches=q ? allBrands.filter(b=>b.toLowerCase().includes(q)) : allBrands;
+    if(!matches.length){menu.classList.add('hidden');return}
+    menu.innerHTML=`
+      <div class="ac-head">
+        <span>${q ? 'Marche trovate ('+matches.length+')' : 'Tutte le marche ('+matches.length+') · Scorri'}</span>
+        <button type="button" onclick="hideAcMenus()">✕</button>
+      </div>` +
+      matches.map(b=>{
+        const mCount=Object.keys(AUTO_DB[b]).length;
+        const isSel=b.toLowerCase()===rawVal.toLowerCase();
+        return `<div class="ac-item ${isSel?'selected':''}" onclick="pickCliBrand('${esc(b)}')">
+          <div><strong>${esc(b)}</strong><small>${mCount} modelli in elenco</small></div>
+          <span class="badge neutral">Marca</span>
+        </div>`;
+      }).join('');
+    menu.classList.remove('hidden');
+    positionAcMenu(menu);
+  } else if(field==='model'){
+    const bKey=findBrandKey(bInp.value);
+    const rawVal=mInp.value.trim();
+    const q=showAll ? '' : rawVal.toLowerCase();
+    let list=[];
+    if(bKey){
+      list=Object.keys(AUTO_DB[bKey]).map(m=>({b:bKey, m, count:AUTO_DB[bKey][m].length}));
+    }else{
+      for(const [brand, modelsObj] of Object.entries(AUTO_DB)){
+        for(const [m, engs] of Object.entries(modelsObj)){
+          list.push({b:brand, m, count:engs.length});
+        }
+      }
+    }
+    const matches=q ? list.filter(x=>(x.m+' '+x.b).toLowerCase().includes(q)) : list;
+    _activeCliModelOpts=matches;
+    if(!_activeCliModelOpts.length){menu.classList.add('hidden');return}
+    const title=bKey
+      ? (q ? `${bKey} · Trovati (${_activeCliModelOpts.length})` : `${bKey} · Tutti i modelli (${_activeCliModelOpts.length})`)
+      : (q ? `Modelli trovati (${_activeCliModelOpts.length})` : `Tutti i modelli (${_activeCliModelOpts.length}) · Scorri o scrivi`);
+    menu.innerHTML=`
+      <div class="ac-head">
+        <span>${esc(title)}</span>
+        <button type="button" onclick="hideAcMenus()">✕</button>
+      </div>` +
+      _activeCliModelOpts.map((item,idx)=>{
+        const isSel=item.m.toLowerCase()===rawVal.toLowerCase() && (!bKey || item.b===bKey);
+        return `<div class="ac-item ${isSel?'selected':''}" onclick="pickCliModel(${idx})">
+          <div><strong>${esc(item.m)}</strong><small>${esc(item.b)} · ${item.count} motorizzazioni</small></div>
+          <span class="badge ok">${esc(item.b)}</span>
+        </div>`;
+      }).join('');
+    menu.classList.remove('hidden');
+    positionAcMenu(menu);
+  } else if(field==='engine'){
+    const bKey=findBrandKey(bInp.value);
+    const mKey=findModelKey(bKey, mInp.value);
+    const rawVal=eInp.value.trim();
+    const q=showAll ? '' : rawVal.toLowerCase();
+    let list=[];
+    let headerTitle='';
+    if(bKey && mKey){
+      list=AUTO_DB[bKey][mKey].map(item=>({e:item.e, rawE:item.e, b:bKey, mod:mKey, f:item.f}));
+      headerTitle=`${bKey} ${mKey} · Motorizzazioni (${list.length})`;
+    }else if(bKey){
+      for(const [mod, engs] of Object.entries(AUTO_DB[bKey])){
+        for(const item of engs) list.push({e:`${mod} · ${item.e}`, rawE:item.e, b:bKey, mod, f:item.f});
+      }
+      headerTitle=`${bKey} · Tutte le motorizzazioni (${list.length})`;
+    }else if(q.length>=2){
+      for(const [brand, modelsObj] of Object.entries(AUTO_DB)){
+        for(const [mod, engs] of Object.entries(modelsObj)){
+          for(const item of engs) list.push({e:`${brand} ${mod} · ${item.e}`, rawE:item.e, b:brand, mod, f:item.f});
+        }
+      }
+      headerTitle='Ricerca motorizzazioni';
+    }else{
+      menu.innerHTML=`
+        <div class="ac-head">
+          <span>Motorizzazioni</span>
+          <button type="button" onclick="hideAcMenus()">✕</button>
+        </div>
+        <div class="ac-item" onclick="hideAcMenus();onCliVehInput(_activeCliRow.querySelector('.vb'),'brand',true)">
+          <div><strong>Seleziona prima Marca e Modello</strong><small>Oppure scrivi almeno 2 caratteri (es. 1.3, K9K, TDI)</small></div>
+          <span class="badge neutral">Guida</span>
+        </div>`;
+      menu.classList.remove('hidden');
+      positionAcMenu(menu);
+      return;
+    }
+    const filtered=q ? list.filter(x=>(x.e+' '+x.f).toLowerCase().includes(q)) : list;
+    _activeCliEngineOpts=filtered;
+    if(!_activeCliEngineOpts.length){menu.classList.add('hidden');return}
+    menu.innerHTML=`
+      <div class="ac-head">
+        <span>${esc(headerTitle)}</span>
+        <button type="button" onclick="hideAcMenus()">✕</button>
+      </div>` +
+      _activeCliEngineOpts.map((item,idx)=>{
+        const isSel=(item.rawE||item.e).toLowerCase()===rawVal.toLowerCase();
+        return `<div class="ac-item ${isSel?'selected':''}" onclick="pickCliEngine(${idx})">
+          <div>
+            <strong>${esc(item.rawE||item.e)}</strong>
+            <small>${item.mod?esc(item.b+' '+item.mod)+' · ':''}${esc(item.f)}</small>
+          </div>
+          <span class="badge neutral">${esc(item.f.split(' ')[0])}</span>
+        </div>`;
+      }).join('');
+    menu.classList.remove('hidden');
+    positionAcMenu(menu);
+  } else if(field==='fuel'){
+    const rawVal=fInp.value.trim();
+    const q=showAll ? '' : rawVal.toLowerCase();
+    const matches=q ? FUEL_TYPES.filter(f=>f.toLowerCase().includes(q)) : FUEL_TYPES;
+    if(!matches.length){menu.classList.add('hidden');return}
+    menu.innerHTML=`
+      <div class="ac-head">
+        <span>Alimentazione (${matches.length})</span>
+        <button type="button" onclick="hideAcMenus()">✕</button>
+      </div>` +
+      matches.map(f=>`
+        <div class="ac-item ${f.toLowerCase()===rawVal.toLowerCase()?'selected':''}" onclick="pickCliFuel('${esc(f)}')">
+          <div><strong>${esc(f)}</strong></div>
+        </div>`).join('');
+    menu.classList.remove('hidden');
+    positionAcMenu(menu);
+  }
+}
+
+function pickCliBrand(brandName){
+  dismissMobileKeyboard();
+  if(!_activeCliRow)return;
+  const bInp=_activeCliRow.querySelector('.vb');
+  const mInp=_activeCliRow.querySelector('.vm');
+  const eInp=_activeCliRow.querySelector('.ve');
+  const prevBrand=findBrandKey(bInp.value);
+  bInp.value=brandName;
+  if(prevBrand && prevBrand!==brandName){
+    mInp.value='';
+    eInp.value='';
+  }
+  hideAcMenus();
+  setTimeout(()=>{ onCliVehInput(mInp,'model',true); }, 20);
+}
+
+function pickCliModel(idx){
+  dismissMobileKeyboard();
+  const item=_activeCliModelOpts[idx];
+  if(!item || !_activeCliRow)return;
+  const bInp=_activeCliRow.querySelector('.vb');
+  const mInp=_activeCliRow.querySelector('.vm');
+  const eInp=_activeCliRow.querySelector('.ve');
+  const prevModel=mInp.value.trim();
+  bInp.value=item.b;
+  mInp.value=item.m;
+  if(prevModel && prevModel.toLowerCase()!==item.m.toLowerCase()){
+    eInp.value='';
+  }
+  hideAcMenus();
+  setTimeout(()=>{ onCliVehInput(eInp,'engine',true); }, 20);
+}
+
+function pickCliEngine(idx){
+  dismissMobileKeyboard();
+  const item=_activeCliEngineOpts[idx];
+  if(!item || !_activeCliRow)return;
+  const bInp=_activeCliRow.querySelector('.vb');
+  const mInp=_activeCliRow.querySelector('.vm');
+  const eInp=_activeCliRow.querySelector('.ve');
+  const fInp=_activeCliRow.querySelector('.vf');
+  if(item.b && !bInp.value.trim()) bInp.value=item.b;
+  if(item.mod && !mInp.value.trim()) mInp.value=item.mod;
+  eInp.value=item.rawE||item.e;
+  if(item.f) fInp.value=item.f;
+  hideAcMenus();
+}
+
+function pickCliFuel(fuelVal){
+  dismissMobileKeyboard();
+  if(!_activeCliRow)return;
+  _activeCliRow.querySelector('.vf').value=fuelVal;
+  hideAcMenus();
 }
 
 function newClientForm(id){

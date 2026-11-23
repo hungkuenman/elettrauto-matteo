@@ -1449,7 +1449,8 @@ button.sm {
         </label>
       </div>
       <div class="actions" style="margin-top:12px">
-        <button type="button" onclick="addCatalog()">+ Aggiungi al listino</button>
+        <button type="button" id="catalogSubmitBtn" onclick="addCatalog()">+ Aggiungi al listino</button>
+        <button type="button" id="catalogCancelBtn" class="secondary hidden" onclick="cancelEditCatalog()">Annulla</button>
       </div>
     </div>
 
@@ -1659,15 +1660,15 @@ let editingClientId=null;
 
 const fields=['kind','number','date','expiry','status','deposit','client','phone','email','address','taxcode','vatid','brand','model','plate','year','km','fuel','vin','serviceDate','serviceKm','serviceType','serviceNotes','notes','internalNotes'];
 
-let catalog=JSON.parse(localStorage.getItem(catKey)||'null')||[
-  {name:'Diagnosi elettronica',price:35},
-  {name:'Sostituzione batteria',price:45},
-  {name:'Manodopera elettrauto (1 ora)',price:45},
-  {name:'Manodopera meccanica (1 ora)',price:45},
-  {name:'Cambio olio e filtri',price:70}
+const cfgFields=['company','companyAddress','companyVat','companyTax','companyPhone','companyEmail','companyIban'];
+const defaultCatalog=[
+  {id:'cat-1',name:'Diagnosi elettronica',price:35},
+  {id:'cat-2',name:'Sostituzione batteria',price:45},
+  {id:'cat-3',name:'Manodopera elettrauto (1 ora)',price:45},
+  {id:'cat-4',name:'Manodopera meccanica (1 ora)',price:45},
+  {id:'cat-5',name:'Cambio olio e filtri',price:70}
 ];
-
-let cfg=JSON.parse(localStorage.getItem(cfgKey)||'null')||{
+const defaultCfg={
   company:'Elettrauto Matteo',
   companyAddress:'Corso Siracusa 46, 10136 Torino (TO)',
   companyVat:'',
@@ -1676,6 +1677,11 @@ let cfg=JSON.parse(localStorage.getItem(cfgKey)||'null')||{
   companyEmail:'',
   companyIban:''
 };
+
+let catalog=(()=>{try{const v=JSON.parse(localStorage.getItem(catKey)||'null');return Array.isArray(v)?v:defaultCatalog.slice();}catch{return defaultCatalog.slice();}})();
+let cfg=(()=>{try{const v=JSON.parse(localStorage.getItem(cfgKey)||'null');return v&&typeof v==='object'?{...defaultCfg,...v}:{...defaultCfg};}catch{return {...defaultCfg};}})();
+
+const makeId=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normalizePlate=p=>String(p||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
@@ -1708,7 +1714,7 @@ function storeClients(a, fromCloud=false){
   localStorage.setItem(clientKey,JSON.stringify(a));
   if(!fromCloud && window._cloudSyncSchedule) window._cloudSyncSchedule();
 }
-const debounce=(fn,ms=120)=>{let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),ms);};};
+const debounce=(fn,ms=120)=>{let t;const d=(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),ms);};d.cancel=()=>clearTimeout(t);return d;};
 
 /* --- NAVIGATION, SHEETS & BACK-BUTTON PROTECTION --- */
 let currentView='home';
@@ -1792,7 +1798,7 @@ function show(id, fromHistory=false){
   if(id==='history') renderHistory();
   if(id==='reminders') renderReminders();
   if(id==='catalog') renderCatalog();
-  if(id==='settings') Object.keys(cfg).forEach(k=>$(k).value=cfg[k]||'');
+  if(id==='settings') cfgFields.forEach(k=>{if($(k)) $(k).value=cfg[k]||'';});
 
   if(!fromHistory && id!==prevView){
     pushAppState(id);
@@ -1802,6 +1808,12 @@ function show(id, fromHistory=false){
 }
 
 function handleInternalBack(){
+  // 0. Chiudi eventuale finestra di login Cloud aperta
+  if($('authModal') && !$('authModal').classList.contains('hidden')){
+    if(window.closeAuthModal) window.closeAuthModal();
+    pushAppState(currentView);
+    return true;
+  }
   // 1. Chiudi eventuali tendine di autocompletamento aperte
   if(hasOpenAcMenus()){
     hideAcMenus();
@@ -1850,16 +1862,16 @@ window.onAndroidBackPressed=function(){
   return handleInternalBack();
 };
 
-// Salva automaticamente la bozza quando l'app va in background o viene chiusa
-window.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') saveDraftNow(); });
-window.addEventListener('pagehide', saveDraftNow);
+// Salva automaticamente la bozza solo se l'utente è nell'editor quando l'app va in background o viene chiusa
+window.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden' && currentView==='editor') saveDraftNow(); });
+window.addEventListener('pagehide',()=>{ if(currentView==='editor') saveDraftNow(); });
 
 function renderHome(){
   renderHomeDraftBanner();
   const all=docs();
   $('homeClients').textContent=clients().length;
   $('homeDocs').textContent=all.length;
-  $('homeReminders').textContent=all.filter(d=>d.serviceDate||d.serviceKm).length;
+  $('homeReminders').textContent=latestReminders().length;
 
   const recent=all.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).slice(0,5);
   $('homeRecent').innerHTML=recent.length
@@ -1954,6 +1966,7 @@ function selectBarVehicle(idx){
   document.querySelectorAll('#clientVehicleBar .v-pill-btn').forEach((btn,i)=>{
     btn.classList.toggle('selected', i===idx);
   });
+  if(typeof scheduleDraftSave==='function') scheduleDraftSave();
 }
 
 function onClientInput(){
@@ -2003,6 +2016,7 @@ function pickAcClient(id){
   showEditorClientNote(c.notes||'');
   updateEditorCallBtn();
   hideAcMenus();
+  if(typeof scheduleDraftSave==='function') scheduleDraftSave();
 }
 
 function onPlateInput(){
@@ -2065,10 +2079,23 @@ function pickAcPlate(idx){
   }
   updateEditorCallBtn();
   hideAcMenus();
+  if(typeof scheduleDraftSave==='function') scheduleDraftSave();
 }
 
 /* --- EDITOR & CALCULATIONS --- */
+function nextDocNumber(kind='Preventivo'){
+  const prefix=kind==='Fattura'?'FAT-':'PRE-';
+  let maxN=0;
+  for(const d of docs()){
+    if(d.kind!==kind) continue;
+    const m=String(d.number||'').match(/(\d+)\s*$/);
+    if(m) maxN=Math.max(maxN, parseInt(m[1],10));
+  }
+  return prefix+String(maxN+1).padStart(3,'0');
+}
+
 function newDoc(kind='Preventivo'){
+  if(typeof scheduleDraftSave==='function' && scheduleDraftSave.cancel) scheduleDraftSave.cancel();
   const prevSuppress=_suppressDraftSave;
   _suppressDraftSave=true;
   currentId=null;
@@ -2077,7 +2104,7 @@ function newDoc(kind='Preventivo'){
   $('date').value=new Date().toISOString().slice(0,10);
   $('status').value='Non pagata';
   $('deposit').value=0;
-  $('number').value=(kind==='Fattura'?'FAT-':'PRE-')+String(docs().filter(d=>d.kind===kind).length+1).padStart(3,'0');
+  $('number').value=nextDocNumber(kind);
   $('lines').innerHTML='';
   updateEditorCallBtn();
   showEditorClientNote('');
@@ -2192,10 +2219,16 @@ function calculate(){
 }
 
 $('deposit').addEventListener('input',calculate);
-$('kind').addEventListener('change',()=>{$('heading').textContent='Modifica '+$('kind').value.toLowerCase()});
+$('kind').addEventListener('change',()=>{
+  const k=$('kind').value;
+  $('heading').textContent=(currentId?'Modifica ':'Nuovo ')+k.toLowerCase();
+  if(!currentId && /^(PRE|FAT)-\d+$/.test($('number').value.trim())){
+    $('number').value=nextDocNumber(k);
+  }
+});
 
 function getDoc(){
-  let d={id:currentId||Date.now().toString(),lines:lines()};
+  let d={id:currentId||makeId(),lines:lines()};
   fields.forEach(k=>d[k]=$(k).value);
   return d;
 }
@@ -2234,7 +2267,7 @@ function upsertClientWithVehicle(d, silent=true){
     a[idx]=existing;
   }else{
     a.push({
-      id:String(Date.now()),
+      id:makeId(),
       name,
       phone:(d.phone||'').trim(),
       email:(d.email||'').trim(),
@@ -2261,19 +2294,20 @@ function saveDoc(){
   currentId=d.id;
   // Auto-sync client & vehicle to address book on document save
   upsertClientWithVehicle(d, true);
-  clearDraft();
+  clearDraft(false);
   alert('Documento salvato e rubrica aggiornata');
 }
 
 function loadDoc(id){
   let d=docs().find(x=>x.id===id);
   if(!d)return;
+  if(typeof scheduleDraftSave==='function' && scheduleDraftSave.cancel) scheduleDraftSave.cancel();
   const prevSuppress=_suppressDraftSave;
   _suppressDraftSave=true;
   currentId=d.id;
   fields.forEach(k=>$(k).value=d[k]||'');
   $('lines').innerHTML='';
-  (d.lines||[]).forEach(addLine);
+  if(d.lines && d.lines.length) d.lines.forEach(addLine); else addLine();
   calculate();
   $('heading').textContent='Modifica '+d.kind.toLowerCase();
 
@@ -2294,7 +2328,7 @@ function convertDoc(id){
   loadDoc(id);
   currentId=null;
   $('kind').value='Fattura';
-  $('number').value='FAT-'+String(docs().filter(x=>x.kind==='Fattura').length+1).padStart(3,'0');
+  $('number').value=nextDocNumber('Fattura');
   $('heading').textContent='Fattura da preventivo';
   alert('Fattura creata come bozza. Premi "Salva Documento" per archiviarla.');
 }
@@ -2309,7 +2343,7 @@ function duplicateDoc(id){
   $('expiry').value='';
   $('status').value='Non pagata';
   $('deposit').value=0;
-  $('number').value=(kind==='Fattura'?'FAT-':'PRE-')+String(docs().filter(x=>x.kind===kind).length+1).padStart(3,'0');
+  $('number').value=nextDocNumber(kind);
   $('heading').textContent='Copia '+kind.toLowerCase();
   calculate();
   alert('Documento duplicato con data odierna. Aggiorna eventuali Km o voci e premi "Salva Documento".');
@@ -2407,7 +2441,7 @@ function saveClient(){
   })).filter(v=>v.plate||v.brand||v.model);
 
   const c={
-    id:editingClientId||String(Date.now()),
+    id:editingClientId||makeId(),
     ...Object.fromEntries(clientProps.map(k=>[k.toLowerCase(),$('c'+k).value.trim()])),
     notes:$('cNotes').value.trim(),
     vehicles,
@@ -2439,6 +2473,7 @@ function useClient(id){
   showEditorClientNote(c.notes||'');
   updateEditorCallBtn();
   show('editor');
+  if(typeof scheduleDraftSave==='function') scheduleDraftSave();
 }
 
 function removeClient(id){
@@ -2566,6 +2601,8 @@ function sendReminderWhatsApp(id){
 }
 
 /* --- CATALOG & SETTINGS --- */
+let editingCatalogIndex=null;
+
 function renderCatalog(){
   $('catalogItems').innerHTML=catalog.map((x,i)=>`
     <div class="doc-card">
@@ -2573,18 +2610,56 @@ function renderCatalog(){
         <strong>${esc(x.name)}</strong>
         <div class="mini">${money(x.price)} + IVA</div>
       </div>
-      <div style="display:flex;gap:6px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button type="button" class="sm" onclick="addFromCatalog(${i})">+ Inserisci nel doc</button>
-        <button type="button" class="danger-ghost sm" onclick="catalog.splice(${i},1);persistCatalog()">✕</button>
+        <button type="button" class="secondary sm" onclick="editCatalog(${i})">Modifica</button>
+        <button type="button" class="danger-ghost sm" onclick="removeCatalog(${i})">✕</button>
       </div>
     </div>`).join('');
 }
 
+function editCatalog(i){
+  const item=catalog[i];
+  if(!item)return;
+  editingCatalogIndex=i;
+  $('itemName').value=item.name||'';
+  $('itemPrice').value=item.price??'';
+  $('catalogSubmitBtn').textContent='💾 Salva modifica';
+  $('catalogSubmitBtn').classList.add('green');
+  $('catalogCancelBtn').classList.remove('hidden');
+  $('itemName').focus();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function cancelEditCatalog(){
+  editingCatalogIndex=null;
+  $('itemName').value='';
+  $('itemPrice').value='';
+  $('catalogSubmitBtn').textContent='+ Aggiungi al listino';
+  $('catalogSubmitBtn').classList.remove('green');
+  $('catalogCancelBtn').classList.add('hidden');
+}
+
+function removeCatalog(i){
+  if(editingCatalogIndex===i) cancelEditCatalog();
+  else if(editingCatalogIndex!==null && i<editingCatalogIndex) editingCatalogIndex--;
+  catalog.splice(i,1);
+  persistCatalog();
+}
+
 function persistCatalog(fromCloud=false){localStorage.setItem(catKey,JSON.stringify(catalog));renderCatalog();if(!fromCloud && window._cloudSyncSchedule) window._cloudSyncSchedule();}
 function addCatalog(){
-  if(!$('itemName').value.trim())return;
-  catalog.push({id:String(Date.now()),name:$('itemName').value.trim(),price:+$('itemPrice').value||0,updatedAt:new Date().toISOString()});
-  $('itemName').value='';$('itemPrice').value='';
+  const name=$('itemName').value.trim();
+  if(!name)return;
+  const price=+$('itemPrice').value||0;
+  const now=new Date().toISOString();
+  if(editingCatalogIndex!==null && catalog[editingCatalogIndex]){
+    catalog[editingCatalogIndex]={...catalog[editingCatalogIndex],name,price,updatedAt:now};
+    cancelEditCatalog();
+  }else{
+    catalog.push({id:makeId(),name,price,updatedAt:now});
+    $('itemName').value='';$('itemPrice').value='';
+  }
   persistCatalog();
 }
 function addFromCatalog(i){
@@ -2593,7 +2668,7 @@ function addFromCatalog(i){
 }
 
 function saveSettings(){
-  Object.keys(cfg).forEach(k=>cfg[k]=$(k).value);
+  cfgFields.forEach(k=>{if($(k)) cfg[k]=$(k).value;});
   cfg.updatedAt=new Date().toISOString();
   localStorage.setItem(cfgKey,JSON.stringify(cfg));
   if(window._cloudSyncSchedule) window._cloudSyncSchedule();
@@ -2615,12 +2690,13 @@ async function restore(ev){
     if(!Array.isArray(d.documents))throw Error('Formato backup non valido');
     if(!confirm('Sostituire i dati attuali con quelli del backup?'))return;
     storeDocs(d.documents);
-    if(Array.isArray(d.catalog)){catalog=d.catalog;localStorage.setItem(catKey,JSON.stringify(catalog))}
-    if(d.cfg){cfg=d.cfg;localStorage.setItem(cfgKey,JSON.stringify(cfg))}
+    if(Array.isArray(d.catalog)){catalog=d.catalog;persistCatalog();}
+    if(d.cfg){cfg={...defaultCfg,...d.cfg,updatedAt:new Date().toISOString()};localStorage.setItem(cfgKey,JSON.stringify(cfg));}
     if(Array.isArray(d.clients))storeClients(d.clients);
-    renderArchive();renderClients();
+    renderArchive();renderClients();renderHome();
     alert('Backup ripristinato con successo');
   }catch(e){alert('Errore: '+e.message)}
+  finally{ev.target.value='';}
 }
 
 /* --- PRINT, WHATSAPP & TABULAR OFFLINE PDF --- */
@@ -2696,7 +2772,7 @@ function makePdf(d){
     return {...l,net};
   });
   let sub=vals.reduce((n,l)=>n+l.net,0),
-      vat=vals.reduce((n,l)=>n+Math.round(l.net*(+l.vat||0)*100)/100,0),
+      vat=vals.reduce((n,l)=>n+Math.round(l.net*(+l.vat||0))/100,0),
       total=Math.round((sub+vat)*100)/100;
   sub=Math.round(sub*100)/100;
   vat=Math.round(vat*100)/100;
@@ -2981,9 +3057,16 @@ function saveDraftNow(){
 
 const scheduleDraftSave=debounce(saveDraftNow, 300);
 
-function clearDraft(){
+function clearDraft(resetEditor=true){
+  if(scheduleDraftSave && scheduleDraftSave.cancel) scheduleDraftSave.cancel();
   try{ localStorage.removeItem(draftKey); }catch(e){}
   setDraftPillVisible(false);
+  if(resetEditor){
+    const prevSuppress=_suppressDraftSave;
+    _suppressDraftSave=true;
+    newDoc($('kind').value || 'Preventivo');
+    _suppressDraftSave=prevSuppress;
+  }
   renderHomeDraftBanner();
 }
 
@@ -2992,8 +3075,7 @@ function discardAndNewDoc(){
   if(hasMeaningfulDraftData(d) || getStoredDraft()){
     if(!confirm('Svuotare i campi ed eliminare la bozza corrente?')) return;
   }
-  clearDraft();
-  newDoc($('kind').value || 'Preventivo');
+  clearDraft(true);
 }
 
 function restoreDraft(openEditor=true){
@@ -3128,6 +3210,7 @@ function updateSettingsCloudUI(user) {
 window.openAuthModal = function() {
   document.getElementById('authError').classList.add('hidden');
   document.getElementById('authModal').classList.remove('hidden');
+  pushAppState(currentView);
   setTimeout(() => document.getElementById('authEmail').focus(), 50);
 };
 
@@ -3158,6 +3241,7 @@ window.submitCloudLogin = async function() {
   errBox.classList.add('hidden');
   try {
     await signInWithEmailAndPassword(auth, email, pass);
+    document.getElementById('authPassword').value = '';
     window.closeAuthModal();
   } catch (e) {
     let msg = 'Errore di accesso: ' + e.message;
@@ -3175,9 +3259,21 @@ window.submitCloudLogin = async function() {
 };
 
 window.cloudLogout = async function() {
-  if (!confirm('Disconnettere la sincronizzazione Cloud su questo dispositivo? I dati locali resteranno comunque salvati.')) return;
+  if (!confirm('Uscire dal tuo account Cloud? I dati in memoria su questo dispositivo verranno rimossi (resteranno al sicuro su Firebase al prossimo accesso).')) return;
+  if (window._cloudSyncSchedule && window._cloudSyncSchedule.cancel) window._cloudSyncSchedule.cancel();
   if (unsubscribeDoc) { unsubscribeDoc(); unsubscribeDoc = null; }
+  currentUser = null;
   await signOut(auth);
+  // Pulisce cache, stato editor e localStorage del dispositivo
+  editingClientId = null;
+  if ($('clientForm')) $('clientForm').classList.add('hidden');
+  storeDocs([], true);
+  storeClients([], true);
+  localStorage.removeItem(key);
+  localStorage.removeItem(clientKey);
+  clearDraft(true);
+  show('home', true);
+  renderHome();
 };
 
 // Merge arrays by id keeping newest updatedAt
@@ -3208,7 +3304,7 @@ function refreshActiveScreen() {
   else if (currentView === 'history') renderHistory();
   else if (currentView === 'reminders') renderReminders();
   else if (currentView === 'catalog') renderCatalog();
-  else if (currentView === 'settings') Object.keys(cfg).forEach(k => { if ($(k)) $(k).value = cfg[k] || ''; });
+  else if (currentView === 'settings') cfgFields.forEach(k => { if ($(k)) $(k).value = cfg[k] || ''; });
 }
 
 window.pushAllLocalToCloud = async function(interactive = false) {
@@ -3260,8 +3356,8 @@ function applyRemoteSnapshot(remote, pushMergedBack = false) {
   if (!remote) return;
   isApplyingRemote = true;
   try {
-    const mergedDocs = mergeById(docs(), remote.documents || []);
-    const mergedClients = mergeById(clients(), remote.clients || []);
+    const mergedDocs = pushMergedBack ? mergeById(docs(), remote.documents || []) : (remote.documents || []);
+    const mergedClients = pushMergedBack ? mergeById(clients(), remote.clients || []) : (remote.clients || []);
     const mergedCatalog = (Array.isArray(remote.catalog) && remote.catalog.length)
       ? remote.catalog
       : catalog;
@@ -3280,8 +3376,12 @@ function applyRemoteSnapshot(remote, pushMergedBack = false) {
     setSyncUI(navigator.onLine ? 'online' : 'offline', navigator.onLine ? '☁️ Sincronizzato' : '☁️ Offline');
 
     // If local had newer/extra items not yet in remote, push merged state back
-    if (pushMergedBack && (mergedDocs.length > (remote.documents || []).length || mergedClients.length > (remote.clients || []).length)) {
-      window.pushAllLocalToCloud(false);
+    if (pushMergedBack) {
+      const docsChanged = JSON.stringify(mergedDocs) !== JSON.stringify(remote.documents || []);
+      const clientsChanged = JSON.stringify(mergedClients) !== JSON.stringify(remote.clients || []);
+      if (docsChanged || clientsChanged) {
+        window.pushAllLocalToCloud(false);
+      }
     }
   } finally {
     isApplyingRemote = false;

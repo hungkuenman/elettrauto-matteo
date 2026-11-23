@@ -779,43 +779,39 @@ button.sm {
 .quick-tile strong { font-size: 13px; font-weight: 700; color: #fff; display: block; line-height: 1.2; }
 .quick-tile small { font-size: 11px; color: var(--text-muted); font-weight: 400; display: block; margin-top: 2px; line-height: 1.2; }
 
-/* Rubrica Clienti: 2 sub-menu + box cliente ottimizzato */
+/* Rubrica Clienti: design pulito e minimale ad elenco espandibile */
 .client-subnav {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  background: var(--bg-surface-2);
+  gap: 6px;
+  background: var(--bg-input);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 6px;
-  margin-bottom: 14px;
+  padding: 5px;
+  margin-bottom: 12px;
 }
 .client-subnav-btn {
-  min-height: 40px;
-  padding: 8px 12px;
-  border-radius: 9px;
+  min-height: 38px;
+  padding: 6px 10px;
+  border-radius: 8px;
   background: transparent;
-  border: 1px solid transparent;
+  border: 0;
   color: var(--text-muted);
   font-size: 13px;
   font-weight: 700;
 }
-.client-subnav-btn:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-main);
-}
+.client-subnav-btn:hover { color: #fff; background: rgba(255,255,255,0.04); }
 .client-subnav-btn.active {
-  background: var(--bg-surface);
-  border-color: #3a465e;
+  background: var(--bg-surface-2);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .client-search-bar {
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .client-search-ico {
   position: absolute;
@@ -828,7 +824,7 @@ button.sm {
   min-height: 42px;
   padding: 8px 34px 8px 38px;
   font-size: 14px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
 }
 .client-search-x {
   position: absolute;
@@ -844,108 +840,148 @@ button.sm {
   border: 1px solid var(--border);
   color: var(--text-muted);
 }
-.client-search-x:hover { color: #fff; background: #263044; }
 
-.client-card {
+.client-directory-list {
   background: var(--bg-surface-2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 13px 15px;
-  margin-top: 9px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: border-color 0.14s;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
-.client-card:hover { border-color: #38445c; }
 
-.client-card-head {
+.client-row {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.client-row:last-child { border-bottom: 0; }
+
+.client-row-main {
+  padding: 12px 14px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
+  cursor: pointer;
 }
-.client-card-name {
-  font-size: 15px;
-  font-weight: 750;
-  color: #fff;
-  line-height: 1.25;
+.client-row-main:hover { background: rgba(255, 255, 255, 0.025); }
+
+.client-row-info {
+  min-width: 0;
+  flex: 1;
 }
-.client-card-contacts {
+.client-row-title {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 6px 12px;
-  margin-top: 4px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.client-row-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+.client-row-sub {
+  margin-top: 3px;
   font-size: 12.5px;
   color: var(--text-muted);
-}
-.client-card-contacts a {
-  color: #cbd5e1;
-  text-decoration: none;
-  font-weight: 600;
-}
-.client-card-contacts a:hover { color: #34d399; text-decoration: underline; }
-
-.client-veh-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.client-veh-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #0e121a;
-  border: 1px solid #2e384d;
-  border-radius: 8px;
-  padding: 4px 8px;
-  font-size: 12px;
-  color: #e2e8f0;
-  max-width: 100%;
-}
-.client-veh-pill .plate-tag {
-  border: 0;
-  padding: 1px 6px;
-  background: rgba(59, 130, 246, 0.18);
-  color: #93c5fd;
-  font-size: 11.5px;
-}
-.client-veh-model {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 260px;
 }
 
-.client-note-line {
+.client-row-quick {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.client-icon-btn {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 14px;
+}
+.client-icon-btn.call {
+  background: var(--ok-soft);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  color: #34d399;
+}
+.client-icon-btn.use {
+  background: var(--brand);
+  color: #fff;
+  width: auto;
+  padding: 0 11px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.client-chev {
+  color: var(--text-dim);
+  font-size: 12px;
+  padding: 0 2px;
+  transition: transform 0.15s;
+}
+.client-row.open .client-chev { transform: rotate(180deg); color: #fff; }
+
+.client-row-drawer {
+  display: none;
+  padding: 0 14px 13px;
+  border-top: 1px dashed rgba(148, 160, 184, 0.14);
+  background: rgba(13, 15, 20, 0.35);
+}
+.client-row.open .client-row-drawer { display: block; }
+
+.client-drawer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding-top: 10px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.client-drawer-vehs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+.client-drawer-veh-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 7px 10px;
+  font-size: 12.5px;
+  color: #e2e8f0;
+}
+.client-drawer-note {
+  margin-top: 9px;
   font-size: 12px;
   color: #fcd34d;
   background: rgba(245, 158, 11, 0.08);
   border-left: 2.5px solid var(--warn);
-  padding: 5px 9px;
+  padding: 6px 10px;
   border-radius: 6px;
 }
-
-.client-card-foot {
+.client-drawer-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
-  flex-wrap: wrap;
-  padding-top: 7px;
-  border-top: 1px solid rgba(148, 160, 184, 0.12);
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(148, 160, 184, 0.1);
 }
-.client-foot-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.client-card-foot button.sm,
-.client-card-foot .call-btn.sm {
+.client-drawer-actions button.sm {
   min-height: 32px;
-  padding: 4px 10px;
+  padding: 4px 11px;
   font-size: 12px;
 }
 
@@ -1694,11 +1730,9 @@ button.sm {
 
   <!-- CLIENTI -->
   <section id="clients" class="hidden">
-    <div class="section-header">
-      <div>
-        <h2>Rubrica Clienti & Veicoli</h2>
-        <p class="muted">Anagrafiche e auto associate salvate sul dispositivo</p>
-      </div>
+    <div class="section-header" style="margin-bottom:12px">
+      <h2>Clienti</h2>
+      <span class="mini" id="clientCountBadge"></span>
     </div>
 
     <div class="client-subnav" role="tablist" aria-label="Menù rubrica clienti">
@@ -17506,6 +17540,11 @@ function removeClient(id){
   renderClients();
 }
 
+function toggleClientRow(id){
+  const el=document.querySelector(`.client-row[data-cid="${id}"]`);
+  if(el) el.classList.toggle('open');
+}
+
 function renderClients(){
   const rawQ=($('clientSearch').value||'').trim();
   const clr=$('clientSearchClear');
@@ -17513,7 +17552,11 @@ function renderClients(){
   const q=rawQ.toLowerCase();
   const nq=normalizePlate(rawQ);
 
-  const a=clients().filter(c=>{
+  const all=clients();
+  const badge=$('clientCountBadge');
+  if(badge) badge.textContent=`${all.length} salvati`;
+
+  const a=all.filter(c=>{
     if(!q) return true;
     const baseMatch=(c.name+' '+(c.phone||'')+' '+(c.email||'')+' '+(c.address||'')+' '+(c.notes||'')).toLowerCase().includes(q);
     const vehMatch=(c.vehicles||[]).some(v=>
@@ -17523,54 +17566,71 @@ function renderClients(){
     return baseMatch || vehMatch;
   });
 
-  $('clientList').innerHTML=a.length
-    ? a.map(c=>{
-        const vehs=c.vehicles||[];
-        const telLink=telHref(c.phone);
-        const phoneHtml=c.phone
-          ? (telLink ? `<a href="${telLink}">📞 ${esc(c.phone)}</a>` : `<span>📞 ${esc(c.phone)}</span>`)
-          : `<span>📞 Nessun tel.</span>`;
-        const mailHtml=c.email?`<span>✉️ ${esc(c.email)}</span>`:'';
-        const addrHtml=c.address?`<span>📍 ${esc(c.address)}</span>`:'';
+  if(!a.length){
+    $('clientList').innerHTML='<p class="muted" style="padding:12px 4px">Nessun cliente trovato. Tocca <b>Aggiungi cliente</b> per inserirne uno.</p>';
+    return;
+  }
 
-        return `
-        <div class="client-card">
-          <div class="client-card-head">
-            <div>
-              <div class="client-card-name">${esc(c.name)}</div>
-              <div class="client-card-contacts">${phoneHtml}${mailHtml}${addrHtml}</div>
-            </div>
-            <span class="badge neutral">${vehs.length} ${vehs.length===1?'auto':'auto'}</span>
+  $('clientList').innerHTML=`<div class="client-directory-list">` + a.map(c=>{
+    const vehs=c.vehicles||[];
+    const telLink=telHref(c.phone);
+    const primaryVeh=vehs[0];
+    const plateBadge=primaryVeh&&primaryVeh.plate
+      ? `<span class="plate-tag">${esc(primaryVeh.plate)}</span>${vehs.length>1?`<span class="mini">+${vehs.length-1}</span>`:''}`
+      : '';
+    const subParts=[
+      c.phone || '',
+      primaryVeh ? [primaryVeh.brand, primaryVeh.model].filter(Boolean).join(' ') : ''
+    ].filter(Boolean).join(' · ');
+
+    const extraMeta=[
+      c.email ? `✉️ ${esc(c.email)}` : '',
+      c.address ? `📍 ${esc(c.address)}` : '',
+      c.taxcode ? `CF: ${esc(c.taxcode)}` : '',
+      c.vatid ? `P.IVA: ${esc(c.vatid)}` : ''
+    ].filter(Boolean);
+
+    return `
+    <div class="client-row ${q?'open':''}" data-cid="${esc(c.id)}">
+      <div class="client-row-main" onclick="toggleClientRow('${esc(c.id)}')">
+        <div class="client-row-info">
+          <div class="client-row-title">
+            <span class="client-row-name">${esc(c.name)}</span>
+            ${plateBadge}
           </div>
+          <div class="client-row-sub">${esc(subParts || 'Nessun recapito o veicolo')}</div>
+        </div>
+        <div class="client-row-quick" onclick="event.stopPropagation()">
+          ${telLink?`<a class="client-icon-btn call" href="${telLink}" title="Chiama ${esc(c.name)}">📞</a>`:''}
+          <button type="button" class="client-icon-btn use" onclick="useClient('${esc(c.id)}')">Usa</button>
+          <span class="client-chev" onclick="toggleClientRow('${esc(c.id)}')">▾</span>
+        </div>
+      </div>
 
-          ${vehs.length?`
-            <div class="client-veh-list">
-              ${vehs.map(v=>{
-                const mainCar=[v.brand,v.model].filter(Boolean).join(' ');
-                const subCar=[v.engine,v.fuel,v.year].filter(Boolean).join(' · ');
-                return `<span class="client-veh-pill" title="${esc([v.plate,mainCar,subCar].filter(Boolean).join(' · '))}">
-                  <span class="plate-tag">${esc(v.plate||'N/D')}</span>
-                  ${mainCar?`<strong class="client-veh-model">${esc(mainCar)}</strong>`:''}
-                  ${subCar?`<span class="mini">${esc(subCar)}</span>`:''}
-                </span>`;
-              }).join('')}
-            </div>`:''}
-
-          ${c.notes?`<div class="client-note-line">🔒 ${esc(c.notes)}</div>`:''}
-
-          <div class="client-card-foot">
-            <div class="client-foot-group">
-              <button type="button" class="sm" onclick="useClient('${c.id}')">Usa nel doc</button>
-              ${telLink?`<a class="call-btn sm" href="${telLink}" title="Chiama ${esc(c.name)}">📞 Chiama</a>`:''}
-            </div>
-            <div class="client-foot-group">
-              <button type="button" class="secondary sm" onclick="newClientForm('${c.id}')">Modifica</button>
-              <button type="button" class="danger-ghost sm" onclick="removeClient('${c.id}')" title="Elimina cliente">✕</button>
-            </div>
-          </div>
-        </div>`;
-      }).join('')
-    : '<p class="muted">Nessun cliente trovato. Passa al menù <b>Aggiungi cliente</b> per inserirne uno.</p>';
+      <div class="client-row-drawer">
+        ${extraMeta.length?`<div class="client-drawer-meta">${extraMeta.map(m=>`<span>${m}</span>`).join('')}</div>`:''}
+        ${vehs.length?`
+          <div class="client-drawer-vehs">
+            ${vehs.map(v=>{
+              const carTitle=[v.brand,v.model].filter(Boolean).join(' ') || 'Veicolo';
+              const carSpec=[v.engine,v.fuel,v.year].filter(Boolean).join(' · ');
+              return `<div class="client-drawer-veh-item">
+                <div>
+                  <strong>${esc(carTitle)}</strong>
+                  ${carSpec?`<div class="mini">${esc(carSpec)}</div>`:''}
+                </div>
+                <span class="plate-tag">${esc(v.plate||'N/D')}</span>
+              </div>`;
+            }).join('')}
+          </div>`:''}
+        ${c.notes?`<div class="client-drawer-note">🔒 ${esc(c.notes)}</div>`:''}
+        <div class="client-drawer-actions">
+          <button type="button" class="secondary sm" onclick="newClientForm('${esc(c.id)}')">Modifica</button>
+          <button type="button" class="danger-ghost sm" onclick="removeClient('${esc(c.id)}')">Elimina</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') + `</div>`;
 }
 
 function clearHomeSearch(){

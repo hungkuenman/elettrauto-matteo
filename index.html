@@ -278,38 +278,105 @@ textarea { min-height: 76px; resize: vertical; }
   letter-spacing: 1px;
 }
 
-/* Inline Autocomplete Dropdown */
+/* Inline Autocomplete & Scrollable Selector Dropdown */
+.combo-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+.combo-wrap input {
+  padding-right: 36px;
+}
+.combo-btn {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+.combo-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.combo-btn:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
 .ac-menu {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  right: 0;
-  min-width: 260px;
-  max-height: 240px;
+  min-width: 250px;
+  width: max-content;
+  max-width: min(380px, calc(100vw - 28px));
+  max-height: 280px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #475572 #121721;
   background: #181e29;
-  border: 1px solid #3c4861;
+  border: 1px solid #475572;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-float);
-  z-index: 60;
+  z-index: 65;
 }
 
 .ac-menu.hidden { display: none; }
 
+.ac-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #121721;
+  border-bottom: 1px solid var(--border);
+  padding: 7px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.ac-head button {
+  min-height: 22px;
+  height: 22px;
+  padding: 0 7px;
+  font-size: 11px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+}
+
 .ac-item {
-  padding: 10px 12px;
+  padding: 11px 12px;
   border-bottom: 1px solid var(--border);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  user-select: none;
 }
 
 .ac-item:last-child { border-bottom: 0; }
-.ac-item:hover { background: #232b3b; }
-.ac-item strong { color: #fff; font-size: 13px; display: block; }
-.ac-item small { color: var(--text-muted); font-size: 11px; display: block; }
+.ac-item:hover, .ac-item.selected { background: #252f42; }
+.ac-item.selected { border-left: 3px solid var(--brand); }
+.ac-item strong { color: #fff; font-size: 13.5px; display: block; }
+.ac-item small { color: var(--text-muted); font-size: 11.5px; display: block; margin-top: 1px; }
 
 /* Client vehicle quick switcher bar */
 .vehicle-pills {
@@ -1220,25 +1287,37 @@ button.sm {
         </div>
         <div class="field-wrap">
           <label>Marca
-            <input id="brand" placeholder="Cerca o scrivi marca..." autocomplete="off" oninput="onBrandInput()" onfocus="onBrandInput()">
+            <div class="combo-wrap">
+              <input id="brand" placeholder="Tocca o scrivi marca..." autocomplete="off" oninput="onBrandInput(false)" onfocus="onBrandInput(true)">
+              <button type="button" class="combo-btn" tabindex="-1" title="Mostra tutte le marche" onclick="toggleVehicleDropdown('brand')">▾</button>
+            </div>
           </label>
           <div id="brandAc" class="ac-menu hidden"></div>
         </div>
         <div class="field-wrap">
           <label>Modello
-            <input id="model" placeholder="Cerca o scrivi modello..." autocomplete="off" oninput="onModelInput()" onfocus="onModelInput()">
+            <div class="combo-wrap">
+              <input id="model" placeholder="Tocca o scrivi modello..." autocomplete="off" oninput="onModelInput(false)" onfocus="onModelInput(true)">
+              <button type="button" class="combo-btn" tabindex="-1" title="Mostra tutti i modelli" onclick="toggleVehicleDropdown('model')">▾</button>
+            </div>
           </label>
           <div id="modelAc" class="ac-menu hidden"></div>
         </div>
         <div class="field-wrap">
           <label>Motorizzazione / Cod. Motore
-            <input id="engine" placeholder="Es. 1.3 MultiJet 95cv / 199B1000" autocomplete="off" oninput="onEngineInput()" onfocus="onEngineInput()">
+            <div class="combo-wrap">
+              <input id="engine" placeholder="Tocca o scrivi motore..." autocomplete="off" oninput="onEngineInput(false)" onfocus="onEngineInput(true)">
+              <button type="button" class="combo-btn" tabindex="-1" title="Mostra tutte le motorizzazioni" onclick="toggleVehicleDropdown('engine')">▾</button>
+            </div>
           </label>
           <div id="engineAc" class="ac-menu hidden"></div>
         </div>
         <div class="field-wrap">
           <label>Alimentazione
-            <input id="fuel" placeholder="Benzina, Diesel, Ibrida..." autocomplete="off" oninput="onFuelInput()" onfocus="onFuelInput()">
+            <div class="combo-wrap">
+              <input id="fuel" placeholder="Benzina, Diesel, Ibrida..." autocomplete="off" oninput="onFuelInput(false)" onfocus="onFuelInput(true)">
+              <button type="button" class="combo-btn" tabindex="-1" title="Mostra alimentazioni" onclick="toggleVehicleDropdown('fuel')">▾</button>
+            </div>
           </label>
           <div id="fuelAc" class="ac-menu hidden"></div>
         </div>
@@ -2001,7 +2080,7 @@ function onClientInput(){
   menu.innerHTML=matches.map(c=>{
     const plates=(c.vehicles||[]).map(v=>v.plate).filter(Boolean).join(', ');
     return `
-      <div class="ac-item" onpointerdown="event.preventDefault();pickAcClient('${c.id}')">
+      <div class="ac-item" onclick="pickAcClient('${c.id}')">
         <div>
           <strong>${esc(c.name)}</strong>
           <small>${esc(c.phone||'Nessun tel.')} ${plates?'· Targhe: '+esc(plates):''}</small>
@@ -2068,7 +2147,7 @@ function onPlateInput(){
   if(!currentPlateResults.length){menu.classList.add('hidden');return}
 
   menu.innerHTML=currentPlateResults.map((r,idx)=>`
-    <div class="ac-item" onpointerdown="event.preventDefault();pickAcPlate(${idx})">
+    <div class="ac-item" onclick="pickAcPlate(${idx})">
       <div>
         <strong><span class="plate-tag">${esc(r.vehicle.plate)}</span> ${esc([r.vehicle.brand,r.vehicle.model].filter(Boolean).join(' '))}</strong>
         <small>Cliente: ${esc(r.client.name||'-')} ${r.client.phone?'· '+esc(r.client.phone):''}</small>
@@ -2112,517 +2191,4056 @@ const FUEL_TYPES = [
 ];
 
 const AUTO_DB = {
-  'Fiat': {
-    'Panda': [
-      {e:'1.2 Fire 69cv (169A4000)', f:'Benzina'},
-      {e:'1.0 FireFly Hybrid 70cv (46341162)', f:'Mild Hybrid Benzina'},
-      {e:'0.9 TwinAir 85cv (312A2000)', f:'Benzina'},
-      {e:'1.3 MultiJet 75cv / 95cv (199A9000 / 330A1000)', f:'Diesel'},
-      {e:'1.2 EasyPower 69cv', f:'GPL (Casa madre / Impianto)'},
-      {e:'0.9 Natural Power 80cv', f:'Metano (CNG)'}
+  "Abarth": {
+    "124 Spider": [
+      {
+        "e": "1.4 MultiAir Turbo 170cv",
+        "f": "Benzina"
+      }
     ],
-    '500': [
-      {e:'1.2 Fire 69cv (169A4000)', f:'Benzina'},
-      {e:'1.0 FireFly Hybrid 70cv', f:'Mild Hybrid Benzina'},
-      {e:'0.9 TwinAir 85cv / 105cv', f:'Benzina'},
-      {e:'1.3 MultiJet 95cv (199B1000)', f:'Diesel'},
-      {e:'500e Elettrica 95cv / 118cv', f:'Elettrica (BEV)'}
+    "500 / 595 / 695": [
+      {
+        "e": "1.4 T-Jet 135cv / 140cv / 145cv / 160cv / 165cv / 180cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "500e / 600e Elettrica 155cv / 240cv / 280cv",
+        "f": "Elettrica (BEV)"
+      }
     ],
-    '500X': [
-      {e:'1.0 FireFly Turbo 120cv (55282151)', f:'Benzina'},
-      {e:'1.3 FireFly Turbo 150cv', f:'Benzina'},
-      {e:'1.5 Hybrid 130cv DCT', f:'Mild Hybrid Benzina'},
-      {e:'1.6 E-Torq 110cv', f:'Benzina'},
-      {e:'1.3 MultiJet 95cv (55266963)', f:'Diesel'},
-      {e:'1.6 MultiJet 120cv / 130cv (55260384)', f:'Diesel'},
-      {e:'2.0 MultiJet 140cv / 150cv 4x4', f:'Diesel'}
-    ],
-    '500L': [
-      {e:'1.4 16V 95cv (843A1000)', f:'Benzina'},
-      {e:'1.4 T-Jet 120cv (198A4000)', f:'Benzina'},
-      {e:'1.3 MultiJet 85cv / 95cv', f:'Diesel'},
-      {e:'1.6 MultiJet 105cv / 120cv', f:'Diesel'}
-    ],
-    'Punto / Grande Punto / Evo': [
-      {e:'1.2 8V 65cv / 69cv (199A4000)', f:'Benzina'},
-      {e:'1.4 8V 77cv (350A1000)', f:'Benzina'},
-      {e:'1.4 16V MultiAir 105cv / 135cv', f:'Benzina'},
-      {e:'1.3 MultiJet 75cv / 85cv / 90cv / 95cv', f:'Diesel'},
-      {e:'1.4 EasyPower 77cv', f:'GPL (Casa madre / Impianto)'},
-      {e:'1.4 Natural Power 70cv', f:'Metano (CNG)'}
-    ],
-    'Tipo': [
-      {e:'1.4 16V 95cv (843A1000)', f:'Benzina'},
-      {e:'1.4 T-Jet 120cv (198A4000)', f:'Benzina'},
-      {e:'1.0 FireFly 100cv', f:'Benzina'},
-      {e:'1.5 Hybrid 130cv', f:'Mild Hybrid Benzina'},
-      {e:'1.3 MultiJet 95cv', f:'Diesel'},
-      {e:'1.6 MultiJet 120cv / 130cv', f:'Diesel'}
-    ],
-    '600': [
-      {e:'1.2 Hybrid 100cv / 136cv eDCT', f:'Mild Hybrid Benzina'},
-      {e:'600e Elettrica 156cv', f:'Elettrica (BEV)'}
-    ],
-    'Ducato': [
-      {e:'2.2 MultiJet3 120cv / 140cv / 160cv / 180cv', f:'Diesel'},
-      {e:'2.3 MultiJet 130cv / 150cv / 180cv (F1AE / F1AGL)', f:'Diesel'},
-      {e:'3.0 MultiJet 160cv / 180cv (F1CE)', f:'Diesel'}
-    ],
-    'Doblò / Fiorino / Scudo': [
-      {e:'1.3 MultiJet 75cv / 80cv / 90cv / 95cv', f:'Diesel'},
-      {e:'1.5 BlueHDi 100cv / 130cv', f:'Diesel'},
-      {e:'1.6 MultiJet 105cv / 120cv', f:'Diesel'},
-      {e:'2.0 MultiJet 135cv / 145cv / 180cv', f:'Diesel'},
-      {e:'1.4 8V / T-Jet Natural Power', f:'Metano (CNG)'}
+    "Grande Punto / Punto Evo": [
+      {
+        "e": "1.4 T-Jet / MultiAir 155cv / 163cv / 180cv SuperSport",
+        "f": "Benzina"
+      }
     ]
   },
-  'Lancia': {
-    'Ypsilon': [
-      {e:'1.2 Fire 69cv (169A4000)', f:'Benzina'},
-      {e:'1.0 FireFly Hybrid 70cv', f:'Mild Hybrid Benzina'},
-      {e:'1.2 Hybrid 100cv eDCT (Nuova Ypsilon)', f:'Mild Hybrid Benzina'},
-      {e:'0.9 TwinAir 85cv', f:'Benzina'},
-      {e:'1.3 MultiJet 75cv / 95cv', f:'Diesel'},
-      {e:'1.2 Ecochic GPL 69cv', f:'GPL (Casa madre / Impianto)'},
-      {e:'Elettrica 156cv', f:'Elettrica (BEV)'}
+  "Alfa Romeo": {
+    "145": [
+      {
+        "e": "1.4 / 1.6 / 1.8 / 2.0 Twin Spark 16V 103cv-155cv / Boxer",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 JTD 105cv (AR32302) / 1.9 TD 90cv",
+        "f": "Diesel"
+      }
     ],
-    'Delta / Musa': [
-      {e:'1.4 T-Jet 120cv / 150cv', f:'Benzina'},
-      {e:'1.3 MultiJet 90cv / 95cv', f:'Diesel'},
-      {e:'1.6 MultiJet 105cv / 120cv', f:'Diesel'},
-      {e:'1.9 TwinTurbo MultiJet 190cv', f:'Diesel'}
+    "146": [
+      {
+        "e": "1.4 / 1.6 / 1.8 / 2.0 Twin Spark 16V 103cv-155cv / Boxer",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 JTD 105cv (AR32302) / 1.9 TD 90cv",
+        "f": "Diesel"
+      }
+    ],
+    "147": [
+      {
+        "e": "1.6 Twin Spark 16V 105cv / 120cv (AR37203 / AR32104)",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.0 Twin Spark 16V 150cv (AR32310) / 3.2 V6 GTA 250cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 JTD / JTDm 8V 100cv / 115cv / 120cv (192A1000 / 937A2000)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.9 JTD 16V / JTDm 140cv / 150cv / 170cv (192A5000 / 937A5000)",
+        "f": "Diesel"
+      }
+    ],
+    "155": [
+      {
+        "e": "1.6 / 1.7 / 1.8 / 2.0 Twin Spark 8V / 16V / Q4 Turbo",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 TD 90cv / 2.5 TD 125cv",
+        "f": "Diesel"
+      }
+    ],
+    "156": [
+      {
+        "e": "1.6 / 1.8 / 2.0 Twin Spark 16V 120cv / 140cv / 150cv / 155cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.0 JTS 165cv / 2.5 V6 24V 190cv / 3.2 V6 GTA 250cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 JTD 105cv / 110cv / 115cv / 140cv / 150cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.4 JTD 136cv / 140cv / 150cv / 175cv",
+        "f": "Diesel"
+      }
+    ],
+    "159": [
+      {
+        "e": "1.8 MPI 140cv / 1.750 TBi 200cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 JTS 160cv / 2.2 JTS 185cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 JTDm 8V 120cv / 16V 150cv (939A1000 / 939A2000)",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.0 JTDm 136cv / 170cv (939B3000 / 939B4000)",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.4 JTDm 200cv / 210cv Q4",
+        "f": "Diesel"
+      }
+    ],
+    "164": [
+      {
+        "e": "2.0 Twin Spark / 2.0 V6 Turbo / 3.0 V6",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.5 TD 114cv / 125cv",
+        "f": "Diesel"
+      }
+    ],
+    "166": [
+      {
+        "e": "2.0 Twin Spark 150cv / 155cv / 2.0 V6 Turbo / 2.5 / 3.0 / 3.2 V6",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.4 JTD 136cv / 140cv / 150cv / 175cv / 185cv",
+        "f": "Diesel"
+      }
+    ],
+    "Brera / Spider": [
+      {
+        "e": "1.750 TBi 200cv / 2.2 JTS 185cv / 3.2 V6 Q4 260cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.0 JTDm 170cv / 2.4 JTDm 200cv / 210cv",
+        "f": "Diesel"
+      }
+    ],
+    "Giulia": [
+      {
+        "e": "2.0 Turbo Benzina 200cv / 280cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.2 Turbo Diesel 136cv / 150cv / 160cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.2 Turbo Diesel 180cv / 190cv / 210cv Q4",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.9 V6 Bi-Turbo Quadrifoglio 510cv / 520cv",
+        "f": "Benzina"
+      }
+    ],
+    "Giulietta": [
+      {
+        "e": "1.4 TB 105cv / 120cv (940B7000 / 198A4000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 TB MultiAir 150cv / 170cv / 1.750 TBi 235cv / 240cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 TB GPL 120cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.6 JTDm 105cv / 120cv (940A3000 / 55260384)",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.0 JTDm 140cv / 150cv / 170cv / 175cv",
+        "f": "Diesel"
+      }
+    ],
+    "GT": [
+      {
+        "e": "1.8 Twin Spark 140cv / 2.0 JTS 165cv / 3.2 V6 240cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 JTDm 150cv / 170cv",
+        "f": "Diesel"
+      }
+    ],
+    "GTV / Spider (916)": [
+      {
+        "e": "1.8 / 2.0 Twin Spark 144cv / 150cv / 155cv / 2.0 JTS / 2.0 V6 Turbo / 3.0 V6",
+        "f": "Benzina"
+      }
+    ],
+    "Junior": [
+      {
+        "e": "1.2 Hybrid 136cv eDCT6 / Q4",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "Elettrica 156cv / 280cv Veloce",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Mito": [
+      {
+        "e": "1.4 8V 70cv / 78cv (350A1000) / 1.4 16V 95cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 TB / MultiAir 120cv / 135cv / 140cv / 155cv / 170cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "0.9 TwinAir 85cv / 105cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 TB GPL 120cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.3 JTDm 85cv / 90cv / 95cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 JTDm 120cv",
+        "f": "Diesel"
+      }
+    ],
+    "Stelvio": [
+      {
+        "e": "2.0 Turbo Benzina 200cv / 280cv Q4 / 2.9 V6 Quadrifoglio 510cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.2 Turbo Diesel 160cv / 180cv / 190cv / 210cv",
+        "f": "Diesel"
+      }
+    ],
+    "Tonale": [
+      {
+        "e": "1.5 Hybrid 130cv / 160cv TCT7",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.3 Plug-in Hybrid Q4 280cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.6 Diesel 130cv TCT6",
+        "f": "Diesel"
+      }
     ]
   },
-  'Alfa Romeo': {
-    'Giulietta': [
-      {e:'1.4 TB 105cv / 120cv (940B7000 / 198A4000)', f:'Benzina'},
-      {e:'1.4 TB MultiAir 150cv / 170cv', f:'Benzina'},
-      {e:'1.6 JTDm 105cv / 120cv (940A3000 / 55260384)', f:'Diesel'},
-      {e:'2.0 JTDm 140cv / 150cv / 170cv / 175cv', f:'Diesel'},
-      {e:'1.4 TB GPL 120cv', f:'GPL (Casa madre / Impianto)'}
+  "Audi": {
+    "100 / A6 (C4)": [
+      {
+        "e": "2.0 / 2.3 / 2.6 / 2.8 Benzina / 2.5 TDI 115cv / 140cv (AAT / AEL)",
+        "f": "Diesel"
+      }
     ],
-    'Mito': [
-      {e:'1.4 8V 70cv / 78cv (350A1000)', f:'Benzina'},
-      {e:'1.4 TB / MultiAir 120cv / 135cv / 170cv', f:'Benzina'},
-      {e:'0.9 TwinAir 85cv / 105cv', f:'Benzina'},
-      {e:'1.3 JTDm 85cv / 90cv / 95cv', f:'Diesel'},
-      {e:'1.6 JTDm 120cv', f:'Diesel'}
+    "80": [
+      {
+        "e": "1.6 / 1.8 / 2.0 E 90cv / 115cv / 1.9 TD 75cv / 1.9 TDI 90cv (1Z)",
+        "f": "Diesel"
+      }
     ],
-    'Giulia': [
-      {e:'2.0 Turbo Benzina 200cv / 280cv', f:'Benzina'},
-      {e:'2.2 Turbo Diesel 136cv / 150cv / 160cv / 180cv / 190cv / 210cv', f:'Diesel'},
-      {e:'2.9 V6 Bi-Turbo Quadrifoglio 510cv / 520cv', f:'Benzina'}
+    "A1": [
+      {
+        "e": "25 TFSI 1.0 95cv / 1.2 TFSI 86cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "30 TFSI 1.0 110cv / 116cv / 1.4 TFSI 122cv / 125cv / 150cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "35 TFSI 1.5 150cv / 40 TFSI 2.0 200cv / 207cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 TDI 90cv / 1.6 TDI 90cv / 105cv / 116cv",
+        "f": "Diesel"
+      }
     ],
-    'Stelvio': [
-      {e:'2.0 Turbo Benzina 200cv / 280cv Q4', f:'Benzina'},
-      {e:'2.2 Turbo Diesel 160cv / 180cv / 190cv / 210cv', f:'Diesel'}
+    "A2": [
+      {
+        "e": "1.4 16V 75cv (AUA / BBY) / 1.6 FSI 110cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 TDI 61cv / 1.4 TDI 75cv / 90cv (AMF / BHC / ATL)",
+        "f": "Diesel"
+      }
     ],
-    'Tonale / Junior': [
-      {e:'1.5 Hybrid 130cv / 160cv TCT7', f:'Mild Hybrid Benzina'},
-      {e:'1.2 Hybrid 136cv eDCT6 (Junior)', f:'Mild Hybrid Benzina'},
-      {e:'1.3 Plug-in Hybrid Q4 280cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.6 Diesel 130cv TCT6', f:'Diesel'},
-      {e:'Junior Elettrica 156cv / 280cv', f:'Elettrica (BEV)'}
+    "A3 (8L / 8P / 8V / 8Y)": [
+      {
+        "e": "1.6 101cv / 102cv / 1.6 FSI 115cv (8L / 8P)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.8 / 1.8 Turbo / S3 125cv / 150cv / 180cv / 210cv / 225cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "30 TFSI 1.0 110cv / 116cv / 1.4 TFSI 122cv / 125cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "35 TFSI 1.5 150cv S tronic",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "40 / 45 TFSI e 204cv / 245cv / 272cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.9 TDI 90cv / 101cv / 105cv / 110cv / 130cv (ALH / ASZ / BKC / BXE)",
+        "f": "Diesel"
+      },
+      {
+        "e": "30 TDI 1.6 / 2.0 105cv / 110cv / 116cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "35 TDI 2.0 140cv / 150cv / 170cv / 184cv (BKD / CFFB / CRLB)",
+        "f": "Diesel"
+      }
+    ],
+    "A4 (B5 / B6 / B7 / B8 / B9)": [
+      {
+        "e": "1.6 / 1.8 / 1.8 T / 2.0 TFSI 101cv-265cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.9 TDI 90cv / 110cv / 115cv / 130cv (AFN / AWX / AVF)",
+        "f": "Diesel"
+      },
+      {
+        "e": "35 TDI 2.0 120cv / 136cv / 143cv / 150cv / 163cv",
+        "f": "Mild Hybrid Diesel"
+      },
+      {
+        "e": "40 TDI 2.0 170cv / 177cv / 190cv / 204cv quattro",
+        "f": "Mild Hybrid Diesel"
+      },
+      {
+        "e": "2.5 / 2.7 / 3.0 TDI V6 150cv-286cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "A5": [
+      {
+        "e": "1.8 / 2.0 TFSI 150cv / 170cv / 204cv / 211cv / 265cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "2.0 TDI 143cv / 150cv / 163cv / 177cv / 190cv / 204cv",
+        "f": "Mild Hybrid Diesel"
+      },
+      {
+        "e": "2.7 / 3.0 TDI V6 190cv / 240cv / 245cv / 286cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "A6 (C5 / C6 / C7 / C8)": [
+      {
+        "e": "1.8 T / 2.0 TFSI 150cv / 180cv / 204cv / 265cv / 50-55 TFSI e",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.9 TDI 110cv / 130cv / 2.0 TDI 140cv / 163cv / 177cv / 190cv / 204cv",
+        "f": "Mild Hybrid Diesel"
+      },
+      {
+        "e": "2.5 / 2.7 / 3.0 TDI V6 150cv-286cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "Q2": [
+      {
+        "e": "30 TFSI 1.0 110cv / 116cv / 35 TFSI 1.4 / 1.5 150cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "30 TDI 1.6 / 2.0 116cv / 35 TDI 2.0 150cv quattro",
+        "f": "Diesel"
+      }
+    ],
+    "Q3": [
+      {
+        "e": "35 TFSI 1.4 / 1.5 150cv / 40 / 45 TFSI 2.0 190cv / 230cv / 245cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "45 TFSI e 245cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "35 TDI 2.0 140cv / 150cv / 40 TDI 2.0 177cv / 184cv / 193cv / 200cv",
+        "f": "Diesel"
+      }
+    ],
+    "Q4 e-tron / e-tron": [
+      {
+        "e": "35 / 40 / 45 / 50 / 55 e-tron quattro",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Q5": [
+      {
+        "e": "40 / 45 TFSI 2.0 204cv / 211cv / 252cv / 265cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "50 / 55 TFSI e 299cv / 367cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "2.0 TDI 143cv / 150cv / 163cv / 177cv / 190cv / 204cv quattro",
+        "f": "Mild Hybrid Diesel"
+      },
+      {
+        "e": "3.0 TDI V6 240cv / 245cv / 258cv / 286cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "Q7 / Q8": [
+      {
+        "e": "55 / 60 TFSI e Plug-in Hybrid / 3.0 TDI 218cv / 231cv / 245cv / 272cv / 286cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "TT (8N / 8J / 8S)": [
+      {
+        "e": "1.8 Turbo 150cv / 180cv / 225cv (8N)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.8 / 2.0 TFSI 160cv / 180cv / 197cv / 200cv / 211cv / 230cv / 245cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.0 TDI 170cv / 184cv quattro",
+        "f": "Diesel"
+      }
     ]
   },
-  'Jeep': {
-    'Renegade': [
-      {e:'1.0 T3 120cv (55282151)', f:'Benzina'},
-      {e:'1.3 T4 150cv / 180cv', f:'Benzina'},
-      {e:'1.5 e-Hybrid 130cv DCT7', f:'Mild Hybrid Benzina'},
-      {e:'1.3 4xe Plug-in Hybrid 190cv / 240cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.6 MultiJet 120cv / 130cv', f:'Diesel'},
-      {e:'2.0 MultiJet 140cv / 170cv 4WD', f:'Diesel'}
+  "BMW": {
+    "i3 / iX1 / iX3": [
+      {
+        "e": "i3 60Ah / 94Ah / 120Ah / REx / iX1 eDrive20 / xDrive30 / iX3",
+        "f": "Elettrica (BEV)"
+      }
     ],
-    'Compass': [
-      {e:'1.3 T4 130cv / 150cv', f:'Benzina'},
-      {e:'1.5 e-Hybrid 130cv DCT7', f:'Mild Hybrid Benzina'},
-      {e:'1.3 4xe Plug-in Hybrid 190cv / 240cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.6 MultiJet 120cv / 130cv', f:'Diesel'},
-      {e:'2.0 MultiJet 140cv / 170cv 4WD', f:'Diesel'}
+    "Serie 1 (E87 / F20 / F40 / F70)": [
+      {
+        "e": "116i / 118i / 120i 1.5 / 1.6 / 2.0 109cv-170cv (N45 / N13 / B38)",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "116d 1.5 / 1.6 / 2.0 116cv (N47 / B37)",
+        "f": "Diesel"
+      },
+      {
+        "e": "118d 2.0 122cv / 143cv / 150cv (M47 / N47 / B47)",
+        "f": "Diesel"
+      },
+      {
+        "e": "120d 2.0 163cv / 177cv / 184cv / 190cv xDrive",
+        "f": "Diesel"
+      }
     ],
-    'Avenger': [
-      {e:'1.2 Turbo 100cv', f:'Benzina'},
-      {e:'1.2 e-Hybrid 100cv / 136cv 4xe', f:'Mild Hybrid Benzina'},
-      {e:'Elettrica 156cv', f:'Elettrica (BEV)'}
+    "Serie 2 Active Tourer / Gran Tourer": [
+      {
+        "e": "216i / 218i / 220i 1.5 102cv / 136cv / 140cv / 170cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "225xe / 225e / 230e xDrive Plug-in Hybrid",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "214d / 216d / 218d / 220d 95cv / 116cv / 150cv / 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Serie 2 Coupé / Gran Coupé": [
+      {
+        "e": "218i / 220i / 228i / 230i / M235i / M240i",
+        "f": "Benzina"
+      },
+      {
+        "e": "218d / 220d 150cv / 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Serie 3 (E36 / E46 / E90 / F30 / G20)": [
+      {
+        "e": "316i / 318i / 320i / 325i / 330i 102cv-258cv (M43 / N42 / N46 / B48)",
+        "f": "Benzina"
+      },
+      {
+        "e": "320e / 330e 204cv / 252cv / 292cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "318d / 320d 2.0 116cv / 136cv / 150cv / 163cv / 177cv / 184cv / 190cv (M47 / N47 / B47)",
+        "f": "Mild Hybrid Diesel"
+      },
+      {
+        "e": "325td / 325tds / 330d 2.5 / 3.0 115cv-286cv (M51 / M57 / N57 / B57)",
+        "f": "Diesel"
+      }
+    ],
+    "Serie 4": [
+      {
+        "e": "420i / 428i / 430i 184cv / 245cv / 252cv / 258cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "418d / 420d / 430d 150cv / 184cv / 190cv / 258cv / 286cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "Serie 5 (E34 / E39 / E60 / F10 / G30)": [
+      {
+        "e": "520i / 523i / 525i / 528i / 530i 150cv-258cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "530e Plug-in Hybrid 252cv / 292cv / 299cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "520d 2.0 136cv / 163cv / 177cv / 184cv / 190cv / 197cv (M47 / N47 / B47)",
+        "f": "Mild Hybrid Diesel"
+      },
+      {
+        "e": "525d / 530d / 535d 2.5 / 3.0 163cv-313cv (M57 / N57 / B57)",
+        "f": "Diesel"
+      }
+    ],
+    "X1 (E84 / F48 / U11)": [
+      {
+        "e": "sDrive18i / sDrive20i 1.5 / 2.0 136cv / 140cv / 150cv / 170cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "xDrive25e / xDrive30e 220cv / 245cv / 326cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "sDrive16d / 18d / xDrive20d 116cv / 143cv / 150cv / 177cv / 190cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "X2": [
+      {
+        "e": "sDrive18i / sDrive20i 136cv / 140cv / 170cv / 192cv / xDrive25e",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "sDrive16d / 18d / xDrive20d 116cv / 150cv / 163cv / 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "X3 / X4": [
+      {
+        "e": "2.0i / 20i / 30i 150cv-252cv / xDrive30e Plug-in Hybrid 292cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "2.0d / 20d 150cv / 177cv / 184cv / 190cv / 197cv / 30d 218cv-286cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "X5 / X6": [
+      {
+        "e": "3.0i / 35i / 40i / xDrive40e / 45e / 50e Plug-in Hybrid",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "3.0d / 25d / 30d / 35d / 40d 184cv-340cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "Z3 / Z4": [
+      {
+        "e": "1.8 / 1.9 / 2.0 / 2.2 / 2.5 / 2.8 / 3.0 Benzina",
+        "f": "Benzina"
+      }
     ]
   },
-  'Volkswagen': {
-    'Polo': [
-      {e:'1.0 MPI 65cv / 75cv / 80cv (CHYC / DFNA)', f:'Benzina'},
-      {e:'1.0 TSI 95cv / 110cv / 115cv (DKLA / DLAA)', f:'Benzina'},
-      {e:'1.2 TSI 90cv / 110cv (CJZC)', f:'Benzina'},
-      {e:'1.4 TDI 75cv / 90cv (CUSA / CUSB)', f:'Diesel'},
-      {e:'1.6 TDI 80cv / 95cv (DGTC / DGTD)', f:'Diesel'},
-      {e:'1.0 TGI 90cv', f:'Metano (CNG)'}
+  "Chevrolet / Daewoo": {
+    "Aveo": [
+      {
+        "e": "1.2 16V 84cv / 86cv / 1.4 16V 100cv / 101cv / GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.3 D 75cv / 95cv",
+        "f": "Diesel"
+      }
     ],
-    'Golf': [
-      {e:'1.0 TSI / eTSI 110cv / 115cv', f:'Mild Hybrid Benzina'},
-      {e:'1.5 TSI / eTSI 115cv / 130cv / 150cv (DADA / DPCA)', f:'Mild Hybrid Benzina'},
-      {e:'1.4 TSI 122cv / 125cv / 140cv / 150cv', f:'Benzina'},
-      {e:'2.0 TSI GTI / R 245cv / 300cv / 320cv', f:'Benzina'},
-      {e:'1.4 eHybrid / GTE 204cv / 245cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.6 TDI 105cv / 110cv / 115cv (CLHA / CXXB / DDYA)', f:'Diesel'},
-      {e:'2.0 TDI 115cv / 150cv / 184cv / 200cv (CRLB / DTSB)', f:'Diesel'},
-      {e:'1.5 TGI 130cv', f:'Metano (CNG)'}
+    "Captiva": [
+      {
+        "e": "2.4 Benzina-GPL 136cv / 167cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "2.0 VCDi 127cv / 150cv / 2.2 VCDi 163cv / 184cv",
+        "f": "Diesel"
+      }
     ],
-    'T-Roc / T-Cross / Taigo': [
-      {e:'1.0 TSI 95cv / 110cv / 115cv', f:'Benzina'},
-      {e:'1.5 TSI 150cv (DADA / DPCA)', f:'Benzina'},
-      {e:'1.6 TDI 115cv (DGTE)', f:'Diesel'},
-      {e:'2.0 TDI 115cv / 150cv DSG 4Motion', f:'Diesel'}
+    "Cruze": [
+      {
+        "e": "1.6 / 1.8 Benzina-GPL 113cv / 124cv / 141cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.7 VCDi 130cv / 2.0 VCDi 125cv / 150cv / 163cv",
+        "f": "Diesel"
+      }
     ],
-    'Tiguan / Passat': [
-      {e:'1.5 TSI / eTSI 130cv / 150cv', f:'Mild Hybrid Benzina'},
-      {e:'1.4 / 1.5 eHybrid 204cv / 218cv / 245cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.6 TDI 120cv', f:'Diesel'},
-      {e:'2.0 TDI 122cv / 150cv / 190cv / 200cv', f:'Diesel'}
+    "Kalos": [
+      {
+        "e": "1.2 8V 72cv / 1.4 8V 83cv / 1.4 16V 94cv / GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      }
     ],
-    'Up! / Caddy / Transporter': [
-      {e:'1.0 MPI 60cv / 65cv / 75cv', f:'Benzina'},
-      {e:'1.0 EcoFuel 68cv', f:'Metano (CNG)'},
-      {e:'2.0 TDI 75cv / 102cv / 122cv / 150cv / 204cv', f:'Diesel'}
+    "Lacetti / Nubira / Tacuma": [
+      {
+        "e": "1.4 / 1.6 / 1.8 / 2.0 Benzina-GPL 95cv-122cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "2.0 TCDi 121cv",
+        "f": "Diesel"
+      }
+    ],
+    "Matiz": [
+      {
+        "e": "0.8 52cv (F8CV) / 1.0 64cv / 66cv / GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      }
+    ],
+    "Orlando": [
+      {
+        "e": "1.8 Benzina-GPL 141cv / 2.0 VCDi 130cv / 163cv",
+        "f": "Diesel"
+      }
+    ],
+    "Spark": [
+      {
+        "e": "1.0 68cv / 1.2 16V 82cv / GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      }
+    ],
+    "Trax": [
+      {
+        "e": "1.4 Turbo 140cv / 1.6 115cv / GPL / 1.7 VCDi 130cv",
+        "f": "Diesel"
+      }
     ]
   },
-  'Audi': {
-    'A1': [
-      {e:'25 / 30 TFSI 1.0 95cv / 110cv / 116cv', f:'Benzina'},
-      {e:'35 TFSI 1.5 150cv', f:'Benzina'},
-      {e:'1.4 / 1.6 TDI 90cv / 105cv / 116cv', f:'Diesel'}
+  "Chrysler / Dodge": {
+    "Caliber / Journey / Nitro": [
+      {
+        "e": "1.8 / 2.0 / 2.4 Benzina-GPL / 2.0 CRD 140cv / 2.8 CRD 177cv",
+        "f": "Diesel"
+      }
     ],
-    'A3': [
-      {e:'30 TFSI 1.0 110cv / 116cv', f:'Mild Hybrid Benzina'},
-      {e:'35 TFSI 1.5 150cv S tronic', f:'Mild Hybrid Benzina'},
-      {e:'40 / 45 TFSI e 204cv / 245cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'30 TDI 1.6 / 2.0 116cv', f:'Diesel'},
-      {e:'35 TDI 2.0 150cv S tronic', f:'Diesel'}
+    "PT Cruiser": [
+      {
+        "e": "1.6 / 2.0 / 2.4 Benzina-GPL / 2.2 CRD 121cv / 150cv",
+        "f": "Diesel"
+      }
     ],
-    'A4 / A5 / A6': [
-      {e:'35 / 40 / 45 TFSI 2.0 150cv / 204cv / 265cv', f:'Mild Hybrid Benzina'},
-      {e:'35 TDI 2.0 150cv / 163cv', f:'Mild Hybrid Diesel'},
-      {e:'40 TDI 2.0 190cv / 204cv quattro', f:'Mild Hybrid Diesel'},
-      {e:'45 / 50 TDI 3.0 V6 231cv / 286cv', f:'Mild Hybrid Diesel'}
-    ],
-    'Q2 / Q3 / Q5': [
-      {e:'30 / 35 TFSI 1.0 / 1.5 110cv / 150cv', f:'Benzina'},
-      {e:'45 TFSI e 245cv / 299cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'30 / 35 TDI 2.0 116cv / 150cv', f:'Diesel'},
-      {e:'40 TDI 2.0 190cv / 204cv quattro', f:'Mild Hybrid Diesel'}
+    "Voyager / Grand Voyager": [
+      {
+        "e": "2.4 / 3.3 / 3.8 Benzina-GPL / 2.5 TD / 2.5 CRD 143cv / 2.8 CRD 150cv / 163cv",
+        "f": "Diesel"
+      }
     ]
   },
-  'BMW': {
-    'Serie 1': [
-      {e:'116i / 118i 1.5 109cv / 136cv / 140cv (B38)', f:'Benzina'},
-      {e:'120i 1.5 Mild Hybrid 170cv', f:'Mild Hybrid Benzina'},
-      {e:'116d 1.5 116cv (B37)', f:'Diesel'},
-      {e:'118d 2.0 150cv (B47 / N47)', f:'Diesel'},
-      {e:'120d 2.0 163cv / 190cv xDrive', f:'Diesel'}
+  "Citroën": {
+    "AX": [
+      {
+        "e": "1.0 / 1.1 / 1.4 Benzina 45cv-95cv / 1.4 D / 1.5 D 52cv-58cv",
+        "f": "Benzina"
+      }
     ],
-    'Serie 2 Active Tourer / Gran Coupé': [
-      {e:'218i / 220i 1.5 136cv / 170cv', f:'Mild Hybrid Benzina'},
-      {e:'225e / 230e xDrive Plug-in Hybrid', f:'Plug-in Hybrid (PHEV)'},
-      {e:'216d / 218d / 220d 116cv / 150cv / 190cv', f:'Diesel'}
+    "Berlingo": [
+      {
+        "e": "1.4 / 1.6 16V / 1.2 PureTech 75cv-110cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 D 69cv / 2.0 HDi 90cv (DW8 / DW10)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 HDi / BlueHDi 75cv / 90cv / 92cv / 100cv / 110cv / 120cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.5 BlueHDi 75cv / 100cv / 130cv",
+        "f": "Diesel"
+      }
     ],
-    'Serie 3 / Serie 4 / Serie 5': [
-      {e:'318i / 320i / 330i 2.0 156cv / 184cv / 245cv (B48)', f:'Benzina'},
-      {e:'320e / 330e 204cv / 292cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'318d / 320d 2.0 150cv / 190cv (B47 / N47)', f:'Mild Hybrid Diesel'},
-      {e:'330d / 530d 3.0 265cv / 286cv (B57)', f:'Mild Hybrid Diesel'}
+    "C1": [
+      {
+        "e": "1.0 68cv / 72cv (1KR-FE / CFB) / 1.2 PureTech 82cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 HDi 54cv (8HT)",
+        "f": "Diesel"
+      }
     ],
-    'X1 / X2 / X3 / X5': [
-      {e:'sDrive18i / sDrive20i 1.5 136cv / 170cv', f:'Mild Hybrid Benzina'},
-      {e:'xDrive25e / xDrive30e Plug-in Hybrid', f:'Plug-in Hybrid (PHEV)'},
-      {e:'sDrive18d / xDrive20d 150cv / 163cv / 190cv', f:'Mild Hybrid Diesel'},
-      {e:'xDrive25d / xDrive30d 218cv / 231cv / 286cv', f:'Mild Hybrid Diesel'}
+    "C2": [
+      {
+        "e": "1.1 60cv / 1.4 73cv / 88cv / 1.6 16V VTS 122cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 HDi 68cv (8HX / 8HZ) / 1.6 HDi 109cv",
+        "f": "Diesel"
+      }
+    ],
+    "C3 (I / II / III / IV)": [
+      {
+        "e": "1.1 60cv / 1.4 73cv / 88cv / 1.4 VTi 95cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 PureTech 68cv / 82cv / 83cv / 100cv / 110cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 Hybrid 100cv e-DCS6",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 GPL 73cv / 1.2 PureTech GPL 82cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.4 HDi 68cv / 70cv / 90cv (8HZ / 8HR)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 HDi / BlueHDi 75cv / 90cv / 92cv / 100cv / 110cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.5 BlueHDi 100cv / 102cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "ë-C3 Elettrica 113cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "C3 Aircross": [
+      {
+        "e": "1.2 PureTech 82cv / 110cv / 130cv / 1.2 Hybrid 136cv e-DCS6",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 BlueHDi 102cv / 110cv / 120cv / 1.6 BlueHDi 99cv / 120cv",
+        "f": "Diesel"
+      }
+    ],
+    "C3 Picasso": [
+      {
+        "e": "1.4 VTi 95cv / 1.6 VTi 120cv / 1.2 PureTech 110cv / GPL",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 HDi / BlueHDi 90cv / 92cv / 100cv / 109cv / 115cv",
+        "f": "Diesel"
+      }
+    ],
+    "C4": [
+      {
+        "e": "1.4 / 1.6 16V / VTi / THP / 1.2 PureTech 90cv-156cv / Hybrid 136cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 BlueHDi 110cv / 130cv / 1.6 HDi 90cv-120cv / 2.0 HDi 136cv / 150cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "ë-C4 Elettrica 136cv / 156cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "C4 Cactus": [
+      {
+        "e": "1.2 VTi / PureTech 75cv / 82cv / 110cv / 130cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 BlueHDi 100cv / 120cv / 1.6 e-HDi / BlueHDi 92cv / 99cv",
+        "f": "Diesel"
+      }
+    ],
+    "C4 Picasso / Grand Picasso / SpaceTourer": [
+      {
+        "e": "1.6 VTi / THP / 1.2 PureTech 110cv / 130cv / 156cv / 165cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 BlueHDi 130cv / 1.6 HDi / BlueHDi 109cv-120cv / 2.0 HDi 136cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "C5": [
+      {
+        "e": "1.8 / 2.0 16V / 1.6 THP 125cv-165cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 HDi / e-HDi 109cv / 112cv / 115cv / 2.0 HDi 110cv-180cv / 2.2 HDi",
+        "f": "Diesel"
+      }
+    ],
+    "C5 Aircross": [
+      {
+        "e": "1.2 PureTech 130cv / 1.2 Hybrid 136cv e-DCS6 / 1.6 THP 180cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 Plug-in Hybrid 180cv / 225cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.5 BlueHDi 130cv / 2.0 BlueHDi 180cv",
+        "f": "Diesel"
+      }
+    ],
+    "C8": [
+      {
+        "e": "2.0 / 2.2 16V Benzina / 2.0 HDi 107cv-163cv / 2.2 HDi 128cv / 170cv",
+        "f": "Diesel"
+      }
+    ],
+    "Jumper": [
+      {
+        "e": "2.0 / 2.2 / 2.5 / 2.8 / 3.0 D / TD / HDi / BlueHDi 86cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "Jumpy": [
+      {
+        "e": "1.5 BlueHDi 100cv / 120cv / 1.6 HDi 90cv / 115cv / 1.9 D / 2.0 HDi / BlueHDi 90cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "Nemo": [
+      {
+        "e": "1.4 73cv / Metano / 1.3 HDi 75cv / 80cv / 1.4 HDi 68cv",
+        "f": "Diesel"
+      }
+    ],
+    "Saxo": [
+      {
+        "e": "1.0 / 1.1 54cv / 60cv / 1.4 75cv / 1.6 8V / 16V VTS 90cv-118cv / 1.5 D 57cv",
+        "f": "Benzina"
+      }
+    ],
+    "Xsara / Xsara Picasso": [
+      {
+        "e": "1.4 75cv / 1.6 88cv / 95cv / 109cv / 1.8 16V 115cv / 2.0 16V",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 HDi 90cv / 109cv / 1.9 D 69cv / 1.9 TD 90cv / 2.0 HDi 90cv / 109cv",
+        "f": "Diesel"
+      }
+    ],
+    "ZX": [
+      {
+        "e": "1.1 / 1.4 / 1.6 / 1.8 / 2.0 Benzina / 1.9 D 64cv / 1.9 TD 90cv",
+        "f": "Diesel"
+      }
     ]
   },
-  'Mercedes-Benz': {
-    'Classe A / Classe B / CLA': [
-      {e:'A 180 / A 200 1.3 Turbo 136cv / 163cv (M282)', f:'Mild Hybrid Benzina'},
-      {e:'A 250 e Plug-in Hybrid 218cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'A 160 d / A 180 d 1.5 95cv / 116cv (OM608)', f:'Diesel'},
-      {e:'A 180 d / A 200 d / A 220 d 2.0 116cv / 150cv / 190cv (OM654)', f:'Diesel'}
+  "Cupra": {
+    "Born": [
+      {
+        "e": "58 kWh / 77 kWh / VZ 204cv / 231cv / 326cv",
+        "f": "Elettrica (BEV)"
+      }
     ],
-    'Classe C / Classe E': [
-      {e:'C 180 / C 200 / C 300 1.5 / 2.0 EQ Boost 170cv / 204cv / 258cv', f:'Mild Hybrid Benzina'},
-      {e:'C 300 e / C 300 de Plug-in Hybrid', f:'Plug-in Hybrid (PHEV)'},
-      {e:'C 200 d / C 220 d / C 300 d 2.0 163cv / 200cv / 265cv (OM654)', f:'Mild Hybrid Diesel'}
+    "Formentor": [
+      {
+        "e": "1.5 TSI / eTSI 150cv DSG",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "2.0 TSI 190cv / 245cv / 310cv / 333cv 4Drive",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 / 1.5 e-Hybrid 204cv / 245cv / 272cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "2.0 TDI 150cv",
+        "f": "Diesel"
+      }
     ],
-    'GLA / GLB / GLC': [
-      {e:'GLA 180 / 200 1.3 136cv / 163cv', f:'Mild Hybrid Benzina'},
-      {e:'GLA / GLC 250 e / 300 e / 300 de Plug-in', f:'Plug-in Hybrid (PHEV)'},
-      {e:'GLA / GLB / GLC 200 d / 220 d 150cv / 190cv / 197cv', f:'Mild Hybrid Diesel'}
-    ],
-    'Sprinter / Vito': [
-      {e:'110 / 114 / 116 / 119 CDI 2.0 / 2.1 102cv / 136cv / 163cv / 190cv', f:'Diesel'}
+    "Leon": [
+      {
+        "e": "1.5 TSI / eTSI 150cv / 2.0 TSI 245cv / 300cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 / 1.5 e-Hybrid 204cv / 245cv / 272cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "2.0 TDI 150cv",
+        "f": "Diesel"
+      }
     ]
   },
-  'Ford': {
-    'Fiesta': [
-      {e:'1.1 70cv / 75cv / 85cv', f:'Benzina'},
-      {e:'1.0 EcoBoost 100cv / 125cv / 140cv', f:'Benzina'},
-      {e:'1.0 EcoBoost Hybrid 125cv / 155cv', f:'Mild Hybrid Benzina'},
-      {e:'1.5 TDCi / EcoBlue 75cv / 85cv / 95cv / 120cv', f:'Diesel'},
-      {e:'1.1 GPL 75cv', f:'GPL (Casa madre / Impianto)'}
+  "Dacia": {
+    "Dokker": [
+      {
+        "e": "1.6 83cv / 102cv / GPL / 1.2 TCe 115cv / 1.3 TCe 102cv / 130cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 dCi / Blue dCi 75cv / 90cv / 95cv (K9K)",
+        "f": "Diesel"
+      }
     ],
-    'Focus': [
-      {e:'1.0 EcoBoost / Hybrid 100cv / 125cv / 155cv', f:'Mild Hybrid Benzina'},
-      {e:'1.5 TDCi / EcoBlue 95cv / 115cv / 120cv', f:'Diesel'},
-      {e:'2.0 EcoBlue 150cv', f:'Diesel'}
+    "Duster (I / II / III)": [
+      {
+        "e": "1.6 16V 105cv / 114cv (K4M / H4M)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 TCe 90cv / 100cv ECO-G / 1.6 GPL 105cv / 114cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.2 TCe 125cv / Mild Hybrid 130cv 4x4 / 1.3 TCe 130cv / 150cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 Hybrid 140cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.5 dCi / Blue dCi 85cv / 90cv / 95cv / 107cv / 110cv / 115cv (K9K)",
+        "f": "Diesel"
+      }
     ],
-    'Puma': [
-      {e:'1.0 EcoBoost Hybrid 125cv / 155cv / 170cv', f:'Mild Hybrid Benzina'},
-      {e:'1.5 EcoBlue 120cv', f:'Diesel'},
-      {e:'Puma Gen-E Elettrica 168cv', f:'Elettrica (BEV)'}
+    "Jogger": [
+      {
+        "e": "1.0 TCe 100cv ECO-G",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.0 TCe 110cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 Hybrid 140cv",
+        "f": "Full Hybrid (HEV)"
+      }
     ],
-    'Kuga': [
-      {e:'1.5 EcoBoost 120cv / 150cv', f:'Benzina'},
-      {e:'2.5 Full Hybrid (FHEV) 180cv / 190cv', f:'Full Hybrid (HEV)'},
-      {e:'2.5 Plug-in Hybrid (PHEV) 225cv / 243cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.5 / 2.0 EcoBlue 120cv / 150cv / 190cv', f:'Diesel'}
+    "Lodgy": [
+      {
+        "e": "1.6 83cv / 102cv / GPL / 1.2 TCe 115cv / 1.3 TCe 102cv / 130cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 dCi / Blue dCi 90cv / 95cv / 107cv / 110cv / 115cv (K9K)",
+        "f": "Diesel"
+      }
     ],
-    'Transit / Transit Custom': [
-      {e:'2.0 EcoBlue 105cv / 130cv / 150cv / 170cv', f:'Diesel'}
+    "Logan / Logan MCV": [
+      {
+        "e": "1.2 16V 75cv / 1.4 75cv / 1.6 84cv / 105cv / 0.9 TCe 90cv / GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.5 dCi / Blue dCi 68cv / 75cv / 85cv / 90cv / 95cv (K9K)",
+        "f": "Diesel"
+      }
+    ],
+    "Sandero / Sandero Stepway (I / II / III)": [
+      {
+        "e": "1.2 16V 75cv / 1.4 75cv / 1.6 84cv / 1.0 SCe 65cv / 75cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "0.9 TCe 90cv / 1.0 TCe 90cv / 110cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 GPL 75cv / 0.9 TCe GPL 90cv / 1.0 TCe 100cv ECO-G",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.5 dCi / Blue dCi 68cv / 75cv / 85cv / 90cv / 95cv (K9K)",
+        "f": "Diesel"
+      }
+    ],
+    "Spring": [
+      {
+        "e": "Electric 45cv / 65cv",
+        "f": "Elettrica (BEV)"
+      }
     ]
   },
-  'Peugeot': {
-    '208': [
-      {e:'1.2 PureTech 75cv / 82cv / 100cv / 130cv (HM01 / HN05)', f:'Benzina'},
-      {e:'1.2 Hybrid 100cv / 136cv e-DCS6', f:'Mild Hybrid Benzina'},
-      {e:'1.5 BlueHDi 100cv / 102cv (YH01)', f:'Diesel'},
-      {e:'1.6 BlueHDi 75cv / 100cv / 120cv (BH01)', f:'Diesel'},
-      {e:'e-208 Elettrica 136cv / 156cv', f:'Elettrica (BEV)'}
+  "Daihatsu": {
+    "Cuore / Sirion / Materia": [
+      {
+        "e": "1.0 / 1.3 / 1.5 Benzina-GPL 58cv-103cv (1KR-FE / K3-VE)",
+        "f": "Benzina"
+      }
     ],
-    '2008': [
-      {e:'1.2 PureTech 100cv / 130cv', f:'Benzina'},
-      {e:'1.2 Hybrid 136cv e-DCS6', f:'Mild Hybrid Benzina'},
-      {e:'1.5 BlueHDi 110cv / 130cv', f:'Diesel'},
-      {e:'1.6 BlueHDi 100cv / 120cv', f:'Diesel'},
-      {e:'e-2008 Elettrica 136cv / 156cv', f:'Elettrica (BEV)'}
-    ],
-    '308 / 3008 / 5008': [
-      {e:'1.2 PureTech 110cv / 130cv', f:'Benzina'},
-      {e:'1.2 Hybrid 136cv e-DCS6', f:'Mild Hybrid Benzina'},
-      {e:'1.6 Plug-in Hybrid 180cv / 225cv / 300cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.5 BlueHDi 130cv (YH01)', f:'Diesel'},
-      {e:'1.6 / 2.0 BlueHDi 120cv / 150cv / 180cv', f:'Diesel'}
+    "Terios": [
+      {
+        "e": "1.3 83cv / 86cv / 1.5 102cv / 105cv Benzina-GPL 4WD",
+        "f": "GPL (Casa madre / Impianto)"
+      }
     ]
   },
-  'Citroën': {
-    'C3': [
-      {e:'1.2 PureTech 82cv / 83cv / 100cv / 110cv', f:'Benzina'},
-      {e:'1.2 Hybrid 100cv e-DCS6', f:'Mild Hybrid Benzina'},
-      {e:'1.5 BlueHDi 100cv / 102cv', f:'Diesel'},
-      {e:'1.6 BlueHDi 75cv / 100cv', f:'Diesel'},
-      {e:'ë-C3 Elettrica 113cv', f:'Elettrica (BEV)'}
+  "DR / EVO": {
+    "DR 1 / DR 2 / DR 3 / DR Zero": [
+      {
+        "e": "1.0 / 1.1 / 1.3 / 1.5 Benzina / Thermohybrid GPL 68cv-116cv",
+        "f": "GPL (Casa madre / Impianto)"
+      }
     ],
-    'C3 Aircross / C4 / C5 Aircross': [
-      {e:'1.2 PureTech 110cv / 130cv', f:'Benzina'},
-      {e:'1.2 Hybrid 136cv e-DCS6', f:'Mild Hybrid Benzina'},
-      {e:'1.6 Plug-in Hybrid 180cv / 225cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.5 BlueHDi 110cv / 130cv', f:'Diesel'}
+    "DR 4.0 / DR 5 / DR 5.0 / DR 6.0 / DR 7.0": [
+      {
+        "e": "1.5 / 1.6 / 1.5 Turbo Benzina / Thermohybrid GPL 114cv-160cv",
+        "f": "GPL (Casa madre / Impianto)"
+      }
     ],
-    'Berlingo / Jumpy / Jumper': [
-      {e:'1.5 BlueHDi 75cv / 100cv / 130cv', f:'Diesel'},
-      {e:'2.0 / 2.2 BlueHDi 120cv / 140cv / 145cv / 165cv / 180cv', f:'Diesel'}
+    "EVO 3 / EVO 4 / EVO 5 / EVO 6 / EVO 7": [
+      {
+        "e": "1.5 / 1.6 / 1.5 Turbo Benzina / GPL 113cv-177cv",
+        "f": "GPL (Casa madre / Impianto)"
+      }
     ]
   },
-  'Opel': {
-    'Corsa': [
-      {e:'1.2 75cv / Turbo 100cv / 130cv', f:'Benzina'},
-      {e:'1.2 Hybrid 100cv / 136cv eDCT6', f:'Mild Hybrid Benzina'},
-      {e:'1.2 / 1.4 70cv / 90cv (Corsa D/E)', f:'Benzina'},
-      {e:'1.5 Diesel 102cv', f:'Diesel'},
-      {e:'1.3 CDTI 75cv / 95cv', f:'Diesel'},
-      {e:'Corsa-e Elettrica 136cv / 156cv', f:'Elettrica (BEV)'}
+  "DS Automobiles": {
+    "DS 3 / DS 3 Crossback": [
+      {
+        "e": "1.2 PureTech 82cv / 100cv / 110cv / 130cv / 1.6 VTi / THP / Hybrid 136cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 BlueHDi 100cv / 130cv / 1.6 HDi / BlueHDi 90cv-120cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "E-Tense Elettrica 136cv / 156cv",
+        "f": "Elettrica (BEV)"
+      }
     ],
-    'Mokka / Crossland / Grandland': [
-      {e:'1.2 Turbo 100cv / 110cv / 130cv', f:'Benzina'},
-      {e:'1.2 Hybrid 136cv eDCT6', f:'Mild Hybrid Benzina'},
-      {e:'1.6 Plug-in Hybrid 225cv / 300cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.5 Diesel 110cv / 120cv / 130cv', f:'Diesel'},
-      {e:'1.6 CDTI 110cv / 136cv', f:'Diesel'}
-    ],
-    'Astra': [
-      {e:'1.2 Turbo 110cv / 130cv', f:'Benzina'},
-      {e:'1.2 Hybrid 136cv', f:'Mild Hybrid Benzina'},
-      {e:'1.6 Plug-in Hybrid 180cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.5 Diesel 130cv', f:'Diesel'},
-      {e:'1.6 CDTI 110cv / 136cv', f:'Diesel'}
+    "DS 4 / DS 5 / DS 7": [
+      {
+        "e": "1.2 PureTech / Hybrid 136cv / 1.6 PureTech / E-Tense Plug-in Hybrid 225cv / 300cv / 360cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.5 BlueHDi 130cv / 1.6 HDi / 2.0 BlueHDi 150cv / 180cv",
+        "f": "Diesel"
+      }
     ]
   },
-  'Renault': {
-    'Clio': [
-      {e:'1.0 SCe 65cv / 75cv', f:'Benzina'},
-      {e:'1.0 TCe 90cv / 100cv (H4D)', f:'Benzina'},
-      {e:'1.0 TCe 100cv GPL', f:'GPL (Casa madre / Impianto)'},
-      {e:'1.6 E-Tech Full Hybrid 140cv / 145cv', f:'Full Hybrid (HEV)'},
-      {e:'1.5 dCi / Blue dCi 75cv / 85cv / 90cv / 100cv / 115cv (K9K)', f:'Diesel'}
+  "Fiat": {
+    "124 Spider": [
+      {
+        "e": "1.4 MultiAir Turbo 140cv",
+        "f": "Benzina"
+      }
     ],
-    'Captur': [
-      {e:'1.0 TCe 90cv / 100cv', f:'Benzina'},
-      {e:'1.0 TCe 100cv GPL', f:'GPL (Casa madre / Impianto)'},
-      {e:'1.3 TCe Mild Hybrid 140cv / 160cv', f:'Mild Hybrid Benzina'},
-      {e:'1.6 E-Tech Full Hybrid 145cv / Plug-in 160cv', f:'Full Hybrid (HEV)'},
-      {e:'1.5 dCi / Blue dCi 90cv / 95cv / 115cv (K9K)', f:'Diesel'}
+    "500": [
+      {
+        "e": "1.2 Fire 69cv (169A4000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 FireFly Hybrid 70cv (46341162)",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "0.9 TwinAir 85cv / 105cv / 1.4 16V 100cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 EasyPower 69cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.3 MultiJet 75cv / 95cv (199B1000)",
+        "f": "Diesel"
+      },
+      {
+        "e": "500e Elettrica 95cv / 118cv",
+        "f": "Elettrica (BEV)"
+      }
     ],
-    'Mégane / Austral / Arkana': [
-      {e:'1.3 TCe 140cv / 160cv', f:'Mild Hybrid Benzina'},
-      {e:'1.2 / 1.6 E-Tech Full Hybrid 145cv / 200cv', f:'Full Hybrid (HEV)'},
-      {e:'1.5 Blue dCi 115cv (K9K)', f:'Diesel'}
+    "500L": [
+      {
+        "e": "1.4 16V 95cv (843A1000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 T-Jet 120cv (198A4000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 T-Jet GPL 120cv / 0.9 TwinAir Natural Power 80cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.3 MultiJet 85cv / 95cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 MultiJet 105cv / 120cv",
+        "f": "Diesel"
+      }
     ],
-    'Kangoo / Trafic / Master': [
-      {e:'1.5 Blue dCi 95cv / 115cv', f:'Diesel'},
-      {e:'2.0 / 2.3 Blue dCi 110cv / 130cv / 150cv / 170cv', f:'Diesel'}
-    ]
-  },
-  'Dacia': {
-    'Sandero / Sandero Stepway': [
-      {e:'1.0 SCe 65cv / 75cv', f:'Benzina'},
-      {e:'1.0 TCe 90cv / 110cv', f:'Benzina'},
-      {e:'1.0 TCe 100cv ECO-G', f:'GPL (Casa madre / Impianto)'},
-      {e:'1.5 dCi / Blue dCi 75cv / 90cv / 95cv', f:'Diesel'}
+    "500X": [
+      {
+        "e": "1.0 FireFly Turbo 120cv (55282151)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.3 FireFly Turbo 150cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 Hybrid 130cv DCT",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 E-Torq 110cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.3 MultiJet 95cv (55266963)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 MultiJet 120cv / 130cv (55260384)",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.0 MultiJet 140cv / 150cv 4x4",
+        "f": "Diesel"
+      }
     ],
-    'Duster': [
-      {e:'1.0 TCe 90cv / 100cv ECO-G', f:'GPL (Casa madre / Impianto)'},
-      {e:'1.2 TCe Mild Hybrid 130cv 4x4', f:'Mild Hybrid Benzina'},
-      {e:'1.3 TCe 130cv / 150cv', f:'Benzina'},
-      {e:'1.6 Hybrid 140cv', f:'Full Hybrid (HEV)'},
-      {e:'1.5 dCi / Blue dCi 95cv / 110cv / 115cv', f:'Diesel'}
+    "600": [
+      {
+        "e": "1.2 Hybrid 100cv / 136cv eDCT",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "600e Elettrica 156cv",
+        "f": "Elettrica (BEV)"
+      }
     ],
-    'Jogger / Spring': [
-      {e:'1.0 TCe 100cv ECO-G', f:'GPL (Casa madre / Impianto)'},
-      {e:'1.6 Hybrid 140cv', f:'Full Hybrid (HEV)'},
-      {e:'Spring Electric 45cv / 65cv', f:'Elettrica (BEV)'}
-    ]
-  },
-  'Toyota': {
-    'Yaris / Yaris Cross': [
-      {e:'1.0 VVT-i 69cv / 72cv (1KR-FE)', f:'Benzina'},
-      {e:'1.5 VVT-i 111cv / 125cv', f:'Benzina'},
-      {e:'1.5 Hybrid 100cv / 116cv / 130cv (1NZ-FXE / M15A-FXE)', f:'Full Hybrid (HEV)'},
-      {e:'1.4 D-4D 90cv (1ND-TV)', f:'Diesel'}
+    "Barchetta": [
+      {
+        "e": "1.8 16V 131cv (183A1000 / 188A6000)",
+        "f": "Benzina"
+      }
     ],
-    'Corolla / C-HR': [
-      {e:'1.8 Hybrid 122cv / 140cv (2ZR-FXE)', f:'Full Hybrid (HEV)'},
-      {e:'2.0 Hybrid 180cv / 184cv / 196cv (M20A-FXS)', f:'Full Hybrid (HEV)'},
-      {e:'2.0 Plug-in Hybrid 223cv', f:'Plug-in Hybrid (PHEV)'}
+    "Bravo (2007-2014)": [
+      {
+        "e": "1.4 16V 90cv (192B2000) / 1.4 EasyPower GPL 90cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 T-Jet 120cv / 150cv / MultiAir 140cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 MultiJet 90cv / 105cv / 120cv (198A2000 / 198A3000)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.9 MultiJet 120cv / 150cv / 2.0 MultiJet 165cv",
+        "f": "Diesel"
+      }
     ],
-    'RAV4 / Aygo / Aygo X': [
-      {e:'1.0 VVT-i 69cv / 72cv (Aygo / Aygo X)', f:'Benzina'},
-      {e:'2.5 Hybrid 218cv / 222cv AWD-i (A25A-FXS)', f:'Full Hybrid (HEV)'},
-      {e:'2.5 Plug-in Hybrid 306cv', f:'Plug-in Hybrid (PHEV)'}
-    ]
-  },
-  'Hyundai': {
-    'i10 / i20 / Bayon': [
-      {e:'1.0 MPI / 1.2 MPI 67cv / 79cv / 84cv', f:'Benzina'},
-      {e:'1.0 T-GDI / 48V Hybrid 100cv / 120cv', f:'Mild Hybrid Benzina'},
-      {e:'1.0 / 1.2 MPI GPL', f:'GPL (Casa madre / Impianto)'}
+    "Bravo / Brava (1995-2001)": [
+      {
+        "e": "1.2 16V 80cv / 82cv (182B2000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 12V 80cv / 1.6 16V 90cv / 103cv (182A4000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.8 16V 113cv / 2.0 20V HGT 147cv / 154cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 D 65cv / 1.9 TD 75cv / 100cv / 1.9 JTD 100cv / 105cv (182B4000)",
+        "f": "Diesel"
+      }
     ],
-    'Tucson / Kona': [
-      {e:'1.6 T-GDI / 48V Hybrid 150cv / 160cv / 180cv', f:'Mild Hybrid Benzina'},
-      {e:'1.6 Full Hybrid 215cv / 230cv', f:'Full Hybrid (HEV)'},
-      {e:'1.6 Plug-in Hybrid 252cv / 265cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.6 CRDi / 48V 115cv / 136cv', f:'Mild Hybrid Diesel'}
-    ]
-  },
-  'Kia': {
-    'Picanto / Rio / Stonic': [
-      {e:'1.0 / 1.2 DPI / MPI 67cv / 79cv / 84cv', f:'Benzina'},
-      {e:'1.0 T-GDI / MHEV 100cv / 120cv', f:'Mild Hybrid Benzina'},
-      {e:'1.0 / 1.2 GPL', f:'GPL (Casa madre / Impianto)'}
+    "Cinquecento": [
+      {
+        "e": "700 / 900 39cv (1170A1046) / 1.1 Fire Sporting 54cv (176B2000)",
+        "f": "Benzina"
+      }
     ],
-    'Sportage / Niro': [
-      {e:'1.6 T-GDI MHEV 150cv / 160cv / 180cv', f:'Mild Hybrid Benzina'},
-      {e:'1.6 Full Hybrid 141cv / 215cv / 230cv', f:'Full Hybrid (HEV)'},
-      {e:'1.6 Plug-in Hybrid 183cv / 252cv / 265cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'1.6 CRDi MHEV 115cv / 136cv', f:'Mild Hybrid Diesel'}
-    ]
-  },
-  'Nissan': {
-    'Qashqai': [
-      {e:'1.3 DIG-T Mild Hybrid 140cv / 158cv', f:'Mild Hybrid Benzina'},
-      {e:'1.5 e-Power 190cv', f:'Full Hybrid (HEV)'},
-      {e:'1.5 dCi 110cv / 115cv (K9K)', f:'Diesel'},
-      {e:'1.6 / 1.7 dCi 130cv / 150cv', f:'Diesel'}
+    "Coupé": [
+      {
+        "e": "1.8 16V 131cv / 2.0 16V / 2.0 16V Turbo / 2.0 20V / 2.0 20V Turbo 220cv",
+        "f": "Benzina"
+      }
     ],
-    'Juke / Micra': [
-      {e:'1.0 DIG-T 92cv / 114cv / 117cv', f:'Benzina'},
-      {e:'1.6 Hybrid 143cv', f:'Full Hybrid (HEV)'},
-      {e:'1.5 dCi 90cv / 110cv (K9K)', f:'Diesel'}
-    ]
-  },
-  'Seat / Cupra': {
-    'Ibiza / Arona': [
-      {e:'1.0 MPI 80cv', f:'Benzina'},
-      {e:'1.0 TSI 95cv / 110cv / 115cv', f:'Benzina'},
-      {e:'1.5 TSI 150cv', f:'Benzina'},
-      {e:'1.0 TGI 90cv', f:'Metano (CNG)'},
-      {e:'1.6 TDI 95cv / 115cv', f:'Diesel'}
+    "Croma": [
+      {
+        "e": "1.8 16V 140cv / 2.2 16V 147cv / 2.0 CHT / Turbo (1990s)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 MultiJet 8V 120cv / 16V 150cv (939A1000 / 939A2000)",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.4 MultiJet 200cv / 1.9 TD i.d. / 2.5 TD",
+        "f": "Diesel"
+      }
     ],
-    'Leon / Formentor / Ateca': [
-      {e:'1.0 / 1.5 TSI / eTSI 110cv / 115cv / 150cv', f:'Mild Hybrid Benzina'},
-      {e:'1.4 / 1.5 e-Hybrid 204cv / 245cv', f:'Plug-in Hybrid (PHEV)'},
-      {e:'2.0 TDI 115cv / 150cv DSG', f:'Diesel'}
-    ]
-  },
-  'Skoda': {
-    'Fabia / Kamiq / Scala': [
-      {e:'1.0 MPI 65cv / 80cv', f:'Benzina'},
-      {e:'1.0 TSI 95cv / 110cv / 115cv', f:'Benzina'},
-      {e:'1.5 TSI 150cv', f:'Benzina'},
-      {e:'1.6 TDI 95cv / 115cv', f:'Diesel'}
+    "Doblò": [
+      {
+        "e": "1.2 65cv / 1.4 8V 77cv / 1.4 16V 95cv / 1.6 16V 103cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 T-Jet Natural Power 120cv / 1.6 Natural Power 103cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.3 MultiJet 70cv / 75cv / 85cv / 90cv / 95cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.5 BlueHDi 100cv / 130cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 MultiJet 90cv / 105cv / 120cv / 1.9 D / JTD / MultiJet 63cv-120cv",
+        "f": "Diesel"
+      }
     ],
-    'Octavia / Karoq / Kodiaq': [
-      {e:'1.0 / 1.5 TSI / e-TEC 110cv / 115cv / 150cv', f:'Mild Hybrid Benzina'},
-      {e:'2.0 TDI 115cv / 150cv / 200cv DSG', f:'Diesel'}
+    "Ducato": [
+      {
+        "e": "2.2 MultiJet3 120cv / 140cv / 160cv / 180cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.3 MultiJet 110cv / 120cv / 130cv / 150cv / 180cv (F1AE / F1AGL)",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.0 JTD / MultiJet 84cv / 115cv / 2.2 MultiJet 100cv (4HV)",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.5 D / TD / TDI / 2.8 D / idTD / JTD / 3.0 MultiJet 160cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "Fiorino": [
+      {
+        "e": "1.4 8V 73cv / 77cv / 1.4 Fire (anni 90)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 Natural Power 70cv / 77cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.3 MultiJet 75cv / 80cv / 95cv / 1.7 D / TD (anni 90)",
+        "f": "Diesel"
+      }
+    ],
+    "Freemont": [
+      {
+        "e": "2.0 MultiJet 140cv / 170cv AWD (939B5000)",
+        "f": "Diesel"
+      }
+    ],
+    "Grande Punto / Punto Evo": [
+      {
+        "e": "1.2 8V 65cv / 69cv (199A4000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 8V 77cv (350A1000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 16V 95cv / T-Jet 120cv / MultiAir 105cv / 135cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 EasyPower 77cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.4 Natural Power 70cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.3 MultiJet 75cv / 85cv / 90cv / 95cv / 1.6 / 1.9 MultiJet 120cv-130cv",
+        "f": "Diesel"
+      }
+    ],
+    "Idea": [
+      {
+        "e": "1.2 16V 80cv / 1.4 8V 77cv / 1.4 16V 95cv / GPL",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.3 MultiJet 70cv / 90cv / 95cv / 1.6 MultiJet 120cv / 1.9 MultiJet 100cv",
+        "f": "Diesel"
+      }
+    ],
+    "Marea": [
+      {
+        "e": "1.6 16V 103cv / Bipower / 1.8 16V 113cv / 2.0 20V 147cv-154cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 TD 75cv / 100cv / 1.9 JTD 105cv / 110cv / 2.4 TD / JTD 125cv-130cv",
+        "f": "Diesel"
+      }
+    ],
+    "Multipla": [
+      {
+        "e": "1.6 16V 103cv (182B6000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 Bipower / Blupower / Natural Power 92cv / 103cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.9 JTD / MultiJet 105cv / 110cv / 115cv / 120cv (186A6000 / 186A9000)",
+        "f": "Diesel"
+      }
+    ],
+    "Palio / Siena / Strada": [
+      {
+        "e": "1.2 60cv / 73cv / 1.6 16V 100cv / 1.3 MultiJet 70cv / 85cv / 1.7 TD / 1.9 D / JTD",
+        "f": "Diesel"
+      }
+    ],
+    "Panda (141 / 169 / 319)": [
+      {
+        "e": "750 / 900 / 1000 / 1100 Fire 34cv-54cv (Panda 141 anni 90-2003)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.1 Fire 54cv / 1.2 Fire 60cv / 69cv (187A1000 / 188A4000 / 169A4000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 FireFly Hybrid 70cv (46341162)",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "0.9 TwinAir 85cv (312A2000) / 1.4 16V 100HP",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 EasyPower 69cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.2 / 0.9 Natural Power 60cv / 69cv / 80cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.3 MultiJet 70cv / 75cv / 95cv (188A8000 / 199A9000 / 330A1000)",
+        "f": "Diesel"
+      }
+    ],
+    "Punto (1a / 2a / 3a serie 1993-2018)": [
+      {
+        "e": "55 / 60 / 75 / 85 16V / 1.4 GT Turbo (Punto 176 anni 90)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 8V 60cv / 69cv (188A4000 / 169A4000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 16V 80cv / 1.4 8V 77cv / 1.4 16V 95cv / 1.8 16V HGT 131cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 / 1.4 EasyPower GPL 60cv / 69cv / 77cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.2 / 1.4 Natural Power Metano 60cv / 70cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.3 MultiJet 70cv / 75cv / 85cv / 95cv (188A9000 / 199A9000)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.7 D / TD 57cv-70cv / 1.9 D 60cv / 1.9 JTD / MultiJet 80cv-101cv",
+        "f": "Diesel"
+      }
+    ],
+    "Qubo": [
+      {
+        "e": "1.4 8V 73cv / 77cv / 1.4 Natural Power Metano 70cv / 77cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.3 MultiJet 75cv / 80cv / 95cv",
+        "f": "Diesel"
+      }
+    ],
+    "Scudo / Talento": [
+      {
+        "e": "1.5 BlueHDi 100cv / 120cv / 1.6 MultiJet / dCi 90cv / 95cv / 120cv / 125cv / 145cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.9 D / TD / 2.0 JTD / MultiJet / BlueHDi 90cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "Sedici": [
+      {
+        "e": "1.6 16V 107cv / 120cv / 1.9 MultiJet 120cv / 2.0 MultiJet 135cv 4x4",
+        "f": "Diesel"
+      }
+    ],
+    "Seicento": [
+      {
+        "e": "900 39cv (1170A1046) / 1.1 Fire 54cv Sporting / Suite (187A1000)",
+        "f": "Benzina"
+      }
+    ],
+    "Stilo": [
+      {
+        "e": "1.2 16V 80cv / 1.4 16V 95cv / 1.6 16V 103cv / 1.8 16V 133cv / 2.4 20V",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 JTD / MultiJet 80cv / 100cv / 115cv / 120cv / 140cv / 150cv (192A1000)",
+        "f": "Diesel"
+      }
+    ],
+    "Tempra": [
+      {
+        "e": "1.4 / 1.6 / 1.8 / 2.0 Benzina / 1.9 D / 1.9 TD 80cv / 90cv",
+        "f": "Diesel"
+      }
+    ],
+    "Tipo (1988-1995 & 2015+)": [
+      {
+        "e": "1.1 / 1.4 / 1.6 / 1.8 / 2.0 Sedicivalvole (Tipo storica anni 90)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 16V 95cv (843A1000) / 1.4 T-Jet 120cv (198A4000) / GPL",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 FireFly 100cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 Hybrid 130cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.3 MultiJet 95cv / 1.6 MultiJet 120cv / 130cv / 1.7 D / 1.9 TD (anni 90)",
+        "f": "Diesel"
+      }
+    ],
+    "Ulysse": [
+      {
+        "e": "2.0 16V / Turbo Benzina / 1.9 TD / 2.0 JTD / MultiJet 109cv-136cv / 2.2 JTD 128cv / 170cv",
+        "f": "Diesel"
+      }
+    ],
+    "Uno": [
+      {
+        "e": "45 / 60 / 70 / 1.0 i.e. / 1.1 i.e. Fire / 1.4 Turbo i.e.",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.3 Turbo D / 1.7 D 57cv / 60cv",
+        "f": "Diesel"
+      }
     ]
   },
-  'Mini': {
-    'One / Cooper / Countryman': [
-      {e:'1.2 / 1.5 Turbo 75cv / 102cv / 136cv (B38)', f:'Benzina'},
-      {e:'2.0 Cooper S / JCW 178cv / 192cv / 231cv (B48)', f:'Benzina'},
-      {e:'1.5 One D / Cooper D 95cv / 116cv (B37)', f:'Diesel'},
-      {e:'2.0 Cooper D / SD 150cv / 190cv (B47)', f:'Diesel'},
-      {e:'Cooper SE Elettrica 184cv / 218cv', f:'Elettrica (BEV)'}
+  "Ford": {
+    "B-Max": [
+      {
+        "e": "1.0 EcoBoost 100cv / 120cv / 125cv / 1.4 90cv / GPL / 1.5 / 1.6 TDCi 75cv / 95cv",
+        "f": "Benzina"
+      }
+    ],
+    "C-Max / Grand C-Max": [
+      {
+        "e": "1.0 EcoBoost 100cv / 125cv / 1.6 / 1.8 / 2.0 Benzina-GPL / 1.5 / 1.6 / 1.8 / 2.0 TDCi 90cv-163cv",
+        "f": "Diesel"
+      }
+    ],
+    "EcoSport": [
+      {
+        "e": "1.0 EcoBoost 100cv / 125cv / 140cv / 1.5 Ti-VCT 112cv / 1.5 TDCi / EcoBlue 90cv / 95cv / 100cv / 125cv",
+        "f": "Diesel"
+      }
+    ],
+    "Escort": [
+      {
+        "e": "1.3 / 1.4 / 1.6 / 1.8 / 2.0 16V Zetec / RS2000 / Cosworth / 1.8 D / TD 60cv / 70cv / 90cv",
+        "f": "Benzina"
+      }
+    ],
+    "Fiesta (Mk3 / Mk4 / Mk5 / Mk6 / Mk7 / Mk8)": [
+      {
+        "e": "1.1 / 1.3 / 1.25 16V / 1.4 16V / 1.6 16V 50cv-103cv (anni 90-2008)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.1 70cv / 75cv / 85cv / 1.25 60cv / 82cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 EcoBoost 100cv / 125cv / 140cv / ST 1.5 / 1.6 182cv-200cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 EcoBoost Hybrid 125cv / 155cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.1 / 1.4 GPL 75cv / 92cv / 96cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.4 TDCi 68cv / 70cv / 1.5 TDCi / EcoBlue 75cv / 85cv / 95cv / 120cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 TDCi 75cv / 90cv / 95cv / 1.8 D / TD / TDDi 60cv / 75cv",
+        "f": "Diesel"
+      }
+    ],
+    "Focus (Mk1 / Mk2 / Mk3 / Mk4)": [
+      {
+        "e": "1.4 / 1.6 / 1.8 / 2.0 16V Zetec / Duratec / Ti-VCT 75cv-145cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 EcoBoost / Hybrid 100cv / 125cv / 155cv / 1.5 / 1.6 EcoBoost",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 / 2.0 GPL 115cv / 145cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.5 TDCi / EcoBlue 95cv / 115cv / 120cv / 1.6 TDCi 90cv / 95cv / 109cv / 115cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.8 TDDi / TDCi 75cv / 90cv / 100cv / 115cv / 2.0 TDCi / EcoBlue 136cv / 150cv",
+        "f": "Diesel"
+      }
+    ],
+    "Fusion": [
+      {
+        "e": "1.25 75cv / 1.4 80cv / GPL / 1.6 100cv / 1.4 TDCi 68cv / 1.6 TDCi 90cv",
+        "f": "Diesel"
+      }
+    ],
+    "Ka / Ka+": [
+      {
+        "e": "1.3 Endura / Duratec 60cv / 70cv / 1.2 69cv (169A4000) / 1.2 Ti-VCT 70cv / 85cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.3 TDCi 75cv",
+        "f": "Diesel"
+      }
+    ],
+    "Kuga": [
+      {
+        "e": "1.5 / 1.6 EcoBoost 120cv / 150cv / 182cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.5 Full Hybrid (FHEV) 180cv / 190cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "2.5 Plug-in Hybrid (PHEV) 225cv / 243cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.5 / 2.0 TDCi / EcoBlue 120cv / 136cv / 140cv / 150cv / 163cv / 180cv / 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Mondeo": [
+      {
+        "e": "1.6 / 1.8 / 2.0 Zetec / Duratec / EcoBoost / Hybrid 187cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.8 TD / 1.6 / 1.8 / 2.0 / 2.2 TDCi / EcoBlue 90cv-210cv",
+        "f": "Diesel"
+      }
+    ],
+    "Puma": [
+      {
+        "e": "1.4 / 1.6 / 1.7 16V Zetec-S (anni 90-2002)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 EcoBoost Hybrid 125cv / 155cv / 170cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 EcoBlue 120cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "Puma Gen-E Elettrica 168cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Ranger": [
+      {
+        "e": "2.0 EcoBlue 170cv / 205cv / 213cv / 2.2 / 2.5 / 3.0 / 3.2 TDCi 109cv-200cv",
+        "f": "Diesel"
+      }
+    ],
+    "S-Max / Galaxy": [
+      {
+        "e": "1.5 / 1.6 / 2.0 EcoBoost / 2.5 Hybrid 190cv / 1.6 / 1.8 / 2.0 / 2.2 TDCi / EcoBlue 115cv-210cv",
+        "f": "Diesel"
+      }
+    ],
+    "Transit / Tourneo Connect / Courier / Custom": [
+      {
+        "e": "1.5 / 1.6 / 1.8 TDCi / EcoBlue 75cv / 90cv / 100cv / 110cv / 120cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.0 / 2.2 / 2.4 / 2.5 D / TD / TDDi / TDCi / EcoBlue 75cv-185cv",
+        "f": "Diesel"
+      }
     ]
   },
-  'Smart': {
-    'ForTwo / ForFour': [
-      {e:'1.0 60cv / 71cv (M281)', f:'Benzina'},
-      {e:'0.9 Turbo 90cv / 109cv Brabus', f:'Benzina'},
-      {e:'EQ Elettrica 82cv', f:'Elettrica (BEV)'}
+  "Honda": {
+    "Accord / Prelude": [
+      {
+        "e": "1.8 / 2.0 / 2.2 / 2.4 i-VTEC / Type-R / 2.2 i-CTDi / i-DTEC 140cv / 150cv / 180cv",
+        "f": "Diesel"
+      }
+    ],
+    "Civic (anni 90-2026)": [
+      {
+        "e": "1.4 / 1.5 / 1.6 / 1.8 i-VTEC / VTi 75cv-160cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 / 1.5 VTEC Turbo 126cv / 129cv / 182cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.0 e:HEV Full Hybrid 184cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.6 i-DTEC 120cv / 1.7 CTDi 100cv / 2.2 i-CTDi / i-DTEC 140cv / 150cv",
+        "f": "Diesel"
+      }
+    ],
+    "CR-V": [
+      {
+        "e": "1.5 VTEC Turbo / 2.0 / 2.4 i-VTEC / 2.0 e:HEV Full Hybrid / e:PHEV Plug-in",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.6 i-DTEC 120cv / 160cv / 2.2 i-CTDi / i-DTEC 140cv / 150cv",
+        "f": "Diesel"
+      }
+    ],
+    "HR-V / FR-V": [
+      {
+        "e": "1.5 / 1.6 / 1.7 / 1.8 i-VTEC / 1.5 e:HEV Full Hybrid 131cv / 1.6 i-DTEC 120cv / 2.2 i-CTDi",
+        "f": "Full Hybrid (HEV)"
+      }
+    ],
+    "Jazz / Insight": [
+      {
+        "e": "1.2 / 1.3 / 1.4 i-DSI / i-VTEC 78cv / 83cv / 90cv / 100cv / 102cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.3 IMA Hybrid / 1.5 e:HEV Full Hybrid 109cv / 122cv",
+        "f": "Full Hybrid (HEV)"
+      }
     ]
   },
-  'Volvo': {
-    'XC40 / XC60 / V40 / V60': [
-      {e:'T2 / T3 / B3 / B4 1.5 / 2.0 129cv / 163cv / 197cv', f:'Mild Hybrid Benzina'},
-      {e:'T4 / T5 / T6 / T8 Recharge Plug-in', f:'Plug-in Hybrid (PHEV)'},
-      {e:'D2 / D3 / D4 / B4 Diesel 120cv / 150cv / 190cv / 197cv', f:'Diesel'}
+  "Hyundai": {
+    "Accent / Coupe": [
+      {
+        "e": "1.3 / 1.5 / 1.6 / 2.0 16V Benzina / 1.5 CRDi 82cv / 110cv",
+        "f": "Benzina"
+      }
+    ],
+    "Atos": [
+      {
+        "e": "1.0 / 1.1 55cv / 58cv / 63cv (G4HC / G4HG)",
+        "f": "Benzina"
+      }
+    ],
+    "Bayon": [
+      {
+        "e": "1.2 MPI 84cv / 1.2 GPL 82cv / 1.0 T-GDI / 48V Hybrid 100cv / 120cv",
+        "f": "Mild Hybrid Benzina"
+      }
+    ],
+    "Galloper / Terracan": [
+      {
+        "e": "2.5 TD / TCI 99cv / 105cv / 2.9 CRDi 150cv / 163cv",
+        "f": "Diesel"
+      }
+    ],
+    "Getz / Matrix": [
+      {
+        "e": "1.1 63cv / 66cv / 1.3 82cv / 1.4 97cv / 1.6 105cv / 1.5 CRDi 82cv / 88cv / 102cv / 110cv",
+        "f": "Diesel"
+      }
+    ],
+    "i10": [
+      {
+        "e": "1.0 / 1.1 / 1.2 MPI 63cv / 66cv / 67cv / 69cv / 78cv / 84cv / 87cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 / 1.1 / 1.2 GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      }
+    ],
+    "i20": [
+      {
+        "e": "1.2 / 1.4 MPI 75cv / 78cv / 79cv / 84cv / 85cv / 100cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 T-GDI / 48V Hybrid 100cv / 120cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.2 GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.1 CRDi 75cv / 1.4 CRDi 75cv / 90cv",
+        "f": "Diesel"
+      }
+    ],
+    "i30 / i40": [
+      {
+        "e": "1.4 / 1.6 / 2.0 MPI / GDI / T-GDI / 48V 90cv-177cv / GPL",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 / 1.6 / 1.7 CRDi / 48V 90cv / 110cv / 115cv / 128cv / 136cv / 141cv",
+        "f": "Diesel"
+      }
+    ],
+    "Ioniq / Ioniq 5 / Ioniq 6": [
+      {
+        "e": "1.6 GDI Hybrid / Plug-in Hybrid 141cv / Elettrica 136cv / 170cv / 229cv / 325cv",
+        "f": "Full Hybrid (HEV)"
+      }
+    ],
+    "ix20": [
+      {
+        "e": "1.4 90cv / 1.6 125cv / GPL / 1.4 CRDi 77cv / 90cv / 1.6 CRDi 115cv",
+        "f": "Diesel"
+      }
+    ],
+    "ix35": [
+      {
+        "e": "1.6 GDI 135cv / 2.0 163cv / GPL / 1.7 CRDi 115cv / 2.0 CRDi 136cv / 184cv",
+        "f": "Diesel"
+      }
+    ],
+    "Kona": [
+      {
+        "e": "1.0 T-GDI / 48V 100cv / 120cv / 1.6 T-GDI 138cv / 177cv / 198cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 Full Hybrid 141cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.6 CRDi 115cv / 136cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "Kona Electric 136cv / 156cv / 204cv / 218cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Santa Fe": [
+      {
+        "e": "2.0 / 2.4 Benzina-GPL / 1.6 T-GDI Full / Plug-in Hybrid 215cv-265cv / 2.0 / 2.2 CRDi 113cv-200cv",
+        "f": "Diesel"
+      }
+    ],
+    "Tucson": [
+      {
+        "e": "1.6 GDI / T-GDI / 48V Hybrid / 2.0 Benzina-GPL 132cv-180cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 Full Hybrid 215cv / 230cv / Plug-in Hybrid 252cv / 265cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.6 / 1.7 / 2.0 CRDi / 48V 112cv-185cv",
+        "f": "Mild Hybrid Diesel"
+      }
     ]
   },
-  'Suzuki': {
-    'Swift / Ignis / Vitara / S-Cross': [
-      {e:'1.2 DualJet Hybrid 83cv / 90cv', f:'Mild Hybrid Benzina'},
-      {e:'1.4 BoosterJet Hybrid 129cv / 140cv AllGrip', f:'Mild Hybrid Benzina'},
-      {e:'1.5 DualJet Full Hybrid 115cv', f:'Full Hybrid (HEV)'}
+  "Isuzu": {
+    "D-Max": [
+      {
+        "e": "1.9 Ddi 163cv / 2.5 TD / TwinTurbo 136cv / 163cv / 3.0 TD 131cv / 163cv",
+        "f": "Diesel"
+      }
     ]
   },
-  'Mazda': {
-    'Mazda2 / Mazda3 / CX-30 / CX-5': [
-      {e:'1.5 / 2.0 / 2.5 e-Skyactiv G / X 75cv / 90cv / 122cv / 150cv / 186cv', f:'Mild Hybrid Benzina'},
-      {e:'1.5 / 1.8 / 2.2 Skyactiv-D 105cv / 116cv / 150cv / 184cv', f:'Diesel'}
+  "Iveco": {
+    "Daily": [
+      {
+        "e": "2.3 HPI / HPT / MultiJet 96cv / 106cv / 116cv / 126cv / 136cv / 156cv (F1A)",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.8 D / TD / Unijet 85cv / 106cv / 125cv / 146cv (8140)",
+        "f": "Diesel"
+      },
+      {
+        "e": "3.0 HPI / HPT 136cv / 146cv / 160cv / 170cv / 180cv / 205cv / 210cv (F1C)",
+        "f": "Diesel"
+      },
+      {
+        "e": "3.0 Natural Power CNG 136cv",
+        "f": "Metano (CNG)"
+      }
     ]
   },
-  'Tesla': {
-    'Model 3 / Model Y': [
-      {e:'RWD Standard Range', f:'Elettrica (BEV)'},
-      {e:'Long Range Dual Motor AWD', f:'Elettrica (BEV)'},
-      {e:'Performance Dual Motor AWD', f:'Elettrica (BEV)'}
+  "Jaguar": {
+    "E-Pace / F-Pace": [
+      {
+        "e": "2.0 Ingenium Benzina / P400e Plug-in Hybrid / 2.0 D150 / D163 / D180 / D200 / D204 / 3.0 D300",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "X-Type / S-Type / XE / XF": [
+      {
+        "e": "2.0 / 2.5 / 3.0 V6 Benzina / 2.0 D / 2.2 D / 2.7 D / 3.0 D 130cv-300cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Jeep": {
+    "Avenger": [
+      {
+        "e": "1.2 Turbo 100cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 e-Hybrid 100cv / 136cv 4xe",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "Elettrica 156cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Cherokee / Patriot": [
+      {
+        "e": "2.4 / 3.7 Benzina-GPL / 2.0 / 2.2 MultiJet 140cv / 170cv / 185cv / 200cv / 2.5 / 2.8 CRD",
+        "f": "Diesel"
+      }
+    ],
+    "Compass": [
+      {
+        "e": "1.3 T4 130cv / 150cv / 1.4 MultiAir 140cv / 170cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 e-Hybrid 130cv DCT7",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.3 4xe Plug-in Hybrid 190cv / 240cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.6 MultiJet 120cv / 130cv / 2.0 / 2.2 CRD / MultiJet 136cv-170cv",
+        "f": "Diesel"
+      }
+    ],
+    "Grand Cherokee": [
+      {
+        "e": "3.6 / 4.0 / 4.7 / 5.7 Benzina-GPL / 2.0 4xe Plug-in 380cv / 2.7 / 3.0 / 3.1 CRD / TD 140cv-250cv",
+        "f": "Diesel"
+      }
+    ],
+    "Renegade": [
+      {
+        "e": "1.0 T3 120cv (55282151) / 1.6 E-Torq 110cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.3 T4 150cv / 180cv / 1.4 MultiAir 140cv / 170cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 e-Hybrid 130cv DCT7",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.3 4xe Plug-in Hybrid 190cv / 240cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.6 MultiJet 120cv / 130cv / 2.0 MultiJet 140cv / 170cv 4WD",
+        "f": "Diesel"
+      }
+    ],
+    "Wrangler": [
+      {
+        "e": "2.0 Turbo / 2.4 / 3.6 / 4.0 Benzina / 2.0 4xe Plug-in Hybrid 380cv / 2.2 MultiJet / 2.5 / 2.8 CRD",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Kia": {
+    "Carens / Carnival": [
+      {
+        "e": "1.6 / 2.0 Benzina-GPL / 1.7 CRDi 115cv / 136cv / 141cv / 2.0 / 2.2 / 2.9 CRDi",
+        "f": "Diesel"
+      }
+    ],
+    "Ceed / Cee'd / ProCeed / XCeed": [
+      {
+        "e": "1.0 T-GDI / 1.4 / 1.5 / 1.6 MPI / GDI / T-GDI 90cv-204cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 GDi Plug-in Hybrid 141cv (XCeed / Ceed SW)",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.4 / 1.6 GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.4 / 1.6 CRDi / MHEV 90cv / 110cv / 115cv / 128cv / 136cv",
+        "f": "Diesel"
+      }
+    ],
+    "Niro / EV6": [
+      {
+        "e": "1.6 GDi Full Hybrid 129cv / 141cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.6 GDi Plug-in Hybrid 183cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "Niro EV / EV6 Elettrica 170cv / 204cv / 229cv / 325cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Picanto": [
+      {
+        "e": "1.0 / 1.1 / 1.2 DPI / MPI 61cv / 63cv / 65cv / 67cv / 69cv / 79cv / 84cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 / 1.1 GPL 65cv / 67cv",
+        "f": "GPL (Casa madre / Impianto)"
+      }
+    ],
+    "Rio": [
+      {
+        "e": "1.2 / 1.4 DPI / MPI 75cv / 84cv / 85cv / 109cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 T-GDI / MHEV 100cv / 120cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.2 GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.1 CRDi 75cv / 1.4 CRDi 90cv / 1.5 CRDi 110cv",
+        "f": "Diesel"
+      }
+    ],
+    "Sorento": [
+      {
+        "e": "1.6 T-GDI Full / Plug-in Hybrid 215cv-265cv / 2.2 / 2.5 CRDi 140cv-202cv",
+        "f": "Diesel"
+      }
+    ],
+    "Sportage": [
+      {
+        "e": "1.6 GDI / T-GDI / MHEV 132cv / 150cv / 160cv / 177cv / 180cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 Full Hybrid 215cv / 230cv / Plug-in Hybrid 252cv / 265cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.6 GPL 135cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.6 / 1.7 / 2.0 CRDi / MHEV 115cv-185cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "Stonic": [
+      {
+        "e": "1.2 DPI / MPI 79cv / 84cv / 1.4 MPI 100cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 T-GDI / MHEV 100cv / 120cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.2 / 1.4 GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.6 CRDi 110cv / 115cv",
+        "f": "Diesel"
+      }
+    ],
+    "Venga / Soul": [
+      {
+        "e": "1.4 / 1.6 Benzina-GPL 90cv-132cv / 1.4 / 1.6 CRDi 75cv / 90cv / 115cv / 128cv / 136cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Lancia": {
+    "Dedra": [
+      {
+        "e": "1.6 / 1.8 / 2.0 / Integrale Benzina / 1.9 TD 90cv",
+        "f": "Benzina"
+      }
+    ],
+    "Delta (1a / 2a / 3a serie)": [
+      {
+        "e": "1.6 / 1.8 / 2.0 HF Turbo / Integrale (anni 90)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 T-Jet 120cv / 150cv / MultiAir 140cv / 1.8 Di TurboJet 200cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 T-Jet GPL 120cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.6 MultiJet 105cv / 120cv / 1.9 TD / 2.0 MultiJet 165cv / 1.9 TwinTurbo 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Kappa / Thema / Thesis": [
+      {
+        "e": "2.0 / 2.0 Turbo / 2.4 / 3.0 / 3.2 V6 / 3.6 V6 Benzina",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.4 TD / 2.4 JTD / MultiJet 136cv-185cv / 3.0 V6 MultiJet 190cv / 239cv",
+        "f": "Diesel"
+      }
+    ],
+    "Lybra": [
+      {
+        "e": "1.6 16V 103cv / 1.8 16V 131cv / 2.0 20V 150cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.9 JTD 105cv / 110cv / 115cv / 2.4 JTD 135cv / 140cv / 150cv",
+        "f": "Diesel"
+      }
+    ],
+    "Musa": [
+      {
+        "e": "1.4 8V 77cv / 1.4 16V 95cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 Ecochic GPL 77cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.3 MultiJet 70cv / 90cv / 95cv / 1.6 MultiJet 120cv / 1.9 MultiJet 100cv",
+        "f": "Diesel"
+      }
+    ],
+    "Phedra / Zeta / Voyager": [
+      {
+        "e": "2.0 / 2.2 JTD / MultiJet 109cv / 120cv / 128cv / 136cv / 170cv / 2.8 CRD 163cv-178cv",
+        "f": "Diesel"
+      }
+    ],
+    "Y / Y10 (1990-2003)": [
+      {
+        "e": "1.1 Fire 50cv / 54cv / 1.2 8V 60cv (176B4000 / 188A4000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 16V 80cv / 86cv Elefantino Rosso (176B9000 / 188A5000)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 12V 80cv",
+        "f": "Benzina"
+      }
+    ],
+    "Ypsilon (843 / 312 / Nuova)": [
+      {
+        "e": "1.2 8V 60cv / 69cv (188A4000 / 169A4000) / 1.2 16V 80cv / 1.4 8V 77cv / 16V 95cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 FireFly Hybrid 70cv / 1.2 Hybrid 100cv eDCT (Nuova Ypsilon)",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "0.9 TwinAir 85cv / Metano 80cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 Ecochic GPL 69cv / 1.4 Ecochic GPL 77cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.3 MultiJet 70cv / 75cv / 90cv / 95cv / 105cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "Elettrica 156cv",
+        "f": "Elettrica (BEV)"
+      }
+    ]
+  },
+  "Land Rover": {
+    "Defender": [
+      {
+        "e": "2.5 TDI / Td5 122cv / 2.4 TDCi 122cv / 2.2 TDCi 122cv / 2.0 / 3.0 D200 / D250 / D300",
+        "f": "Diesel"
+      }
+    ],
+    "Discovery / Discovery Sport": [
+      {
+        "e": "2.0 / 2.2 eD4 / TD4 / SD4 / D150 / D165 / D180 / D200 / 2.5 Td5 / 2.7 / 3.0 TDV6 / SDV6",
+        "f": "Diesel"
+      }
+    ],
+    "Freelander (1 / 2)": [
+      {
+        "e": "1.8 16V 117cv / 120cv / 2.0 Di / TD4 98cv / 112cv / 2.2 TD4 / eD4 / SD4 150cv-190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Range Rover / Sport / Velar": [
+      {
+        "e": "2.0 / 3.0 P400e / P440e Plug-in Hybrid / 2.0 D180 / D204 / D240 / 3.0 / 3.6 / 4.4 TDV6 / SDV6 / TDV8",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "Range Rover Evoque": [
+      {
+        "e": "2.0 Si4 / P200 / P250 / P300e Plug-in Hybrid 309cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "2.0 / 2.2 eD4 / TD4 / SD4 / D150 / D165 / D180 / D200 / D204",
+        "f": "Mild Hybrid Diesel"
+      }
+    ]
+  },
+  "Lexus": {
+    "CT / IS / UX / NX / RX": [
+      {
+        "e": "CT 200h / IS 300h / UX 250h / 300h / NX 300h / 350h / 450h+ / RX 450h Full & Plug-in Hybrid",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "IS 200 / IS 220d / IS 250",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Mazda": {
+    "CX-3": [
+      {
+        "e": "2.0 Skyactiv-G 120cv / 121cv / 150cv / 1.5 / 1.8 Skyactiv-D 105cv / 116cv",
+        "f": "Benzina"
+      }
+    ],
+    "CX-30": [
+      {
+        "e": "2.0 / 2.5 e-Skyactiv G / X 122cv / 140cv / 150cv / 186cv / 1.8 Skyactiv-D 116cv",
+        "f": "Mild Hybrid Benzina"
+      }
+    ],
+    "CX-5 / CX-60": [
+      {
+        "e": "2.0 / 2.5 Skyactiv-G / e-Skyactiv G / 2.5 Plug-in Hybrid 327cv (CX-60)",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "2.2 Skyactiv-D 150cv / 175cv / 184cv / 3.3 e-Skyactiv D 200cv / 254cv (CX-60)",
+        "f": "Diesel"
+      }
+    ],
+    "Mazda2 / Demio": [
+      {
+        "e": "1.25 / 1.3 / 1.4 / 1.5 Skyactiv-G / Hybrid 63cv-116cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 / 1.5 / 1.6 MZ-CD / Skyactiv-D 68cv / 90cv / 95cv / 105cv",
+        "f": "Diesel"
+      }
+    ],
+    "Mazda3 / 323": [
+      {
+        "e": "1.3 / 1.5 / 1.6 / 1.8 / 2.0 / 2.5 Benzina / e-Skyactiv G / X 73cv-186cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 / 1.6 / 1.8 / 2.0 / 2.2 MZ-CD / Skyactiv-D 90cv-184cv",
+        "f": "Diesel"
+      }
+    ],
+    "Mazda5 / Premacy": [
+      {
+        "e": "1.8 / 2.0 Benzina-GPL / 1.6 MZ-CD 115cv / 2.0 CD / MZR-CD 110cv / 143cv",
+        "f": "Diesel"
+      }
+    ],
+    "Mazda6 / 626": [
+      {
+        "e": "1.8 / 2.0 / 2.5 Benzina / Skyactiv-G / 2.0 / 2.2 TD / MZR-CD / Skyactiv-D 90cv-184cv",
+        "f": "Diesel"
+      }
+    ],
+    "MX-5 (NA / NB / NC / ND)": [
+      {
+        "e": "1.5 / 1.6 / 1.8 / 2.0 16V 90cv-184cv",
+        "f": "Benzina"
+      }
+    ]
+  },
+  "Mercedes-Benz": {
+    "Citan": [
+      {
+        "e": "108 / 109 / 110 / 111 / 112 CDI 75cv / 90cv / 95cv / 110cv / 116cv",
+        "f": "Diesel"
+      }
+    ],
+    "CLA": [
+      {
+        "e": "CLA 180 / 200 1.3 / 1.6 Turbo 122cv / 136cv / 156cv / 163cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "CLA 250 e Plug-in Hybrid 218cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "CLA 180 d / 200 d / 220 d 109cv / 116cv / 136cv / 150cv / 177cv / 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Classe A (W168 / W169 / W176 / W177)": [
+      {
+        "e": "A 140 / A 150 / A 160 / A 170 / A 180 / A 200 82cv-163cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "A 250 e Plug-in Hybrid 218cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "A 160 CDI / A 170 CDI / A 180 CDI / A 200 CDI 60cv-140cv (OM668 / OM640)",
+        "f": "Diesel"
+      },
+      {
+        "e": "A 160 d / A 180 d / A 200 d / A 220 d 90cv-190cv (OM607 / OM608 / OM651 / OM654)",
+        "f": "Diesel"
+      }
+    ],
+    "Classe B (W245 / W246 / W247)": [
+      {
+        "e": "B 150 / B 160 / B 170 / B 180 / B 200 95cv-163cv / B 170/200 NGT Metano",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "B 180 CDI / d / B 200 CDI / d 109cv-190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Classe C (W202 / W203 / W204 / W205 / W206)": [
+      {
+        "e": "C 180 / C 200 / C 220 / C 300 122cv-258cv (Kompressor / CGI / EQ Boost)",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "C 300 e / C 300 de / C 350 e Plug-in Hybrid",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "C 200 / C 220 / C 250 / C 300 D / TD / CDI / d 75cv-265cv (OM604 / OM611 / OM646 / OM651 / OM654)",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "Classe E (W210 / W211 / W212 / W213)": [
+      {
+        "e": "E 200 / E 240 / E 280 / E 320 / E 350 136cv-306cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "E 300 e / E 300 de / E 350 e Plug-in Hybrid",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "E 200 / E 220 / E 250 / E 270 / E 300 / E 320 / E 350 D / TD / CDI / d 95cv-265cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "CLK / SLK / SLC": [
+      {
+        "e": "200 / 200 Kompressor / 230 Kompressor / 280 / 320 / 350 136cv-306cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "220 CDI / 250 d / 270 CDI / 320 CDI 150cv-224cv",
+        "f": "Diesel"
+      }
+    ],
+    "GLA": [
+      {
+        "e": "GLA 180 / 200 / 250 122cv-224cv / GLA 250 e Plug-in Hybrid 218cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "GLA 180 d / 200 CDI / d / 220 CDI / d 109cv-190cv",
+        "f": "Diesel"
+      }
+    ],
+    "GLB / GLK": [
+      {
+        "e": "180 / 200 / 250 136cv-224cv / 180 d / 200 CDI / d / 220 CDI / d / 250 CDI 116cv-204cv",
+        "f": "Diesel"
+      }
+    ],
+    "GLC": [
+      {
+        "e": "200 / 250 / 300 4MATIC 197cv-258cv / 300 e / 300 de / 350 e Plug-in Hybrid",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "200 d / 220 d / 250 d / 300 d 163cv-269cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "ML / GLE": [
+      {
+        "e": "250 CDI / d / 270 CDI / 280 CDI / 300 d / 320 CDI / 350 CDI / d 163cv-272cv",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "Sprinter": [
+      {
+        "e": "208 / 211 / 213 / 214 / 308 / 311 / 313 / 314 / 315 / 316 / 317 / 319 CDI 82cv-190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Vito / Viano / Classe V": [
+      {
+        "e": "108 / 109 / 110 / 111 / 113 / 114 / 115 / 116 / 119 / 200 / 220 / 250 / 300 CDI / d 82cv-239cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "MG": {
+    "MG HS / EHS": [
+      {
+        "e": "1.5 T-GDI 162cv / 170cv / EHS Plug-in Hybrid 258cv / 307cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      }
+    ],
+    "MG ZS / MG ZS EV": [
+      {
+        "e": "1.0 T-GDI 111cv / 1.5 VTi-tech 106cv / Hybrid+ 197cv / ZS EV Elettrica 156cv / 177cv",
+        "f": "Benzina"
+      }
+    ],
+    "MG3 / MG4 / MG5": [
+      {
+        "e": "MG3 Hybrid+ 1.5 Full Hybrid 195cv / MG4 / MG5 Elettrica 156cv / 170cv / 204cv",
+        "f": "Full Hybrid (HEV)"
+      }
+    ]
+  },
+  "Mini": {
+    "Clubman": [
+      {
+        "e": "One / Cooper / Cooper S 1.5 / 1.6 / 2.0 102cv-192cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "One D / Cooper D / SD 1.5 / 1.6 / 2.0 112cv / 116cv / 150cv / 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Countryman (R60 / F60 / U25)": [
+      {
+        "e": "One / Cooper 1.5 / 1.6 98cv / 102cv / 122cv / 136cv / 170cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "Cooper S / JCW 1.6 / 2.0 178cv / 184cv / 190cv / 192cv / 300cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "Cooper SE ALL4 Plug-in Hybrid 220cv / 224cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "One D / Cooper D / SD 1.5 / 1.6 / 2.0 90cv / 112cv / 116cv / 143cv / 150cv / 190cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "Countryman E / SE ALL4 Elettrica 204cv / 313cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "One / Cooper (R50 / R53 / R56 / F55 / F56)": [
+      {
+        "e": "1.4 / 1.6 One / Cooper / Cooper S (R50/R53/R56) 75cv-184cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 / 1.5 Turbo One / Cooper 75cv / 102cv / 136cv / 156cv (B38)",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.0 Cooper S / JCW 178cv / 192cv / 204cv / 231cv (B48)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 D 75cv / 88cv (1ND-TV) / 1.6 One D / Cooper D 90cv / 109cv / 112cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.5 One D / Cooper D 95cv / 116cv (B37) / 2.0 Cooper SD 143cv / 170cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "Cooper SE Elettrica 184cv / 218cv",
+        "f": "Elettrica (BEV)"
+      }
+    ]
+  },
+  "Mitsubishi": {
+    "ASX / Eclipse Cross": [
+      {
+        "e": "1.6 / 2.0 MIVEC Benzina-GPL / 1.5 Turbo / 2.4 PHEV Plug-in Hybrid 188cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.6 DI-D 114cv / 1.8 DI-D 116cv / 150cv / 2.2 DI-D 150cv",
+        "f": "Diesel"
+      }
+    ],
+    "Colt / Space Star / Lancer": [
+      {
+        "e": "1.0 / 1.1 / 1.2 / 1.3 / 1.5 / 1.6 Benzina-GPL 71cv-117cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 DI-D 68cv / 95cv / 1.8 DI-D / 2.0 DI-D 140cv / 150cv",
+        "f": "Diesel"
+      }
+    ],
+    "Outlander": [
+      {
+        "e": "2.0 / 2.4 MIVEC Benzina-GPL / 2.0 / 2.4 PHEV Plug-in Hybrid 203cv / 224cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "2.0 DI-D 140cv / 2.2 DI-D 150cv / 156cv / 177cv",
+        "f": "Diesel"
+      }
+    ],
+    "Pajero / L200": [
+      {
+        "e": "2.4 / 2.5 TD / DI-D 99cv / 115cv / 133cv / 136cv / 154cv / 178cv / 181cv / 3.2 DI-D 160cv-200cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Nissan": {
+    "Almera / Primera": [
+      {
+        "e": "1.4 / 1.5 / 1.6 / 1.8 / 2.0 Benzina-GPL 87cv-140cv / 1.5 / 1.9 / 2.0 / 2.2 dCi / TD",
+        "f": "Diesel"
+      }
+    ],
+    "Juke": [
+      {
+        "e": "1.6 94cv / 112cv / 117cv / GPL / 1.2 DIG-T 115cv / 1.0 DIG-T 114cv / 117cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 Hybrid 143cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.5 dCi 110cv (K9K)",
+        "f": "Diesel"
+      }
+    ],
+    "Leaf / Ariya": [
+      {
+        "e": "Leaf 24 / 30 / 40 / 62 kWh (109cv / 150cv / 218cv) / Ariya",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Micra (K11 / K12 / K13 / K14)": [
+      {
+        "e": "1.0 / 1.3 16V 54cv / 60cv / 75cv (Micra K11 anni 90-2002)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 / 1.2 / 1.4 16V 65cv / 80cv / 88cv / 98cv (K12 / K13) / GPL",
+        "f": "Benzina"
+      },
+      {
+        "e": "0.9 IG-T 90cv / 1.0 IG-T 71cv / 92cv / 100cv / 117cv (K14)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 dCi 65cv / 68cv / 82cv / 86cv / 90cv (K9K)",
+        "f": "Diesel"
+      }
+    ],
+    "Navara / Terrano / Patrol": [
+      {
+        "e": "2.3 / 2.5 / 2.7 / 3.0 TD / Di / dCi 100cv-231cv",
+        "f": "Diesel"
+      }
+    ],
+    "Note / Pulsar": [
+      {
+        "e": "1.2 / 1.2 DIG-S / 1.4 / 1.6 Benzina-GPL 80cv-115cv / 1.5 dCi 68cv / 86cv / 90cv / 110cv (K9K)",
+        "f": "Diesel"
+      }
+    ],
+    "NV200 / Primastar / NV300 / NV400": [
+      {
+        "e": "1.5 dCi 86cv / 90cv / 110cv / 1.6 / 1.9 / 2.0 / 2.3 / 2.5 dCi 82cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "Qashqai (J10 / J11 / J12)": [
+      {
+        "e": "1.6 115cv / 117cv / GPL / 2.0 141cv / 1.2 DIG-T 115cv / 1.6 DIG-T 163cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.3 DIG-T Mild Hybrid 140cv / 158cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 e-Power 190cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.5 dCi 106cv / 110cv / 115cv (K9K) / 1.6 / 1.7 / 2.0 dCi 130cv / 150cv",
+        "f": "Diesel"
+      }
+    ],
+    "X-Trail": [
+      {
+        "e": "1.3 DIG-T 158cv / 1.5 Mild Hybrid 163cv / e-Power 204cv / 213cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.6 / 1.7 / 2.0 / 2.2 dCi 114cv / 130cv / 136cv / 150cv / 173cv / 177cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Opel": {
+    "Adam": [
+      {
+        "e": "1.2 69cv / 1.4 87cv / 100cv / 1.4 GPL 87cv / 1.0 Turbo 90cv / 115cv",
+        "f": "GPL (Casa madre / Impianto)"
+      }
+    ],
+    "Agila / Karl": [
+      {
+        "e": "1.0 / 1.2 Benzina-GPL 58cv-94cv / 1.3 CDTI 70cv / 75cv (Agila)",
+        "f": "Benzina"
+      }
+    ],
+    "Astra (F / G / H / J / K / L)": [
+      {
+        "e": "1.4 / 1.6 / 1.8 / 2.0 8V / 16V Ecotec 60cv-140cv (anni 90-2010)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 / 1.2 / 1.4 / 1.6 Turbo 100cv-200cv / 1.2 Hybrid 136cv eDCT6",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 / 1.6 GPL 90cv / 115cv / 140cv / 1.4 Turbo Metano 110cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.6 Plug-in Hybrid 180cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.3 CDTI 90cv / 1.5 Diesel 105cv / 122cv / 130cv / 1.6 CDTI 95cv / 110cv / 136cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.7 D / TD / DTI / CDTI 68cv-130cv / 1.9 CDTI 100cv-150cv / 2.0 DTI / CDTI 82cv-165cv",
+        "f": "Diesel"
+      }
+    ],
+    "Combo": [
+      {
+        "e": "1.4 / 1.6 Benzina / Metano / 1.3 CDTI 70cv / 75cv / 90cv / 1.5 Diesel 75cv-130cv / 1.6 / 1.7 CDTI",
+        "f": "Diesel"
+      }
+    ],
+    "Corsa (B / C / D / E / F)": [
+      {
+        "e": "1.0 12V / 1.2 8V/16V / 1.4 8V/16V 45cv-90cv (Corsa B / C anni 90-2006)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 / 1.2 / 1.4 60cv / 69cv / 70cv / 75cv / 80cv / 85cv / 90cv / 100cv (Corsa D / E)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 75cv / Turbo 100cv / 130cv / 1.2 Hybrid 100cv / 136cv eDCT6 (Corsa F)",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.2 / 1.4 GPL 75cv / 80cv / 85cv / 90cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.3 CDTI 70cv / 75cv / 90cv / 95cv / 1.5 Diesel 102cv / 1.5 D / 1.7 D / DTI / CDTI",
+        "f": "Diesel"
+      },
+      {
+        "e": "Corsa-e Elettrica 136cv / 156cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Crossland / Crossland X": [
+      {
+        "e": "1.2 81cv / 83cv / Turbo 110cv / 130cv / GPL / 1.5 Diesel 102cv / 110cv / 120cv / 1.6 Diesel 99cv / 120cv",
+        "f": "Diesel"
+      }
+    ],
+    "Frontera / Antara": [
+      {
+        "e": "2.0 / 2.2 / 2.4 Benzina-GPL / 2.0 / 2.2 CDTI / DTI 115cv-184cv",
+        "f": "Diesel"
+      }
+    ],
+    "Grandland / Grandland X": [
+      {
+        "e": "1.2 Turbo 130cv / Hybrid 136cv / 1.6 Plug-in Hybrid 225cv / 300cv / 1.5 Diesel 130cv",
+        "f": "Mild Hybrid Benzina"
+      }
+    ],
+    "Insignia": [
+      {
+        "e": "1.4 / 1.5 / 1.6 / 1.8 / 2.0 Turbo 140cv-260cv / 1.6 / 2.0 CDTI 110cv-210cv",
+        "f": "Diesel"
+      }
+    ],
+    "Meriva (A / B)": [
+      {
+        "e": "1.4 / 1.6 / 1.8 Benzina 87cv-140cv / 1.4 Turbo GPL 120cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.3 CDTI 70cv / 75cv / 95cv / 1.6 CDTI 95cv / 110cv / 136cv / 1.7 DTI / CDTI 75cv-130cv",
+        "f": "Diesel"
+      }
+    ],
+    "Mokka / Mokka X": [
+      {
+        "e": "1.4 Turbo 140cv / GPL / 1.6 115cv / 1.2 Turbo 100cv / 130cv / Hybrid 136cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 Diesel 110cv / 1.6 CDTI 110cv / 136cv / 1.7 CDTI 130cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "Mokka-e Elettrica 136cv / 156cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Tigra / Calibra": [
+      {
+        "e": "1.4 16V 90cv / 1.6 16V 106cv / 1.8 16V 125cv / 2.0 8V / 16V / Turbo",
+        "f": "Benzina"
+      }
+    ],
+    "Vectra / Omega": [
+      {
+        "e": "1.6 / 1.8 / 2.0 / 2.2 / 2.5 V6 Benzina / 1.7 TD / 1.9 CDTI / 2.0 / 2.2 DTI / 2.5 TD",
+        "f": "Diesel"
+      }
+    ],
+    "Vivaro / Movano": [
+      {
+        "e": "1.5 / 1.6 / 1.9 / 2.0 / 2.2 / 2.3 / 2.5 DTI / CDTI / BlueHDi 82cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "Zafira (A / B / C)": [
+      {
+        "e": "1.6 / 1.8 / 2.2 Benzina / 1.6 EcoM / Turbo Metano 94cv / 150cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.6 / 1.7 / 1.9 / 2.0 / 2.2 DTI / CDTI 82cv-170cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Peugeot": {
+    "1007": [
+      {
+        "e": "1.4 73cv / 1.4 16V 88cv / 1.6 16V 109cv / 1.4 HDi 68cv / 1.6 HDi 109cv",
+        "f": "Diesel"
+      }
+    ],
+    "106": [
+      {
+        "e": "1.0 / 1.1 45cv / 54cv / 60cv / 1.4 75cv / 1.6 Rallye / 16V 90cv-118cv / 1.5 D 54cv / 57cv",
+        "f": "Benzina"
+      }
+    ],
+    "107 / 108": [
+      {
+        "e": "1.0 68cv / 72cv (1KR-FE / CFB) / 1.2 PureTech 82cv / 1.4 HDi 54cv",
+        "f": "Benzina"
+      }
+    ],
+    "2008": [
+      {
+        "e": "1.2 PureTech 82cv / 100cv / 110cv / 130cv / 1.6 VTi 120cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 Hybrid 136cv e-DCS6",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 BlueHDi 102cv / 110cv / 120cv / 130cv / 1.6 e-HDi / BlueHDi 75cv-120cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "e-2008 Elettrica 136cv / 156cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "205": [
+      {
+        "e": "1.0 / 1.1 / 1.4 / 1.6 / 1.9 GTI / 1.8 D / 1.8 TD / 1.9 D",
+        "f": "Benzina"
+      }
+    ],
+    "206 / 206+": [
+      {
+        "e": "1.1 60cv (HFZ / HFX) / 1.4 8V 75cv (KFW) / 1.4 16V 88cv / 1.6 16V 109cv / 2.0 S16",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.1 / 1.4 GPL 60cv / 75cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.4 HDi 68cv (8HX / 8HZ) / 1.6 HDi 109cv / 1.9 D 69cv (WJY) / 2.0 HDi 90cv",
+        "f": "Diesel"
+      }
+    ],
+    "207": [
+      {
+        "e": "1.4 8V 73cv / 1.4 16V 88cv / 1.4 VTi 95cv / 1.6 VTi 120cv / 1.6 THP 150cv-175cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 GPL 73cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.4 HDi 68cv (8HZ / 8HR) / 1.6 HDi 90cv / 92cv / 109cv / 112cv",
+        "f": "Diesel"
+      }
+    ],
+    "208": [
+      {
+        "e": "1.0 VTi 68cv / 1.2 VTi / PureTech 75cv / 82cv / 100cv / 110cv / 130cv (HM01 / HN05)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 Hybrid 100cv / 136cv e-DCS6",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 HDi 68cv / 1.5 BlueHDi 100cv / 102cv (YH01) / 1.6 e-HDi / BlueHDi 75cv-120cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "e-208 Elettrica 136cv / 156cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "3008": [
+      {
+        "e": "1.6 VTi / THP 120cv / 156cv / 165cv / 1.2 PureTech 130cv / Hybrid 136cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 Plug-in Hybrid 180cv / 225cv / 300cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.5 BlueHDi 130cv (YH01) / 1.6 HDi 109cv-120cv / 2.0 HDi / BlueHDi 150cv / 180cv",
+        "f": "Diesel"
+      }
+    ],
+    "306": [
+      {
+        "e": "1.1 / 1.4 / 1.6 / 1.8 / 2.0 16V / 1.9 D 68cv / 1.9 TD 90cv / 2.0 HDi 90cv",
+        "f": "Diesel"
+      }
+    ],
+    "307": [
+      {
+        "e": "1.4 8V / 16V 75cv / 88cv / 1.6 16V 109cv / 2.0 16V 136cv / 140cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 HDi 68cv / 1.6 HDi 90cv / 109cv / 2.0 HDi 90cv / 107cv / 136cv",
+        "f": "Diesel"
+      }
+    ],
+    "308": [
+      {
+        "e": "1.4 / 1.6 VTi / THP / 1.2 PureTech 82cv / 110cv / 130cv / Hybrid 136cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 Plug-in Hybrid 180cv / 225cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.5 BlueHDi 100cv / 130cv / 1.6 HDi / BlueHDi 90cv-120cv / 2.0 HDi / BlueHDi 136cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "406 / 407": [
+      {
+        "e": "1.6 / 1.8 / 2.0 / 2.2 16V Benzina / 1.9 TD / 2.0 HDi 90cv-140cv / 2.2 HDi / 2.7 HDi",
+        "f": "Diesel"
+      }
+    ],
+    "5008": [
+      {
+        "e": "1.6 VTi / THP / 1.2 PureTech 130cv / Hybrid 136cv / 1.5 BlueHDi 130cv / 1.6 / 2.0 HDi 110cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "508": [
+      {
+        "e": "1.6 VTi / THP / PureTech / Hybrid 180cv / 225cv / 360cv / 1.5 BlueHDi 130cv / 1.6 / 2.0 / 2.2 HDi",
+        "f": "Diesel"
+      }
+    ],
+    "806 / 807": [
+      {
+        "e": "2.0 / 2.2 16V Benzina / 1.9 TD / 2.0 HDi 107cv-163cv / 2.2 HDi 128cv / 170cv",
+        "f": "Diesel"
+      }
+    ],
+    "Bipper": [
+      {
+        "e": "1.4 73cv / 1.3 HDi 75cv / 80cv / 1.4 HDi 68cv",
+        "f": "Diesel"
+      }
+    ],
+    "Expert / Boxer / Traveller": [
+      {
+        "e": "1.5 BlueHDi 100cv / 120cv / 1.6 HDi 90cv / 115cv / 1.9 D / 2.0 / 2.2 HDi / BlueHDi 90cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "Partner / Ranch / Rifter": [
+      {
+        "e": "1.4 / 1.6 16V / 1.2 PureTech 110cv / 1.5 BlueHDi 75cv-130cv / 1.6 HDi 75cv-120cv / 1.9 D / 2.0 HDi",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Piaggio": {
+    "Porter / Porter NP6": [
+      {
+        "e": "1.0 / 1.3 16V / MultiTech / Eco-Power GPL / Green-Power Metano / 1.5 CombiFuel (NP6)",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.2 D120 / 1.4 D Diesel",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Porsche": {
+    "911 / Boxster / Cayman / Panamera": [
+      {
+        "e": "2.0 / 2.5 / 2.7 / 3.0 / 3.4 / 3.6 / 3.8 / 4.0 Benzina / E-Hybrid",
+        "f": "Benzina"
+      }
+    ],
+    "Cayenne / Macan": [
+      {
+        "e": "2.0 / 2.9 / 3.0 / 3.6 / 4.8 Benzina / S / Turbo / E-Hybrid Plug-in / 3.0 / 4.2 Diesel",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Renault": {
+    "Arkana": [
+      {
+        "e": "1.3 TCe Mild Hybrid 140cv / 160cv / 1.6 E-Tech Full Hybrid 145cv",
+        "f": "Full Hybrid (HEV)"
+      }
+    ],
+    "Austral / Symbioz / Rafale": [
+      {
+        "e": "1.2 / 1.3 TCe Mild Hybrid 130cv / 140cv / 160cv / 1.2 / 1.6 E-Tech Full Hybrid 145cv / 200cv / 300cv",
+        "f": "Full Hybrid (HEV)"
+      }
+    ],
+    "Captur": [
+      {
+        "e": "0.9 TCe 90cv / 1.0 TCe 90cv / 100cv / 1.2 TCe 120cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 TCe 100cv GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.3 TCe / Mild Hybrid 130cv / 140cv / 150cv / 160cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 E-Tech Full Hybrid 145cv / Plug-in 160cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.5 dCi / Blue dCi 90cv / 95cv / 110cv / 115cv (K9K)",
+        "f": "Diesel"
+      }
+    ],
+    "Clio (I / II / III / IV / V)": [
+      {
+        "e": "1.2 / 1.4 / 1.6 / 1.8 16V / Williams 54cv-150cv (Clio 1 & 2 anni 90-2005)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 8V / 16V 58cv / 75cv (D7F / D4F) / 1.2 TCe 100cv / 120cv / 1.4 / 1.6 16V",
+        "f": "Benzina"
+      },
+      {
+        "e": "0.9 TCe 75cv / 90cv / 1.0 SCe 65cv / 75cv / 1.0 TCe 90cv / 100cv (H4D)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 GPL 75cv / 0.9 TCe GPL 90cv / 1.0 TCe 100cv GPL",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.6 E-Tech Full Hybrid 140cv / 145cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.5 dCi / Blue dCi 65cv / 68cv / 75cv / 82cv / 85cv / 90cv / 100cv / 105cv / 115cv (K9K)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.9 D 55cv / 64cv (F8Q) / 1.9 dTi 80cv",
+        "f": "Diesel"
+      }
+    ],
+    "Espace": [
+      {
+        "e": "2.0 16V / Turbo Benzina / 1.6 dCi 130cv / 160cv / 1.9 / 2.0 / 2.2 dCi / dT 115cv-200cv",
+        "f": "Diesel"
+      }
+    ],
+    "Kadjar / Koleos": [
+      {
+        "e": "1.2 TCe 130cv / 1.3 TCe 140cv / 160cv / 1.5 dCi / Blue dCi 110cv / 115cv / 1.6 / 1.7 / 2.0 dCi 130cv-190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Kangoo": [
+      {
+        "e": "1.2 / 1.4 / 1.6 Benzina-GPL / 1.5 dCi / Blue dCi 60cv-115cv (K9K) / 1.9 D / dTi / dCi",
+        "f": "Diesel"
+      }
+    ],
+    "Laguna": [
+      {
+        "e": "1.6 / 1.8 / 2.0 16V / Turbo Benzina-GPL / 1.5 dCi 110cv / 1.9 dTi / dCi 100cv-130cv / 2.0 / 2.2 dCi",
+        "f": "Diesel"
+      }
+    ],
+    "Master": [
+      {
+        "e": "2.2 / 2.3 / 2.5 / 2.8 dTi / dCi / Blue dCi 80cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "Modus / Grand Modus": [
+      {
+        "e": "1.2 16V 65cv / 75cv (D4F) / 1.2 TCe 100cv / 1.4 / 1.6 16V / 1.5 dCi 65cv / 68cv / 82cv / 86cv / 106cv",
+        "f": "Diesel"
+      }
+    ],
+    "Mégane (I / II / III / IV / E-Tech)": [
+      {
+        "e": "1.4 / 1.6 / 2.0 8V/16V 75cv-147cv (Mégane 1 & 2 anni 90-2008)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 TCe 115cv / 130cv / 1.3 TCe 115cv / 140cv / 160cv / 1.4 TCe 130cv / 1.6 110cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 E-Tech Plug-in Hybrid 160cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.5 dCi / Blue dCi 82cv / 86cv / 90cv / 95cv / 101cv / 106cv / 110cv / 115cv (K9K)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 dCi 130cv / 165cv / 1.9 D / dTi / dCi 64cv-130cv / 2.0 dCi 150cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "Mégane E-Tech Electric 130cv / 220cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "R4 / R5 / R19 / R21 (storiche anni 90)": [
+      {
+        "e": "0.9 / 1.1 / 1.2 / 1.4 / 1.7 / 1.8 16V Benzina / 1.6 D / 1.9 D / TD",
+        "f": "Benzina"
+      }
+    ],
+    "Scénic / Grand Scénic (I / II / III / IV)": [
+      {
+        "e": "1.2 TCe 115cv / 130cv / 1.3 TCe 115cv / 140cv / 160cv / 1.4 / 1.6 / 2.0 16V 95cv-140cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 dCi 82cv / 86cv / 95cv / 101cv / 106cv / 110cv (K9K)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 dCi 130cv / 1.7 Blue dCi 120cv / 150cv / 1.9 dTi / dCi 80cv-130cv / 2.0 dCi",
+        "f": "Diesel"
+      }
+    ],
+    "Trafic": [
+      {
+        "e": "1.6 dCi 90cv / 95cv / 115cv / 120cv / 125cv / 145cv / 1.9 / 2.0 / 2.5 dCi / Blue dCi 82cv-170cv",
+        "f": "Diesel"
+      }
+    ],
+    "Twingo (I / II / III)": [
+      {
+        "e": "1.2 8V 55cv / 58cv / 60cv (C3G / D7F) / 1.2 16V 75cv (D4F)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 SCe 65cv / 70cv / 75cv / 0.9 TCe 90cv / 93cv / 110cv / GPL",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 dCi 64cv / 75cv / 85cv (K9K)",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Rover / MG (storiche)": {
+    "MG ZR / ZS / ZT / TF": [
+      {
+        "e": "1.4 / 1.6 / 1.8 / 2.5 V6 Benzina / 2.0 TD / CDT 101cv / 113cv / 131cv",
+        "f": "Benzina"
+      }
+    ],
+    "Rover 25 / 45 / 75 / 200 / 400 / 600": [
+      {
+        "e": "1.1 / 1.4 / 1.6 / 1.8 / 2.0 Benzina Serie K / 2.0 TD / IDT / CDT 86cv / 101cv / 116cv / 131cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Saab": {
+    "9-3 / 9-5 / 900": [
+      {
+        "e": "1.8t / 2.0t / 2.0 Turbo / 2.3t Benzina / 1.9 TiD / TTiD 120cv / 150cv / 180cv / 2.2 TiD",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Seat": {
+    "Alhambra": [
+      {
+        "e": "1.4 TSI / 1.8 T / 2.0 Benzina-GPL / 1.9 TDI 90cv / 115cv / 130cv / 150cv / 2.0 TDI 115cv-184cv",
+        "f": "Diesel"
+      }
+    ],
+    "Altea / Altea XL": [
+      {
+        "e": "1.2 / 1.4 / 1.6 / 1.8 / 2.0 Benzina-GPL / TSI / 1.6 TDI 90cv / 105cv / 1.9 TDI 90cv / 105cv / 2.0 TDI 140cv / 170cv",
+        "f": "Diesel"
+      }
+    ],
+    "Arona": [
+      {
+        "e": "1.0 TSI 95cv / 110cv / 115cv / 1.5 TSI 150cv DSG / 1.0 TGI Metano 90cv / 1.6 TDI 95cv / 115cv",
+        "f": "Benzina"
+      }
+    ],
+    "Arosa / Marbella": [
+      {
+        "e": "0.9 / 1.0 / 1.4 Benzina 39cv-75cv / 1.4 TDI 75cv / 1.7 SDI 60cv",
+        "f": "Benzina"
+      }
+    ],
+    "Ateca": [
+      {
+        "e": "1.0 TSI 110cv / 115cv / 1.4 / 1.5 TSI 150cv DSG / 1.6 TDI 115cv / 2.0 TDI 115cv / 150cv / 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Cordoba": [
+      {
+        "e": "1.0 / 1.2 / 1.4 / 1.6 / 1.8 / 2.0 Benzina / 1.4 TDI 70cv / 75cv / 80cv / 1.9 D / SDI / TD / TDI 64cv-130cv",
+        "f": "Diesel"
+      }
+    ],
+    "Ibiza (6K / 6L / 6J / 6F)": [
+      {
+        "e": "1.0 / 1.2 / 1.4 / 1.6 / 1.8 / 2.0 50cv-150cv (anni 90-2015)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 MPI 65cv / 75cv / 80cv / 1.0 TSI 95cv / 110cv / 115cv / 1.2 TSI 90cv / 105cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 / 1.4 GPL 70cv / 85cv / 1.0 TGI Metano 90cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.2 TDI 75cv / 1.4 TDI 70cv / 75cv / 80cv / 90cv / 105cv / 1.6 TDI 80cv / 90cv / 95cv / 105cv / 115cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.9 D / SDI / TD / TDI 64cv / 68cv / 75cv / 90cv / 101cv / 110cv / 130cv / 160cv",
+        "f": "Diesel"
+      }
+    ],
+    "Leon (1M / 1P / 5F / KL)": [
+      {
+        "e": "1.4 / 1.6 / 1.8 20VT / 1.2 TSI / 1.4 TSI / 1.0 / 1.5 TSI / eTSI 75cv-180cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 e-Hybrid 204cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.4 / 1.5 TGI Metano 110cv / 130cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.6 TDI 90cv / 105cv / 110cv / 115cv / 1.9 TDI 90cv / 105cv / 110cv / 130cv / 150cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.0 TDI 115cv / 140cv / 150cv / 170cv / 184cv DSG",
+        "f": "Diesel"
+      }
+    ],
+    "Mii": [
+      {
+        "e": "1.0 MPI 60cv / 75cv / 1.0 Ecofuel Metano 68cv / Mii Electric 83cv",
+        "f": "Benzina"
+      }
+    ],
+    "Tarraco": [
+      {
+        "e": "1.5 TSI 150cv / 2.0 TSI / 1.4 e-Hybrid 245cv / 2.0 TDI 150cv / 190cv / 200cv",
+        "f": "Diesel"
+      }
+    ],
+    "Toledo / Exeo": [
+      {
+        "e": "1.4 / 1.6 / 1.8 T / 2.0 Benzina / 1.6 TDI 105cv / 1.9 TDI 90cv-150cv / 2.0 TDI 120cv-170cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Skoda": {
+    "Citigo": [
+      {
+        "e": "1.0 MPI 60cv / 75cv / 1.0 G-TEC Metano 68cv / Citigo-e iV",
+        "f": "Benzina"
+      }
+    ],
+    "Fabia (I / II / III / IV)": [
+      {
+        "e": "1.0 / 1.2 / 1.4 / 1.6 MPI / 16V 50cv-105cv / GPL",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 TSI 95cv / 110cv / 115cv / 1.2 TSI 86cv / 90cv / 105cv / 110cv / 1.5 TSI 150cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 TDI 75cv / 1.4 TDI 70cv / 75cv / 80cv / 90cv / 105cv / 1.6 TDI 75cv / 90cv / 95cv / 105cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.9 SDI / TDI 64cv / 101cv / 130cv",
+        "f": "Diesel"
+      }
+    ],
+    "Felicia": [
+      {
+        "e": "1.3 54cv / 68cv / 1.6 75cv / 1.9 D 64cv",
+        "f": "Benzina"
+      }
+    ],
+    "Kamiq": [
+      {
+        "e": "1.0 TSI 95cv / 110cv / 115cv / 1.5 TSI 150cv / 1.0 G-TEC Metano 90cv / 1.6 TDI 115cv",
+        "f": "Benzina"
+      }
+    ],
+    "Karoq": [
+      {
+        "e": "1.0 TSI 110cv / 115cv / 1.5 TSI 150cv / 1.6 TDI 115cv / 2.0 TDI 115cv / 150cv / 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "Kodiaq / Enyaq": [
+      {
+        "e": "1.4 / 1.5 / 2.0 TSI / iV Plug-in Hybrid / 2.0 TDI 150cv / 190cv / 193cv / 200cv / Enyaq EV",
+        "f": "Diesel"
+      }
+    ],
+    "Octavia (I / II / III / IV)": [
+      {
+        "e": "1.4 / 1.6 / 1.8 T / 2.0 Benzina-GPL / 1.0 / 1.2 / 1.4 / 1.5 TSI / e-TEC 75cv-150cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 / 1.5 TSI iV Plug-in Hybrid 204cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.4 / 1.5 G-TEC Metano 110cv / 130cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.6 TDI 90cv / 105cv / 110cv / 115cv / 1.9 TDI 90cv / 101cv / 105cv / 110cv / 130cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.0 TDI 115cv / 140cv / 150cv / 170cv / 184cv / 200cv DSG",
+        "f": "Diesel"
+      }
+    ],
+    "Rapid / Scala": [
+      {
+        "e": "1.0 TSI 95cv / 110cv / 115cv / 1.2 TSI / 1.4 / 1.5 TSI 150cv / 1.0 G-TEC Metano 90cv / 1.4 / 1.6 TDI 90cv-115cv",
+        "f": "Benzina"
+      }
+    ],
+    "Roomster / Yeti": [
+      {
+        "e": "1.2 / 1.4 / 1.6 Benzina-GPL / TSI / 1.2 / 1.4 / 1.6 / 2.0 TDI 75cv-170cv",
+        "f": "Diesel"
+      }
+    ],
+    "Superb": [
+      {
+        "e": "1.4 / 1.5 / 1.8 / 2.0 TSI / iV Plug-in Hybrid 218cv / 1.6 / 1.9 / 2.0 / 2.5 TDI 105cv-200cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Smart": {
+    "ForFour (454 / 453)": [
+      {
+        "e": "1.1 75cv / 1.3 95cv / 1.5 109cv (454 2004-2006)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 60cv / 71cv (M281) / 0.9 Turbo 90cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 cdi 68cv / 95cv (454)",
+        "f": "Diesel"
+      },
+      {
+        "e": "EQ Elettrica 82cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "ForTwo (450 / 451 / 453)": [
+      {
+        "e": "600 / 700 Turbo 45cv / 50cv / 55cv / 61cv / 75cv (Smart 450)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 61cv / 71cv mhd / 1.0 Turbo 84cv / 98cv / 102cv Brabus (Smart 451)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 60cv / 71cv (M281) / 0.9 Turbo 90cv / 109cv Brabus (Smart 453)",
+        "f": "Benzina"
+      },
+      {
+        "e": "0.8 cdi 41cv / 45cv / 54cv (OM660)",
+        "f": "Diesel"
+      },
+      {
+        "e": "EQ Elettrica 82cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Roadster / #1 / #3": [
+      {
+        "e": "0.7 Turbo 61cv / 82cv / 101cv Brabus / #1 / #3 Elettrica 272cv / 428cv",
+        "f": "Benzina"
+      }
+    ]
+  },
+  "SsangYong / KGM": {
+    "Korando / Tivoli / XLV": [
+      {
+        "e": "1.2 / 1.5 / 1.6 Benzina-GPL 128cv-163cv / 1.6 e-XDi 115cv / 136cv / 2.0 e-XDi 149cv / 175cv",
+        "f": "GPL (Casa madre / Impianto)"
+      }
+    ],
+    "Rexton / Kyron / Actyon / Musso": [
+      {
+        "e": "2.0 / 2.2 / 2.7 / 2.9 XDi / TD 120cv-202cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Subaru": {
+    "Forester": [
+      {
+        "e": "2.0 / 2.5 Boxer Benzina / Bi-Fuel GPL 125cv-240cv / 2.0i e-Boxer Mild Hybrid 150cv / 2.0 Boxer Diesel 147cv",
+        "f": "GPL (Casa madre / Impianto)"
+      }
+    ],
+    "Impreza / Justy": [
+      {
+        "e": "1.0 / 1.3 / 1.5 / 1.6 / 2.0 / 2.5 Boxer Benzina / Bi-Fuel GPL / WRX / STI / 2.0 Boxer Diesel 150cv",
+        "f": "Benzina"
+      }
+    ],
+    "Legacy / Outback / Levorg": [
+      {
+        "e": "1.6 / 2.0 / 2.5 / 3.0 Boxer Benzina / Bi-Fuel GPL / 2.0 Boxer Diesel 150cv",
+        "f": "GPL (Casa madre / Impianto)"
+      }
+    ],
+    "XV / Crosstrek": [
+      {
+        "e": "1.6 / 2.0 Boxer Benzina / Bi-Fuel GPL / 2.0i e-Boxer Mild Hybrid 136cv / 150cv / 2.0 Boxer Diesel 147cv",
+        "f": "Mild Hybrid Benzina"
+      }
+    ]
+  },
+  "Suzuki": {
+    "Alto / Celerio": [
+      {
+        "e": "1.0 / 1.1 Benzina-GPL 58cv / 63cv / 68cv",
+        "f": "Benzina"
+      }
+    ],
+    "Baleno / Liana": [
+      {
+        "e": "1.0 BoosterJet 112cv / 1.2 DualJet / Hybrid 90cv / 1.3 / 1.6 Benzina / 1.4 DDiS 90cv",
+        "f": "Mild Hybrid Benzina"
+      }
+    ],
+    "Ignis": [
+      {
+        "e": "1.3 / 1.5 Benzina 83cv / 94cv / 99cv (1a/2a serie)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 DualJet / Hybrid 83cv / 90cv AllGrip",
+        "f": "Mild Hybrid Benzina"
+      }
+    ],
+    "Jimny / Samurai": [
+      {
+        "e": "1.3 16V 80cv / 82cv / 85cv (G13BB / M13A) / 1.5 102cv (K15B)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 DDiS 65cv / 86cv (K9K) / 1.9 D / TD (Samurai)",
+        "f": "Diesel"
+      }
+    ],
+    "Splash / Wagon R+": [
+      {
+        "e": "1.0 / 1.2 / 1.3 Benzina-GPL 65cv-94cv / 1.3 DDiS 70cv / 75cv (Z13DT)",
+        "f": "Benzina"
+      }
+    ],
+    "Swift": [
+      {
+        "e": "1.0 / 1.3 / 1.5 / 1.6 Sport 53cv-136cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 DualJet / Hybrid 83cv / 90cv / 94cv AllGrip / 1.4 BoosterJet Hybrid 129cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.3 DDiS 69cv / 75cv",
+        "f": "Diesel"
+      }
+    ],
+    "SX4 / S-Cross": [
+      {
+        "e": "1.5 / 1.6 VVT 99cv / 107cv / 120cv / 1.0 / 1.4 BoosterJet Hybrid 112cv / 129cv / 140cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 DualJet Full Hybrid 115cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.6 DDiS 90cv / 120cv / 1.9 DDiS 120cv / 2.0 DDiS 135cv",
+        "f": "Diesel"
+      }
+    ],
+    "Vitara / Grand Vitara / Across": [
+      {
+        "e": "1.6 / 2.0 Benzina-GPL 80cv-140cv / 1.4 BoosterJet Hybrid 129cv / 140cv AllGrip",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.5 DualJet Full Hybrid 115cv / 2.5 Plug-in Hybrid 306cv (Across)",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.6 DDiS 120cv / 1.9 DDiS 129cv / 2.0 TD / HDI 87cv-109cv",
+        "f": "Diesel"
+      }
+    ]
+  },
+  "Tesla": {
+    "Model 3": [
+      {
+        "e": "RWD Standard Range / Long Range Dual Motor AWD / Performance",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Model S / Model X": [
+      {
+        "e": "75D / 85 / 90D / 100D / Long Range / Plaid",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Model Y": [
+      {
+        "e": "RWD Standard Range / Long Range RWD-AWD / Performance",
+        "f": "Elettrica (BEV)"
+      }
+    ]
+  },
+  "Toyota": {
+    "Auris": [
+      {
+        "e": "1.33 Dual VVT-i 99cv / 1.4 VVT-i 97cv / 1.6 VVT-i 124cv / 132cv / 1.2 Turbo 116cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.8 Hybrid 136cv (2ZR-FXE)",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.4 D-4D 90cv (1ND-TV) / 1.6 D-4D 112cv / 2.0 D-4D 124cv / 126cv / 2.2 D-CAT",
+        "f": "Diesel"
+      }
+    ],
+    "Avensis / Carina E": [
+      {
+        "e": "1.6 / 1.8 / 2.0 VVT-i 107cv-152cv / 1.6 / 2.0 / 2.2 D-4D / D-CAT / TD 90cv-177cv",
+        "f": "Diesel"
+      }
+    ],
+    "Aygo / Aygo X": [
+      {
+        "e": "1.0 VVT-i 68cv / 69cv / 72cv (1KR-FE)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 HDi 54cv (Aygo 1a serie)",
+        "f": "Diesel"
+      }
+    ],
+    "C-HR": [
+      {
+        "e": "1.2 Turbo 116cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.8 Hybrid 122cv / 140cv (2ZR-FXE)",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "2.0 Hybrid 184cv / 197cv (M20A-FXS)",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "2.0 Plug-in Hybrid 223cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      }
+    ],
+    "Corolla": [
+      {
+        "e": "1.3 / 1.4 / 1.6 / 1.8 VVT-i 86cv-132cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.8 Hybrid 122cv / 140cv (2ZR-FXE) / 2.0 Hybrid 180cv / 184cv / 196cv",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.4 D-4D 90cv / 2.0 D-4D 90cv / 116cv",
+        "f": "Diesel"
+      }
+    ],
+    "Hilux / Land Cruiser": [
+      {
+        "e": "2.4 / 2.5 / 2.8 / 3.0 D-4D / TD 90cv-204cv",
+        "f": "Diesel"
+      }
+    ],
+    "Prius": [
+      {
+        "e": "1.5 Hybrid 110cv (Prius 2) / 1.8 Hybrid 122cv / 136cv (Prius 3/4) / 2.0 Plug-in 223cv",
+        "f": "Full Hybrid (HEV)"
+      }
+    ],
+    "Proace / Proace City": [
+      {
+        "e": "1.5 D-4D 102cv / 120cv / 130cv / 1.6 / 2.0 D-4D 95cv-180cv",
+        "f": "Diesel"
+      }
+    ],
+    "RAV4 (I / II / III / IV / V)": [
+      {
+        "e": "2.0 16V / VVT-i / Valvematic 129cv / 150cv / 152cv / 158cv / GPL",
+        "f": "Benzina"
+      },
+      {
+        "e": "2.5 Hybrid 197cv / 218cv / 222cv AWD-i (A25A-FXS)",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "2.5 Plug-in Hybrid 306cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "2.0 D-4D 116cv / 124cv / 143cv / 2.2 D-4D / D-CAT 136cv / 150cv / 177cv",
+        "f": "Diesel"
+      }
+    ],
+    "Verso / Corolla Verso / Yaris Verso": [
+      {
+        "e": "1.3 / 1.5 / 1.6 / 1.8 VVT-i 86cv-147cv / 1.4 / 1.6 / 2.0 / 2.2 D-4D 75cv-177cv",
+        "f": "Diesel"
+      }
+    ],
+    "Yaris (I / II / III / IV)": [
+      {
+        "e": "1.0 16V / VVT-i 65cv / 68cv / 69cv / 72cv (1SZ-FE / 1KR-FE)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.3 16V / VVT-i / Dual VVT-i 86cv / 87cv / 99cv / 101cv / 1.5 106cv / 111cv / 125cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.5 Hybrid 100cv / 116cv / 130cv (1NZ-FXE / M15A-FXE)",
+        "f": "Full Hybrid (HEV)"
+      },
+      {
+        "e": "1.4 D-4D 75cv / 90cv (1ND-TV)",
+        "f": "Diesel"
+      }
+    ],
+    "Yaris Cross": [
+      {
+        "e": "1.5 Hybrid 116cv / 130cv AWD-i (M15A-FXE)",
+        "f": "Full Hybrid (HEV)"
+      }
+    ]
+  },
+  "Volkswagen": {
+    "Arteon / Scirocco / Eos": [
+      {
+        "e": "1.4 / 1.5 / 2.0 TSI 122cv-320cv / 1.4 eHybrid 218cv / 2.0 TDI 140cv / 150cv / 170cv / 190cv / 200cv",
+        "f": "Diesel"
+      }
+    ],
+    "Bora / Jetta": [
+      {
+        "e": "1.4 / 1.6 / 1.8 T / 2.0 / 1.4 TSI 75cv-160cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 TDI 105cv / 1.9 TDI 90cv / 101cv / 105cv / 110cv / 115cv / 130cv / 150cv / 2.0 TDI",
+        "f": "Diesel"
+      }
+    ],
+    "Caddy": [
+      {
+        "e": "1.4 / 1.6 / 1.2 TSI / 1.4 TSI / 1.5 TSI / 1.4 TGI / 2.0 EcoFuel Metano",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 TDI 75cv / 102cv / 1.9 SDI / TDI 64cv / 75cv / 90cv / 105cv / 2.0 SDI / TDI 70cv-170cv",
+        "f": "Diesel"
+      }
+    ],
+    "Crafter / LT": [
+      {
+        "e": "2.0 TDI / BiTDI 102cv / 109cv / 136cv / 140cv / 163cv / 177cv / 2.5 TDI 88cv-163cv",
+        "f": "Diesel"
+      }
+    ],
+    "Fox": [
+      {
+        "e": "1.2 55cv / 60cv / 1.4 75cv / 1.4 TDI 70cv",
+        "f": "Benzina"
+      }
+    ],
+    "Golf (Mk3 / Mk4 / Mk5 / Mk6 / Mk7 / Mk8)": [
+      {
+        "e": "1.4 / 1.6 / 1.8 / 2.0 8V/16V / GTI 60cv-150cv (Golf 3 & 4 anni 90-2003)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 16V 75cv / 80cv / 1.6 102cv / 1.6 FSI 115cv / 1.6 BiFuel GPL 102cv (Golf 5 & 6)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 TSI 86cv / 105cv / 110cv / 1.4 TSI 122cv / 125cv / 140cv / 150cv / 160cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 TSI / eTSI 110cv / 115cv / 1.5 TSI / eTSI 115cv / 130cv / 150cv (DADA / DPCA)",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "2.0 TSI GTI / R 200cv / 211cv / 220cv / 230cv / 245cv / 300cv / 320cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 / 1.5 eHybrid / GTE 204cv / 245cv / 272cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.4 / 1.5 TGI Metano 110cv / 130cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "1.9 D / TD / SDI / TDI 64cv / 68cv / 75cv / 90cv / 101cv / 105cv / 110cv / 115cv / 130cv / 150cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 TDI 90cv / 105cv / 110cv / 115cv (CAYC / CLHA / CXXB / DDYA)",
+        "f": "Diesel"
+      },
+      {
+        "e": "2.0 TDI 115cv / 140cv / 150cv / 170cv / 184cv / 200cv (BKD / CBAB / CRLB / DTSB)",
+        "f": "Diesel"
+      }
+    ],
+    "ID.3 / ID.4 / ID.5": [
+      {
+        "e": "Pure / Pro / Pro S / GTX (145cv / 170cv / 204cv / 286cv / 299cv / 340cv)",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "Lupo": [
+      {
+        "e": "1.0 50cv / 1.4 8V / 16V 60cv / 75cv / 101cv / 1.6 GTI 125cv / 1.2 TDI 3L / 1.4 TDI 75cv / 1.7 SDI 60cv",
+        "f": "Benzina"
+      }
+    ],
+    "New Beetle / Maggiolino": [
+      {
+        "e": "1.4 / 1.6 / 1.8 T / 2.0 / 1.2 TSI 105cv / 1.4 TSI 150cv / 160cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 TDI 105cv / 1.9 TDI 90cv / 101cv / 105cv / 2.0 TDI 110cv / 140cv / 150cv",
+        "f": "Diesel"
+      }
+    ],
+    "Passat (B4 / B5 / B6 / B7 / B8 / B9)": [
+      {
+        "e": "1.6 / 1.8 / 1.8 T / 2.0 / 1.4 TSI / 1.5 TSI / eTSI / 1.4 TSI EcoFuel Metano 150cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 / 1.5 eHybrid 204cv / 218cv / 272cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.9 TDI 90cv / 101cv / 105cv / 110cv / 115cv / 130cv (AFN / AVF / AWX / BKC)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.6 TDI 105cv / 120cv / 2.0 TDI 115cv / 122cv / 140cv / 150cv / 170cv / 177cv / 190cv / 200cv",
+        "f": "Diesel"
+      }
+    ],
+    "Polo (6N / 9N / 6R / 6C / AW)": [
+      {
+        "e": "1.0 / 1.3 / 1.4 / 1.6 8V/16V 45cv-101cv (Polo 6N / 6N2 anni 90-2001)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.2 6V/12V 54cv / 60cv / 64cv / 69cv / 1.4 16V 75cv / 80cv / 85cv / 101cv (Polo 9N / 6R)",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 MPI 60cv / 65cv / 75cv / 80cv / 1.0 TSI 95cv / 110cv / 115cv / 1.2 TSI 90cv / 105cv / 110cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.4 BiFuel GPL 82cv / 85cv / 1.0 TGI Metano 90cv",
+        "f": "GPL (Casa madre / Impianto)"
+      },
+      {
+        "e": "1.2 TDI 75cv / 1.4 TDI 70cv / 75cv / 80cv / 90cv / 105cv / 1.6 TDI 75cv / 80cv / 90cv / 95cv / 105cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.4 D / 1.7 SDI / 1.9 D / SDI / TDI 48cv / 60cv / 64cv / 101cv / 130cv",
+        "f": "Diesel"
+      }
+    ],
+    "T-Cross": [
+      {
+        "e": "1.0 TSI 95cv / 110cv / 115cv / 1.5 TSI 150cv DSG / 1.6 TDI 95cv (DGTD)",
+        "f": "Benzina"
+      }
+    ],
+    "T-Roc": [
+      {
+        "e": "1.0 TSI 110cv / 115cv / 1.5 TSI 150cv DSG (DADA / DPCA) / 2.0 TSI 190cv / 300cv",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 TDI 115cv (DGTE) / 2.0 TDI 115cv / 150cv DSG 4Motion",
+        "f": "Diesel"
+      }
+    ],
+    "Taigo": [
+      {
+        "e": "1.0 TSI 95cv / 110cv / 115cv / 1.5 TSI 150cv DSG",
+        "f": "Benzina"
+      }
+    ],
+    "Tiguan": [
+      {
+        "e": "1.4 TSI 122cv / 125cv / 150cv / 160cv / 1.5 TSI / eTSI 130cv / 150cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.4 / 1.5 eHybrid 204cv / 245cv / 272cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "1.6 TDI 115cv / 2.0 TDI 110cv / 115cv / 122cv / 140cv / 150cv / 170cv / 177cv / 190cv / 200cv",
+        "f": "Diesel"
+      }
+    ],
+    "Touareg": [
+      {
+        "e": "2.5 R5 TDI 174cv / 3.0 V6 TDI 204cv / 224cv / 231cv / 240cv / 245cv / 262cv / 286cv / eHybrid",
+        "f": "Diesel"
+      }
+    ],
+    "Touran / Sharan": [
+      {
+        "e": "1.2 / 1.4 / 1.5 TSI / 1.4 TSI EcoFuel Metano 150cv / 1.6 / 2.0 Benzina-GPL",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 TDI 105cv / 110cv / 115cv / 1.9 TDI 90cv / 101cv / 105cv / 115cv / 130cv / 2.0 TDI 115cv-184cv",
+        "f": "Diesel"
+      }
+    ],
+    "Transporter / Caravelle / Multivan (T4 / T5 / T6)": [
+      {
+        "e": "1.9 D / TD / 2.4 D / 2.5 TDI 60cv-151cv (T4)",
+        "f": "Diesel"
+      },
+      {
+        "e": "1.9 TDI 84cv / 102cv / 105cv / 2.0 TDI 84cv / 102cv / 110cv / 114cv / 140cv / 150cv / 180cv / 204cv / 2.5 TDI 130cv / 174cv",
+        "f": "Diesel"
+      }
+    ],
+    "Up!": [
+      {
+        "e": "1.0 MPI 60cv / 65cv / 75cv / 1.0 TSI 90cv / 115cv GTI",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.0 EcoFuel Metano 68cv",
+        "f": "Metano (CNG)"
+      },
+      {
+        "e": "e-Up! Elettrica 83cv",
+        "f": "Elettrica (BEV)"
+      }
+    ]
+  },
+  "Volvo": {
+    "440 / 460 / 480 / 940 / 960": [
+      {
+        "e": "1.6 / 1.7 / 1.8 / 2.0 / 2.3 Benzina-Turbo / 1.9 TD / 2.4 TD / TDI",
+        "f": "Benzina"
+      }
+    ],
+    "850 / S70 / V70 / XC70": [
+      {
+        "e": "2.0 / 2.3 / 2.4 / 2.5 Benzina / Turbo / Bi-Fuel",
+        "f": "Benzina"
+      },
+      {
+        "e": "1.6 D / DRIVe 109cv / 114cv / 2.0 D / D3 / D4 136cv-181cv / 2.4 D / D5 / 2.5 TDI 126cv-215cv",
+        "f": "Diesel"
+      }
+    ],
+    "C30 / C70": [
+      {
+        "e": "1.6 / 1.8 / 2.0 / 2.4 / T5 Benzina-GPL / 1.6 D / D2 109cv-115cv / 2.0 D / D3 / D4 / 2.4 D5",
+        "f": "Diesel"
+      }
+    ],
+    "S40 / V40 / V50": [
+      {
+        "e": "1.6 / 1.8 / 2.0 / T2 / T3 / B3 / B4 100cv-197cv / Bi-Fuel GPL",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 D / D2 109cv / 114cv / 115cv / 1.9 TD / DI / 2.0 D / D2 / D3 / D4 120cv / 136cv / 150cv / 177cv / 190cv",
+        "f": "Diesel"
+      }
+    ],
+    "S60 / V60 / S80 / S90 / V90": [
+      {
+        "e": "T2 / T3 / T4 / T5 / B3 / B4 / B5 122cv-250cv / T6 / T8 Recharge Plug-in Hybrid",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "1.6 D2 115cv / 2.0 D2 / D3 / D4 / B4 / B5 120cv / 136cv / 150cv / 163cv / 181cv / 190cv / 197cv / 2.4 D5",
+        "f": "Mild Hybrid Diesel"
+      }
+    ],
+    "XC40 / EX30": [
+      {
+        "e": "T2 / T3 / B3 / B4 1.5 / 2.0 129cv / 156cv / 163cv / 197cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "T4 / T5 Recharge Plug-in Hybrid 211cv / 262cv",
+        "f": "Plug-in Hybrid (PHEV)"
+      },
+      {
+        "e": "D3 / D4 2.0 Diesel 150cv / 190cv",
+        "f": "Diesel"
+      },
+      {
+        "e": "Recharge / EX30 / EX40 Elettrica 231cv / 238cv / 272cv / 408cv / 428cv",
+        "f": "Elettrica (BEV)"
+      }
+    ],
+    "XC60 / XC90": [
+      {
+        "e": "T5 / T6 / B4 / B5 / B6 197cv-300cv / T6 / T8 Recharge Plug-in Hybrid 350cv / 455cv",
+        "f": "Mild Hybrid Benzina"
+      },
+      {
+        "e": "2.0 D3 / D4 / B4 / B5 Diesel 150cv / 163cv / 181cv / 190cv / 197cv / 235cv / 2.4 D4 / D5 163cv-220cv",
+        "f": "Mild Hybrid Diesel"
+      }
     ]
   }
 };
+
+function dismissMobileKeyboard(){
+  const ae = document.activeElement;
+  if(ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')){
+    ae.blur();
+  }
+}
+
+// Abbassa automaticamente la tastiera del telefono quando l'utente scorre dentro qualsiasi elenco a tendina
+document.addEventListener('touchmove', (e) => {
+  if(e.target && e.target.closest && e.target.closest('.ac-menu')){
+    dismissMobileKeyboard();
+  }
+}, { passive: true });
+
+document.addEventListener('scroll', (e) => {
+  if(e.target && e.target.classList && e.target.classList.contains('ac-menu')){
+    dismissMobileKeyboard();
+  }
+}, { capture: true, passive: true });
+
+function positionAcMenu(menu){
+  if(!menu) return;
+  menu.style.left = '0px';
+  menu.style.right = 'auto';
+  const rect = menu.getBoundingClientRect();
+  const vw = window.innerWidth;
+  if(rect.right > vw - 12){
+    const shift = rect.right - (vw - 12);
+    menu.style.left = Math.max(-rect.left + 12, -shift) + 'px';
+  }
+  const availH = window.innerHeight - rect.top - 20;
+  menu.style.maxHeight = Math.max(210, Math.min(340, availH)) + 'px';
+}
+
+function toggleVehicleDropdown(field){
+  dismissMobileKeyboard();
+  const map = {
+    brand: () => onBrandInput(true),
+    model: () => onModelInput(true),
+    engine: () => onEngineInput(true),
+    fuel: () => onFuelInput(true)
+  };
+  const menu = $(field + 'Ac');
+  if(!menu) return;
+  const wasOpen = !menu.classList.contains('hidden');
+  hideAcMenus();
+  if(!wasOpen && map[field]) map[field]();
+}
 
 function findBrandKey(brandInput){
   const q=String(brandInput||'').trim().toLowerCase();
@@ -2639,93 +6257,177 @@ function findModelKey(brandKey, modelInput){
   return models.find(m=>m.toLowerCase()===q) || models.find(m=>m.toLowerCase().includes(q) || q.includes(m.toLowerCase())) || null;
 }
 
-function onBrandInput(){
-  const q=$('brand').value.trim().toLowerCase();
+function onBrandInput(showAll=false){
+  hideAcMenus();
+  const rawVal=$('brand').value.trim();
+  const q=showAll ? '' : rawVal.toLowerCase();
   const menu=$('brandAc');
   const allBrands=Object.keys(AUTO_DB);
   const matches=q ? allBrands.filter(b=>b.toLowerCase().includes(q)) : allBrands;
   if(!matches.length){menu.classList.add('hidden');return}
-  menu.innerHTML=matches.slice(0,10).map(b=>{
-    const mCount=Object.keys(AUTO_DB[b]).length;
-    return `<div class="ac-item" onpointerdown="event.preventDefault();pickBrand('${esc(b)}')">
-      <div><strong>${esc(b)}</strong><small>${mCount} famiglie modelli</small></div>
-      <span class="badge neutral">Marca</span>
-    </div>`;
-  }).join('');
+  menu.innerHTML=`
+    <div class="ac-head">
+      <span>${q ? 'Marche trovate ('+matches.length+')' : 'Tutte le marche ('+matches.length+') · Scorri'}</span>
+      <button type="button" onclick="hideAcMenus()">✕</button>
+    </div>` +
+    matches.map(b=>{
+      const mCount=Object.keys(AUTO_DB[b]).length;
+      const isSel=b.toLowerCase()===rawVal.toLowerCase();
+      return `<div class="ac-item ${isSel?'selected':''}" onclick="pickBrand('${esc(b)}')">
+        <div><strong>${esc(b)}</strong><small>${mCount} modelli in elenco</small></div>
+        <span class="badge neutral">Marca</span>
+      </div>`;
+    }).join('');
   menu.classList.remove('hidden');
+  positionAcMenu(menu);
 }
 
 function pickBrand(brandName){
+  dismissMobileKeyboard();
+  const prevBrand = findBrandKey($('brand').value);
   $('brand').value=brandName;
+  if(prevBrand && prevBrand !== brandName){
+    $('model').value='';
+    $('engine').value='';
+  }
   $('brandAc').classList.add('hidden');
   if(typeof scheduleDraftSave==='function') scheduleDraftSave();
-  setTimeout(()=>{ $('model').focus(); onModelInput(); }, 30);
+  setTimeout(()=>{ onModelInput(true); }, 20);
 }
 
-function onModelInput(){
+let currentModelOptions=[];
+
+function onModelInput(showAll=false){
+  hideAcMenus();
   const bKey=findBrandKey($('brand').value);
-  const q=$('model').value.trim().toLowerCase();
+  const rawVal=$('model').value.trim();
+  const q=showAll ? '' : rawVal.toLowerCase();
   const menu=$('modelAc');
-  if(!bKey){menu.classList.add('hidden');return}
-  const allModels=Object.keys(AUTO_DB[bKey]);
-  const matches=q ? allModels.filter(m=>m.toLowerCase().includes(q)) : allModels;
-  if(!matches.length){menu.classList.add('hidden');return}
-  menu.innerHTML=matches.slice(0,10).map(m=>{
-    const engCount=AUTO_DB[bKey][m].length;
-    return `<div class="ac-item" onpointerdown="event.preventDefault();pickModel('${esc(bKey)}','${esc(m)}')">
-      <div><strong>${esc(m)}</strong><small>${engCount} motorizzazioni disponibili</small></div>
-      <span class="badge ok">${esc(bKey)}</span>
-    </div>`;
-  }).join('');
+
+  let list=[];
+  if(bKey){
+    list=Object.keys(AUTO_DB[bKey]).map(m=>({
+      b: bKey,
+      m,
+      count: AUTO_DB[bKey][m].length
+    }));
+  }else{
+    for(const [brand, modelsObj] of Object.entries(AUTO_DB)){
+      for(const [m, engs] of Object.entries(modelsObj)){
+        list.push({b: brand, m, count: engs.length});
+      }
+    }
+  }
+
+  const matches=q ? list.filter(x=>(x.m+' '+x.b).toLowerCase().includes(q)) : list;
+  currentModelOptions=matches;
+  if(!currentModelOptions.length){menu.classList.add('hidden');return}
+
+  const title = bKey
+    ? (q ? `${bKey} · Trovati (${currentModelOptions.length})` : `${bKey} · Tutti i modelli (${currentModelOptions.length})`)
+    : (q ? `Modelli trovati (${currentModelOptions.length})` : `Tutti i modelli (${currentModelOptions.length}) · Scorri o scrivi`);
+
+  menu.innerHTML=`
+    <div class="ac-head">
+      <span>${esc(title)}</span>
+      <button type="button" onclick="hideAcMenus()">✕</button>
+    </div>` +
+    currentModelOptions.map((item,idx)=>{
+      const isSel=item.m.toLowerCase()===rawVal.toLowerCase() && (!bKey || item.b===bKey);
+      return `<div class="ac-item ${isSel?'selected':''}" onclick="pickModel(${idx})">
+        <div><strong>${esc(item.m)}</strong><small>${esc(item.b)} · ${item.count} motorizzazioni</small></div>
+        <span class="badge ok">${esc(item.b)}</span>
+      </div>`;
+    }).join('');
   menu.classList.remove('hidden');
+  positionAcMenu(menu);
 }
 
-function pickModel(bKey, modelName){
-  $('brand').value=bKey;
-  $('model').value=modelName;
+function pickModel(idx){
+  dismissMobileKeyboard();
+  const item=currentModelOptions[idx];
+  if(!item)return;
+  const prevModel = $('model').value.trim();
+  $('brand').value=item.b;
+  $('model').value=item.m;
+  if(prevModel && prevModel.toLowerCase() !== item.m.toLowerCase()){
+    $('engine').value='';
+  }
   $('modelAc').classList.add('hidden');
   if(typeof scheduleDraftSave==='function') scheduleDraftSave();
-  setTimeout(()=>{ $('engine').focus(); onEngineInput(); }, 30);
+  setTimeout(()=>{ onEngineInput(true); }, 20);
 }
 
 let currentEngineOptions=[];
 
-function onEngineInput(){
+function onEngineInput(showAll=false){
+  hideAcMenus();
   const bKey=findBrandKey($('brand').value);
   const mKey=findModelKey(bKey, $('model').value);
-  const q=$('engine').value.trim().toLowerCase();
+  const rawVal=$('engine').value.trim();
+  const q=showAll ? '' : rawVal.toLowerCase();
   const menu=$('engineAc');
 
   let list=[];
+  let headerTitle='';
   if(bKey && mKey){
-    list=AUTO_DB[bKey][mKey];
+    list=AUTO_DB[bKey][mKey].map(item=>({e:item.e, rawE:item.e, b:bKey, mod:mKey, f:item.f}));
+    headerTitle=`${bKey} ${mKey} · Motorizzazioni (${list.length})`;
   }else if(bKey){
     for(const [mod, engs] of Object.entries(AUTO_DB[bKey])){
-      for(const item of engs) list.push({e:`${mod} · ${item.e}`, rawE:item.e, mod, f:item.f});
+      for(const item of engs) list.push({e:`${mod} · ${item.e}`, rawE:item.e, b:bKey, mod, f:item.f});
     }
+    headerTitle=`${bKey} · Tutte le motorizzazioni (${list.length})`;
+  }else if(q.length>=2){
+    for(const [brand, modelsObj] of Object.entries(AUTO_DB)){
+      for(const [mod, engs] of Object.entries(modelsObj)){
+        for(const item of engs) list.push({e:`${brand} ${mod} · ${item.e}`, rawE:item.e, b:brand, mod, f:item.f});
+      }
+    }
+    headerTitle='Ricerca motorizzazioni';
   }else{
-    menu.classList.add('hidden');
+    menu.innerHTML=`
+      <div class="ac-head">
+        <span>Motorizzazioni</span>
+        <button type="button" onclick="hideAcMenus()">✕</button>
+      </div>
+      <div class="ac-item" onclick="hideAcMenus();onBrandInput(true)">
+        <div><strong>Seleziona prima Marca e Modello</strong><small>Oppure scrivi almeno 2 caratteri (es. 1.3, K9K, TDI)</small></div>
+        <span class="badge neutral">Guida</span>
+      </div>`;
+    menu.classList.remove('hidden');
+    positionAcMenu(menu);
     return;
   }
 
   const filtered=q ? list.filter(x=>(x.e+' '+x.f).toLowerCase().includes(q)) : list;
-  currentEngineOptions=filtered.slice(0,12);
+  currentEngineOptions=filtered;
   if(!currentEngineOptions.length){menu.classList.add('hidden');return}
 
-  menu.innerHTML=currentEngineOptions.map((item,idx)=>`
-    <div class="ac-item" onpointerdown="event.preventDefault();pickEngine(${idx})">
-      <div>
-        <strong>${esc(item.rawE||item.e)}</strong>
-        <small>${item.mod?esc(item.mod)+' · ':''}${esc(item.f)}</small>
-      </div>
-      <span class="badge neutral">${esc(item.f.split(' ')[0])}</span>
-    </div>`).join('');
+  menu.innerHTML=`
+    <div class="ac-head">
+      <span>${esc(headerTitle)}</span>
+      <button type="button" onclick="hideAcMenus()">✕</button>
+    </div>` +
+    currentEngineOptions.map((item,idx)=>{
+      const isSel=(item.rawE||item.e).toLowerCase()===rawVal.toLowerCase();
+      return `<div class="ac-item ${isSel?'selected':''}" onclick="pickEngine(${idx})">
+        <div>
+          <strong>${esc(item.rawE||item.e)}</strong>
+          <small>${item.mod?esc(item.b+' '+item.mod)+' · ':''}${esc(item.f)}</small>
+        </div>
+        <span class="badge neutral">${esc(item.f.split(' ')[0])}</span>
+      </div>`;
+    }).join('');
   menu.classList.remove('hidden');
+  positionAcMenu(menu);
 }
 
 function pickEngine(idx){
+  dismissMobileKeyboard();
   const item=currentEngineOptions[idx];
   if(!item)return;
+  if(item.b && !$('brand').value.trim()) $('brand').value=item.b;
   if(item.mod && !$('model').value.trim()) $('model').value=item.mod;
   $('engine').value=item.rawE||item.e;
   if(item.f) $('fuel').value=item.f;
@@ -2733,19 +6435,28 @@ function pickEngine(idx){
   if(typeof scheduleDraftSave==='function') scheduleDraftSave();
 }
 
-function onFuelInput(){
-  const q=$('fuel').value.trim().toLowerCase();
+function onFuelInput(showAll=false){
+  hideAcMenus();
+  const rawVal=$('fuel').value.trim();
+  const q=showAll ? '' : rawVal.toLowerCase();
   const menu=$('fuelAc');
   const matches=q ? FUEL_TYPES.filter(f=>f.toLowerCase().includes(q)) : FUEL_TYPES;
   if(!matches.length){menu.classList.add('hidden');return}
-  menu.innerHTML=matches.map(f=>`
-    <div class="ac-item" onpointerdown="event.preventDefault();pickFuel('${esc(f)}')">
-      <div><strong>${esc(f)}</strong></div>
-    </div>`).join('');
+  menu.innerHTML=`
+    <div class="ac-head">
+      <span>Alimentazione (${matches.length})</span>
+      <button type="button" onclick="hideAcMenus()">✕</button>
+    </div>` +
+    matches.map(f=>`
+      <div class="ac-item ${f.toLowerCase()===rawVal.toLowerCase()?'selected':''}" onclick="pickFuel('${esc(f)}')">
+        <div><strong>${esc(f)}</strong></div>
+      </div>`).join('');
   menu.classList.remove('hidden');
+  positionAcMenu(menu);
 }
 
 function pickFuel(fuelVal){
+  dismissMobileKeyboard();
   $('fuel').value=fuelVal;
   $('fuelAc').classList.add('hidden');
   if(typeof scheduleDraftSave==='function') scheduleDraftSave();
@@ -2794,7 +6505,7 @@ function onLineDescInput(inp){
   if(!matches.length){menu.classList.add('hidden');return}
   menu.innerHTML=matches.map(item=>{
     const idx=catalog.indexOf(item);
-    return `<div class="ac-item" onpointerdown="event.preventDefault();pickLineCatalog(this,${idx})">
+    return `<div class="ac-item" onclick="pickLineCatalog(this,${idx})">
       <div>
         <strong>${esc(item.name)}</strong>
         <small>Listino officina</small>

@@ -557,15 +557,15 @@ button.sm {
 .hero-card {
   background: linear-gradient(135deg, #1b1519 0%, #161b26 60%, #121722 100%);
   border: 1px solid rgba(239, 68, 68, 0.32);
-  border-radius: var(--radius-xl);
-  padding: 24px;
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
   position: relative;
   overflow: hidden;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .hero-card::after {
@@ -573,8 +573,8 @@ button.sm {
   position: absolute;
   right: -30px;
   top: -30px;
-  width: 180px;
-  height: 180px;
+  width: 150px;
+  height: 150px;
   background: radial-gradient(circle, rgba(239, 68, 68, 0.22) 0%, transparent 70%);
   pointer-events: none;
 }
@@ -582,73 +582,155 @@ button.sm {
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11px;
+  gap: 5px;
+  font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.7px;
   color: #ff8585;
   background: var(--brand-soft);
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: 99px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .hero-card h1 {
-  margin: 0 0 6px;
-  font-size: clamp(22px, 4vw, 28px);
+  margin: 0 0 3px;
+  font-size: clamp(19px, 3.4vw, 24px);
   font-weight: 800;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.5px;
 }
 
 .hero-card p {
-  margin: 0 0 18px;
+  margin: 0 0 12px;
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 13px;
 }
 
-.hero-cta-group { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero-cta-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.hero-cta-group button { min-height: 38px; padding: 7px 13px; font-size: 13px; }
+
+.home-search-box {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.home-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.home-search-ico {
+  position: absolute;
+  left: 13px;
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+}
+
+.home-search-box input {
+  min-height: 42px;
+  padding: 8px 36px 8px 38px;
+  font-size: 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border-color: #323c52;
+}
+
+.home-search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-height: 28px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: 11px;
+  border-radius: 7px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.home-search-clear:hover { color: #fff; background: #263044; }
+
+.home-search-results {
+  margin-top: 8px;
+  background: var(--bg-surface);
+  border: 1px solid #38445e;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.home-search-results.hidden { display: none; }
+
+.home-sr-head {
+  padding: 7px 12px;
+  background: var(--bg-surface-2);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-sr-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+}
+.home-sr-item:last-child { border-bottom: 0; }
+.home-sr-item:hover { background: var(--bg-surface-2); }
 
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .kpi-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
+  border-radius: var(--radius-md);
+  padding: 11px 13px;
   cursor: pointer;
   transition: border-color 0.15s, transform 0.15s;
 }
 
-.kpi-card:hover { border-color: #3b465e; transform: translateY(-2px); }
+.kpi-card:hover { border-color: #3b465e; transform: translateY(-1px); }
 
 .kpi-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .kpi-val {
-  font-size: 26px;
+  font-size: 21px;
   font-weight: 800;
-  letter-spacing: -0.8px;
+  letter-spacing: -0.6px;
   color: #fff;
+  line-height: 1.15;
 }
 
 .block-heading {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
-  margin: 0 0 12px;
+  margin: 0 0 9px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -657,35 +739,36 @@ button.sm {
 .quick-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 9px;
+  margin-bottom: 14px;
 }
 
 @media (min-width: 720px) {
-  .quick-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .quick-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 }
 
 .quick-tile {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
+  border-radius: var(--radius-md);
+  padding: 11px 12px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   text-align: left;
-  gap: 12px;
-  min-height: 106px;
+  gap: 10px;
+  min-height: 62px;
 }
 
 .quick-tile:hover { background: var(--bg-surface-2); border-color: #3a465e; }
 
 .tile-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   display: grid;
   place-items: center;
+  flex-shrink: 0;
 }
 
 .tile-icon.red { background: var(--brand-soft); color: #ff7b7b; }
@@ -693,8 +776,79 @@ button.sm {
 .tile-icon.green { background: var(--ok-soft); color: #34d399; }
 .tile-icon.amber { background: var(--warn-soft); color: #fbbf24; }
 
-.quick-tile strong { font-size: 14px; font-weight: 700; color: #fff; display: block; }
-.quick-tile small { font-size: 12px; color: var(--text-muted); font-weight: 400; display: block; margin-top: 2px; }
+.quick-tile strong { font-size: 13px; font-weight: 700; color: #fff; display: block; line-height: 1.2; }
+.quick-tile small { font-size: 11px; color: var(--text-muted); font-weight: 400; display: block; margin-top: 2px; line-height: 1.2; }
+
+/* Rubrica Clienti layout migliorato */
+.client-card {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.client-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.client-card-name {
+  font-size: 15.5px;
+  font-weight: 750;
+  color: #fff;
+}
+.client-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.client-vehicles-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(148, 160, 184, 0.18);
+}
+.client-veh-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0e121a;
+  border: 1px solid #323c52;
+  border-radius: 8px;
+  padding: 4px 9px;
+  font-size: 12px;
+  color: #e2e8f0;
+}
+.client-veh-chip .plate-tag {
+  border: 0;
+  padding: 1px 6px;
+  background: rgba(59, 130, 246, 0.16);
+  color: #93c5fd;
+}
+.client-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid rgba(148, 160, 184, 0.12);
+}
+.client-actions-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
 /* --- LISTS & CARDS --- */
 .list-card {
@@ -1140,6 +1294,17 @@ button.sm {
     </div>
 
     <div id="homeDraftBanner" class="draft-card hidden"></div>
+
+    <div class="home-search-box">
+      <div class="home-search-input-wrap">
+        <span class="home-search-ico">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <input id="homeSearch" placeholder="Cerca cliente, targa, modello o n. documento..." autocomplete="off" oninput="debouncedRenderHomeSearch()">
+        <button type="button" id="homeSearchClear" class="home-search-clear hidden" onclick="clearHomeSearch()">Pulisci</button>
+      </div>
+      <div id="homeSearchResults" class="home-search-results hidden"></div>
+    </div>
 
     <div class="kpi-grid">
       <div class="kpi-card" onclick="show('archive')">
@@ -17216,31 +17381,134 @@ function removeClient(id){
 }
 
 function renderClients(){
-  let q=($('clientSearch').value||'').toLowerCase();
-  let a=clients().filter(c=>
-    (c.name+' '+c.phone+' '+c.email).toLowerCase().includes(q) ||
-    (c.vehicles||[]).some(v=>(v.plate+' '+v.brand+' '+v.model).toLowerCase().includes(q))
-  );
+  let q=($('clientSearch').value||'').toLowerCase().trim();
+  let a=clients().filter(c=>{
+    if(!q) return true;
+    const baseMatch=(c.name+' '+(c.phone||'')+' '+(c.email||'')+' '+(c.address||'')+' '+(c.notes||'')).toLowerCase().includes(q);
+    const vehMatch=(c.vehicles||[]).some(v=>
+      normalizePlate(v.plate).includes(normalizePlate(q)) ||
+      (v.brand+' '+v.model+' '+(v.engine||'')+' '+(v.fuel||'')).toLowerCase().includes(q)
+    );
+    return baseMatch || vehMatch;
+  });
   $('clientList').innerHTML=a.length
-    ? a.map(c=>`
-      <div class="doc-card">
-        <div>
-          <strong>${esc(c.name)}</strong>
-          <div class="mini">${esc(c.phone||'Nessun telefono')} ${c.email?'· '+esc(c.email):''}</div>
-          ${(c.vehicles&&c.vehicles.length)?`
-            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
-              ${c.vehicles.map(v=>`<span class="plate-tag">${esc(v.plate||'N/D')} ${v.brand||v.model||v.engine?'· '+esc([v.brand,v.model,v.engine].filter(Boolean).join(' ')):''}</span>`).join('')}
+    ? a.map(c=>{
+        const vehs=c.vehicles||[];
+        const addrLine=c.address?`<span>📍 ${esc(c.address)}</span>`:'';
+        const phoneLine=`<span>📞 ${esc(c.phone||'Nessun telefono')}</span>`;
+        const mailLine=c.email?`<span>✉️ ${esc(c.email)}</span>`:'';
+        return `
+        <div class="client-card">
+          <div class="client-card-top">
+            <div>
+              <div class="client-card-name">${esc(c.name)}</div>
+              <div class="client-card-meta">${phoneLine}${mailLine}${addrLine}</div>
+            </div>
+            <span class="badge neutral">${vehs.length} ${vehs.length===1?'auto':'auto'}</span>
+          </div>
+          ${vehs.length?`
+            <div class="client-vehicles-wrap">
+              ${vehs.map(v=>{
+                const details=[v.brand,v.model,v.engine].filter(Boolean).join(' ');
+                const extra=[v.fuel,v.year].filter(Boolean).join(' · ');
+                return `<span class="client-veh-chip">
+                  <span class="plate-tag">${esc(v.plate||'N/D')}</span>
+                  ${details?`<span>${esc(details)}</span>`:''}
+                  ${extra?`<span class="mini">(${esc(extra)})</span>`:''}
+                </span>`;
+              }).join('')}
             </div>`:''}
-          ${c.notes?`<div class="mini" style="color:#fbbf24;margin-top:6px">🔒 ${esc(c.notes)}</div>`:''}
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${telHref(c.phone)?`<a class="call-btn sm" href="${telHref(c.phone)}" title="Chiama ${esc(c.name)}">📞 Chiama</a>`:''}
-          <button type="button" class="sm" onclick="useClient('${c.id}')">Usa nel doc</button>
-          <button type="button" class="secondary sm" onclick="newClientForm('${c.id}')">Modifica</button>
-          <button type="button" class="danger-ghost sm" onclick="removeClient('${c.id}')">✕</button>
-        </div>
-      </div>`).join('')
+          ${c.notes?`<div class="mini" style="color:#fbbf24">🔒 ${esc(c.notes)}</div>`:''}
+          <div class="client-card-actions">
+            <div class="client-actions-group">
+              ${telHref(c.phone)?`<a class="call-btn sm" href="${telHref(c.phone)}" title="Chiama ${esc(c.name)}">📞 Chiama</a>`:''}
+              <button type="button" class="sm" onclick="useClient('${c.id}')">Usa nel doc</button>
+            </div>
+            <div class="client-actions-group">
+              <button type="button" class="secondary sm" onclick="newClientForm('${c.id}')">Modifica</button>
+              <button type="button" class="danger-ghost sm" onclick="removeClient('${c.id}')" title="Elimina cliente">✕</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('')
     : '<p class="muted">Nessun cliente trovato. Premi <b>+ Nuovo Cliente</b>.</p>';
+}
+
+function clearHomeSearch(){
+  const inp=$('homeSearch');
+  const box=$('homeSearchResults');
+  const clr=$('homeSearchClear');
+  if(inp) inp.value='';
+  if(box){ box.innerHTML=''; box.classList.add('hidden'); }
+  if(clr) clr.classList.add('hidden');
+}
+
+function renderHomeSearch(){
+  const inp=$('homeSearch');
+  const box=$('homeSearchResults');
+  const clr=$('homeSearchClear');
+  if(!inp || !box) return;
+  const rawQ=inp.value.trim();
+  if(clr) clr.classList.toggle('hidden', !rawQ);
+  if(!rawQ){
+    box.innerHTML='';
+    box.classList.add('hidden');
+    return;
+  }
+  const q=rawQ.toLowerCase();
+  const nq=normalizePlate(rawQ);
+
+  const clientMatches=[];
+  for(const c of clients()){
+    const nameMatch=(c.name||'').toLowerCase().includes(q) || (c.phone||'').toLowerCase().includes(q);
+    const matchingVehs=(c.vehicles||[]).filter(v=>
+      (nq && normalizePlate(v.plate).includes(nq)) ||
+      ((v.brand||'')+' '+(v.model||'')+' '+(v.engine||'')).toLowerCase().includes(q)
+    );
+    if(nameMatch || matchingVehs.length){
+      clientMatches.push({client:c, vehs: matchingVehs.length ? matchingVehs : (c.vehicles||[])});
+    }
+  }
+
+  const docMatches=docs().filter(d=>
+    (d.client||'').toLowerCase().includes(q) ||
+    (d.number||'').toLowerCase().includes(q) ||
+    (nq && normalizePlate(d.plate).includes(nq)) ||
+    ((d.brand||'')+' '+(d.model||'')).toLowerCase().includes(q)
+  ).slice().reverse().slice(0,5);
+
+  let html='';
+  if(clientMatches.length){
+    html+=`<div class="home-sr-head"><span>Clienti & Veicoli (${clientMatches.length})</span></div>`;
+    html+=clientMatches.slice(0,4).map(m=>{
+      const vTxt=m.vehs.map(v=>`${v.plate||'N/D'} ${[v.brand,v.model].filter(Boolean).join(' ')}`).join(' · ');
+      return `<div class="home-sr-item" onclick="useClient('${m.client.id}')">
+        <div>
+          <strong>${esc(m.client.name)}</strong>
+          <div class="mini">${esc(m.client.phone||'Nessun tel.')}${vTxt?' · '+esc(vTxt):''}</div>
+        </div>
+        <span class="badge ok">Apri</span>
+      </div>`;
+    }).join('');
+  }
+  if(docMatches.length){
+    html+=`<div class="home-sr-head"><span>Documenti (${docMatches.length})</span></div>`;
+    html+=docMatches.map(d=>`
+      <div class="home-sr-item" onclick="loadDoc('${d.id}')">
+        <div>
+          <span class="badge ${d.kind==='Fattura'?'fat':'pre'}">${esc(d.kind)}</span>
+          <strong>${esc(d.number||'')}</strong>
+          ${d.plate?`<span class="plate-tag">${esc(d.plate)}</span>`:''}
+          <div class="mini" style="margin-top:2px">${esc(d.client||'')} · ${esc(d.date||'')}</div>
+        </div>
+        <strong style="font-size:13.5px;white-space:nowrap">${money(docTotal(d))}</strong>
+      </div>`).join('');
+  }
+  if(!html){
+    html=`<div class="home-sr-item"><span class="muted">Nessun risultato per "${esc(rawQ)}"</span></div>`;
+  }
+  box.innerHTML=html;
+  box.classList.remove('hidden');
 }
 
 /* --- HISTORY & REMINDERS --- */
@@ -17746,6 +18014,7 @@ $('pwaDismiss').addEventListener('click',()=>{$('pwaInstall').style.display='non
 window.addEventListener('appinstalled',()=>{$('pwaInstall').style.display='none'});
 
 const debouncedRenderClients=debounce(renderClients,110);
+const debouncedRenderHomeSearch=debounce(renderHomeSearch,110);
 const debouncedRenderArchive=debounce(renderArchive,110);
 const debouncedRenderHistory=debounce(renderHistory,110);
 const debouncedRenderReminders=debounce(renderReminders,110);

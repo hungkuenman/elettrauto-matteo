@@ -780,33 +780,6 @@ button.sm {
 .quick-tile small { font-size: 11px; color: var(--text-muted); font-weight: 400; display: block; margin-top: 2px; line-height: 1.2; }
 
 /* Rubrica Clienti: design pulito e minimale ad elenco espandibile */
-.client-subnav {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 5px;
-  margin-bottom: 12px;
-}
-.client-subnav-btn {
-  min-height: 38px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: transparent;
-  border: 0;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 700;
-}
-.client-subnav-btn:hover { color: #fff; background: rgba(255,255,255,0.04); }
-.client-subnav-btn.active {
-  background: var(--bg-surface-2);
-  color: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
 .client-search-bar {
   position: relative;
   display: flex;
@@ -1398,7 +1371,8 @@ button.sm {
       <button type="button" data-nav="home" onclick="show('home')">Dashboard</button>
       <button type="button" data-nav="editor" onclick="show('editor');newDoc('Preventivo')">+ Nuovo</button>
       <button type="button" data-nav="archive" onclick="show('archive')">Documenti</button>
-      <button type="button" data-nav="clients" onclick="show('clients')">Clienti</button>
+      <button type="button" data-nav="clients" onclick="show('clients')">Rubrica</button>
+      <button type="button" data-nav="clientAdd" onclick="newClientForm()">+ Cliente</button>
       <button type="button" data-nav="history" onclick="show('history')">Storico Targa</button>
       <button type="button" data-nav="reminders" onclick="show('reminders')">Tagliandi</button>
       <button type="button" data-nav="catalog" onclick="show('catalog')">Listino</button>
@@ -1488,7 +1462,7 @@ button.sm {
         </div>
       </button>
 
-      <button type="button" class="quick-tile" onclick="show('clients');newClientForm()">
+      <button type="button" class="quick-tile" onclick="newClientForm()">
         <span class="tile-icon red">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="8" r="3"/><path d="M4 20v-2a6 6 0 0 1 12 0v2M19 8v6M16 11h6"/></svg>
         </span>
@@ -1728,33 +1702,37 @@ button.sm {
     </div>
   </section>
 
-  <!-- CLIENTI -->
+  <!-- RUBRICA CLIENTI -->
   <section id="clients" class="hidden">
     <div class="section-header" style="margin-bottom:12px">
-      <h2>Clienti</h2>
-      <span class="mini" id="clientCountBadge"></span>
-    </div>
-
-    <div class="client-subnav" role="tablist" aria-label="Menù rubrica clienti">
-      <button type="button" id="subtabClientList" class="client-subnav-btn active" onclick="switchClientSubmenu('list')">📋 Rubrica clienti</button>
-      <button type="button" id="subtabClientAdd" class="client-subnav-btn" onclick="switchClientSubmenu('add')">➕ Aggiungi cliente</button>
-    </div>
-
-    <div id="clientDirectoryView">
-      <div class="client-search-bar">
-        <span class="client-search-ico">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
-        </span>
-        <input id="clientSearch" placeholder="Cerca cliente per nome, telefono, targa o modello..." oninput="debouncedRenderClients()">
-        <button type="button" id="clientSearchClear" class="client-search-x hidden" onclick="clearClientSearch()">✕</button>
+      <div>
+        <h2 style="margin:0">Rubrica Clienti</h2>
+        <span class="mini" id="clientCountBadge"></span>
       </div>
-      <div id="clientList"></div>
+      <button type="button" class="sm" onclick="newClientForm()">+ Aggiungi cliente</button>
     </div>
 
-    <div id="clientForm" class="form-block hidden" style="margin-top:0;margin-bottom:16px">
-      <div class="form-block-header">
-        <h3 class="form-block-title" id="clientFormTitle">Aggiungi cliente</h3>
+    <div class="client-search-bar">
+      <span class="client-search-ico">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+      </span>
+      <input id="clientSearch" placeholder="Cerca cliente per nome, telefono, targa o modello..." oninput="debouncedRenderClients()">
+      <button type="button" id="clientSearchClear" class="client-search-x hidden" onclick="clearClientSearch()">✕</button>
+    </div>
+    <div id="clientList"></div>
+  </section>
+
+  <!-- AGGIUNGI / MODIFICA CLIENTE (SEZIONE SEPARATA) -->
+  <section id="clientAdd" class="hidden">
+    <div class="section-header" style="margin-bottom:14px">
+      <div>
+        <h2 id="clientFormTitle" style="margin:0">Aggiungi cliente</h2>
+        <p class="muted" style="margin-top:3px">Scheda anagrafica e veicoli associati</p>
       </div>
+      <button type="button" class="secondary sm" onclick="show('clients')">📋 Rubrica</button>
+    </div>
+
+    <div class="form-block" style="margin-top:0">
       <div class="form-grid">
         <label class="col-6 sm-12">Nome / Ragione sociale<input id="cName" placeholder="Mario Rossi / Azienda Srl"></label>
         <label class="col-6 sm-12">Telefono<input id="cPhone" type="tel" placeholder="333 1234567"></label>
@@ -1783,8 +1761,8 @@ button.sm {
       </details>
 
       <div class="actions">
-        <button type="button" class="green" onclick="saveClient()">Salva Anagrafica</button>
-        <button type="button" class="secondary" onclick="switchClientSubmenu('list')">Torna all'elenco</button>
+        <button type="button" class="green" onclick="saveClient()">💾 Salva Anagrafica</button>
+        <button type="button" class="secondary" onclick="show('clients')">Annulla</button>
       </div>
     </div>
   </section>
@@ -1984,7 +1962,7 @@ button.sm {
       <small>Documento fiscale / copia di cortesia</small>
     </div>
   </button>
-  <button type="button" class="sheet-item" onclick="closeSheets();show('clients');newClientForm()">
+  <button type="button" class="sheet-item" onclick="closeSheets();newClientForm()">
     <span class="s-ico" style="color:#34d399">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="8" r="3"/><path d="M4 20v-2a6 6 0 0 1 12 0v2M19 8v6M16 11h6"/></svg>
     </span>
@@ -2206,14 +2184,15 @@ function show(id, fromHistory=false){
   const prevView=currentView;
   currentView=id;
 
-  ['home','editor','clients','archive','history','reminders','catalog','settings'].forEach(x=>{
+  ['home','editor','clients','clientAdd','archive','history','reminders','catalog','settings'].forEach(x=>{
     $(x).classList.toggle('hidden',x!==id);
   });
 
   document.querySelectorAll('.bottom-nav button').forEach(b=>{
     const tab=b.dataset.tab;
     const isMore=['history','reminders','catalog','settings'].includes(id);
-    b.classList.toggle('active', tab===(isMore?'more':id));
+    const activeTab = id==='clientAdd' ? 'editor' : (isMore ? 'more' : id);
+    b.classList.toggle('active', tab===activeTab);
   });
 
   document.querySelectorAll('.desktop-nav button').forEach(b=>{
@@ -2221,7 +2200,7 @@ function show(id, fromHistory=false){
   });
 
   if(id==='home') renderHome();
-  if(id==='clients'){ switchClientSubmenu('list'); }
+  if(id==='clients'){ editingClientId=null; renderClients(); }
   if(id==='archive') renderArchive();
   if(id==='history') renderHistory();
   if(id==='reminders') renderReminders();
@@ -2254,9 +2233,9 @@ function handleInternalBack(){
     pushAppState(currentView);
     return true;
   }
-  // 3. Chiudi eventuale form cliente aperto nella rubrica
-  if(currentView==='clients' && !$('clientForm').classList.contains('hidden')){
-    switchClientSubmenu('list');
+  // 3. Se sei nella pagina Aggiungi/Modifica Cliente, torna alla Rubrica
+  if(currentView==='clientAdd'){
+    show('clients', true);
     pushAppState('clients');
     return true;
   }
@@ -17451,18 +17430,6 @@ function pickCliFuel(fuelVal){
   hideAcMenus();
 }
 
-function switchClientSubmenu(mode){
-  const isAdd = mode === 'add';
-  $('subtabClientList').classList.toggle('active', !isAdd);
-  $('subtabClientAdd').classList.toggle('active', isAdd);
-  $('clientDirectoryView').classList.toggle('hidden', isAdd);
-  $('clientForm').classList.toggle('hidden', !isAdd);
-  if(!isAdd){
-    editingClientId = null;
-    renderClients();
-  }
-}
-
 function clearClientSearch(){
   $('clientSearch').value='';
   $('clientSearchClear').classList.add('hidden');
@@ -17480,8 +17447,7 @@ function newClientForm(id){
   if(vehs.length) vehs.forEach(addClientVehicleRow);
   else addClientVehicleRow();
   $('clientFormTitle').textContent=c?'Modifica cliente e veicoli':'Aggiungi cliente';
-  switchClientSubmenu('add');
-  pushAppState('clients');
+  show('clientAdd');
   $('cName').focus();
 }
 
@@ -17509,7 +17475,7 @@ function saveClient(){
   if(i>=0)a[i]=c;else a.push(c);
   storeClients(a);
   editingClientId=null;
-  switchClientSubmenu('list');
+  show('clients');
 }
 
 function saveClientFromEditor(){
@@ -17567,7 +17533,7 @@ function renderClients(){
   });
 
   if(!a.length){
-    $('clientList').innerHTML='<p class="muted" style="padding:12px 4px">Nessun cliente trovato. Tocca <b>Aggiungi cliente</b> per inserirne uno.</p>';
+    $('clientList').innerHTML='<p class="muted" style="padding:12px 4px">Nessun cliente trovato. Tocca <b>+ Aggiungi cliente</b> per inserirne uno.</p>';
     return;
   }
 
@@ -18468,7 +18434,7 @@ window.cloudLogout = async function() {
   await signOut(auth);
   // Pulisce cache, stato editor e localStorage del dispositivo
   editingClientId = null;
-  if ($('clientForm')) $('clientForm').classList.add('hidden');
+  if (currentView === 'clientAdd') show('clients', true);
   storeDocs([], true);
   storeClients([], true);
   localStorage.removeItem(key);

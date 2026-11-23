@@ -779,75 +779,174 @@ button.sm {
 .quick-tile strong { font-size: 13px; font-weight: 700; color: #fff; display: block; line-height: 1.2; }
 .quick-tile small { font-size: 11px; color: var(--text-muted); font-weight: 400; display: block; margin-top: 2px; line-height: 1.2; }
 
-/* Rubrica Clienti layout migliorato */
+/* Rubrica Clienti: 2 sub-menu + box cliente ottimizzato */
+.client-subnav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  margin-bottom: 14px;
+}
+.client-subnav-btn {
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.client-subnav-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-main);
+}
+.client-subnav-btn.active {
+  background: var(--bg-surface);
+  border-color: #3a465e;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.client-search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.client-search-ico {
+  position: absolute;
+  left: 13px;
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+}
+.client-search-bar input {
+  min-height: 42px;
+  padding: 8px 34px 8px 38px;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+}
+.client-search-x {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-height: 28px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: 11px;
+  border-radius: 7px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.client-search-x:hover { color: #fff; background: #263044; }
+
 .client-card {
   background: var(--bg-surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 14px 16px;
-  margin-top: 10px;
+  padding: 13px 15px;
+  margin-top: 9px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  transition: border-color 0.14s;
 }
-.client-card-top {
+.client-card:hover { border-color: #38445c; }
+
+.client-card-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 10px;
 }
 .client-card-name {
-  font-size: 15.5px;
+  font-size: 15px;
   font-weight: 750;
   color: #fff;
+  line-height: 1.25;
 }
-.client-card-meta {
+.client-card-contacts {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 3px;
+  align-items: center;
+  gap: 6px 12px;
+  margin-top: 4px;
   font-size: 12.5px;
   color: var(--text-muted);
 }
-.client-vehicles-wrap {
+.client-card-contacts a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-weight: 600;
+}
+.client-card-contacts a:hover { color: #34d399; text-decoration: underline; }
+
+.client-veh-list {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding-top: 8px;
-  border-top: 1px dashed rgba(148, 160, 184, 0.18);
 }
-.client-veh-chip {
+.client-veh-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   background: #0e121a;
-  border: 1px solid #323c52;
+  border: 1px solid #2e384d;
   border-radius: 8px;
-  padding: 4px 9px;
+  padding: 4px 8px;
   font-size: 12px;
   color: #e2e8f0;
+  max-width: 100%;
 }
-.client-veh-chip .plate-tag {
+.client-veh-pill .plate-tag {
   border: 0;
   padding: 1px 6px;
-  background: rgba(59, 130, 246, 0.16);
+  background: rgba(59, 130, 246, 0.18);
   color: #93c5fd;
+  font-size: 11.5px;
 }
-.client-card-actions {
+.client-veh-model {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
+
+.client-note-line {
+  font-size: 12px;
+  color: #fcd34d;
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 2.5px solid var(--warn);
+  padding: 5px 9px;
+  border-radius: 6px;
+}
+
+.client-card-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   flex-wrap: wrap;
-  padding-top: 8px;
+  padding-top: 7px;
   border-top: 1px solid rgba(148, 160, 184, 0.12);
 }
-.client-actions-group {
+.client-foot-group {
   display: flex;
+  align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  align-items: center;
+}
+.client-card-foot button.sm,
+.client-card-foot .call-btn.sm {
+  min-height: 32px;
+  padding: 4px 10px;
+  font-size: 12px;
 }
 
 /* --- LISTS & CARDS --- */
@@ -1600,16 +1699,27 @@ button.sm {
         <h2>Rubrica Clienti & Veicoli</h2>
         <p class="muted">Anagrafiche e auto associate salvate sul dispositivo</p>
       </div>
-      <button type="button" onclick="newClientForm()">+ Nuovo Cliente</button>
     </div>
 
-    <label>Cerca per nome, telefono, email o targa
-      <input id="clientSearch" placeholder="Digita per filtrare..." oninput="debouncedRenderClients()">
-    </label>
+    <div class="client-subnav" role="tablist" aria-label="Menù rubrica clienti">
+      <button type="button" id="subtabClientList" class="client-subnav-btn active" onclick="switchClientSubmenu('list')">📋 Rubrica clienti</button>
+      <button type="button" id="subtabClientAdd" class="client-subnav-btn" onclick="switchClientSubmenu('add')">➕ Aggiungi cliente</button>
+    </div>
 
-    <div id="clientForm" class="form-block hidden" style="margin-bottom:16px">
+    <div id="clientDirectoryView">
+      <div class="client-search-bar">
+        <span class="client-search-ico">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <input id="clientSearch" placeholder="Cerca cliente per nome, telefono, targa o modello..." oninput="debouncedRenderClients()">
+        <button type="button" id="clientSearchClear" class="client-search-x hidden" onclick="clearClientSearch()">✕</button>
+      </div>
+      <div id="clientList"></div>
+    </div>
+
+    <div id="clientForm" class="form-block hidden" style="margin-top:0;margin-bottom:16px">
       <div class="form-block-header">
-        <h3 class="form-block-title" id="clientFormTitle">Nuovo cliente</h3>
+        <h3 class="form-block-title" id="clientFormTitle">Aggiungi cliente</h3>
       </div>
       <div class="form-grid">
         <label class="col-6 sm-12">Nome / Ragione sociale<input id="cName" placeholder="Mario Rossi / Azienda Srl"></label>
@@ -1640,11 +1750,9 @@ button.sm {
 
       <div class="actions">
         <button type="button" class="green" onclick="saveClient()">Salva Anagrafica</button>
-        <button type="button" class="secondary" onclick="document.getElementById('clientForm').classList.add('hidden')">Annulla</button>
+        <button type="button" class="secondary" onclick="switchClientSubmenu('list')">Torna all'elenco</button>
       </div>
     </div>
-
-    <div id="clientList" style="margin-top:14px"></div>
   </section>
 
   <!-- ARCHIVIO -->
@@ -2079,7 +2187,7 @@ function show(id, fromHistory=false){
   });
 
   if(id==='home') renderHome();
-  if(id==='clients') renderClients();
+  if(id==='clients'){ switchClientSubmenu('list'); }
   if(id==='archive') renderArchive();
   if(id==='history') renderHistory();
   if(id==='reminders') renderReminders();
@@ -2114,7 +2222,7 @@ function handleInternalBack(){
   }
   // 3. Chiudi eventuale form cliente aperto nella rubrica
   if(currentView==='clients' && !$('clientForm').classList.contains('hidden')){
-    $('clientForm').classList.add('hidden');
+    switchClientSubmenu('list');
     pushAppState('clients');
     return true;
   }
@@ -17309,6 +17417,24 @@ function pickCliFuel(fuelVal){
   hideAcMenus();
 }
 
+function switchClientSubmenu(mode){
+  const isAdd = mode === 'add';
+  $('subtabClientList').classList.toggle('active', !isAdd);
+  $('subtabClientAdd').classList.toggle('active', isAdd);
+  $('clientDirectoryView').classList.toggle('hidden', isAdd);
+  $('clientForm').classList.toggle('hidden', !isAdd);
+  if(!isAdd){
+    editingClientId = null;
+    renderClients();
+  }
+}
+
+function clearClientSearch(){
+  $('clientSearch').value='';
+  $('clientSearchClear').classList.add('hidden');
+  renderClients();
+}
+
 function newClientForm(id){
   const c=clients().find(x=>x.id===id);
   editingClientId=c?.id||null;
@@ -17319,8 +17445,8 @@ function newClientForm(id){
   const vehs=c?.vehicles||[];
   if(vehs.length) vehs.forEach(addClientVehicleRow);
   else addClientVehicleRow();
-  $('clientFormTitle').textContent=c?'Modifica cliente e veicoli':'Nuovo cliente';
-  $('clientForm').classList.remove('hidden');
+  $('clientFormTitle').textContent=c?'Modifica cliente e veicoli':'Aggiungi cliente';
+  switchClientSubmenu('add');
   pushAppState('clients');
   $('cName').focus();
 }
@@ -17348,8 +17474,8 @@ function saveClient(){
   let a=clients(),i=a.findIndex(x=>x.id===c.id);
   if(i>=0)a[i]=c;else a.push(c);
   storeClients(a);
-  $('clientForm').classList.add('hidden');
-  renderClients();
+  editingClientId=null;
+  switchClientSubmenu('list');
 }
 
 function saveClientFromEditor(){
@@ -17381,57 +17507,70 @@ function removeClient(id){
 }
 
 function renderClients(){
-  let q=($('clientSearch').value||'').toLowerCase().trim();
-  let a=clients().filter(c=>{
+  const rawQ=($('clientSearch').value||'').trim();
+  const clr=$('clientSearchClear');
+  if(clr) clr.classList.toggle('hidden', !rawQ);
+  const q=rawQ.toLowerCase();
+  const nq=normalizePlate(rawQ);
+
+  const a=clients().filter(c=>{
     if(!q) return true;
     const baseMatch=(c.name+' '+(c.phone||'')+' '+(c.email||'')+' '+(c.address||'')+' '+(c.notes||'')).toLowerCase().includes(q);
     const vehMatch=(c.vehicles||[]).some(v=>
-      normalizePlate(v.plate).includes(normalizePlate(q)) ||
+      (nq && normalizePlate(v.plate).includes(nq)) ||
       (v.brand+' '+v.model+' '+(v.engine||'')+' '+(v.fuel||'')).toLowerCase().includes(q)
     );
     return baseMatch || vehMatch;
   });
+
   $('clientList').innerHTML=a.length
     ? a.map(c=>{
         const vehs=c.vehicles||[];
-        const addrLine=c.address?`<span>📍 ${esc(c.address)}</span>`:'';
-        const phoneLine=`<span>📞 ${esc(c.phone||'Nessun telefono')}</span>`;
-        const mailLine=c.email?`<span>✉️ ${esc(c.email)}</span>`:'';
+        const telLink=telHref(c.phone);
+        const phoneHtml=c.phone
+          ? (telLink ? `<a href="${telLink}">📞 ${esc(c.phone)}</a>` : `<span>📞 ${esc(c.phone)}</span>`)
+          : `<span>📞 Nessun tel.</span>`;
+        const mailHtml=c.email?`<span>✉️ ${esc(c.email)}</span>`:'';
+        const addrHtml=c.address?`<span>📍 ${esc(c.address)}</span>`:'';
+
         return `
         <div class="client-card">
-          <div class="client-card-top">
+          <div class="client-card-head">
             <div>
               <div class="client-card-name">${esc(c.name)}</div>
-              <div class="client-card-meta">${phoneLine}${mailLine}${addrLine}</div>
+              <div class="client-card-contacts">${phoneHtml}${mailHtml}${addrHtml}</div>
             </div>
             <span class="badge neutral">${vehs.length} ${vehs.length===1?'auto':'auto'}</span>
           </div>
+
           ${vehs.length?`
-            <div class="client-vehicles-wrap">
+            <div class="client-veh-list">
               ${vehs.map(v=>{
-                const details=[v.brand,v.model,v.engine].filter(Boolean).join(' ');
-                const extra=[v.fuel,v.year].filter(Boolean).join(' · ');
-                return `<span class="client-veh-chip">
+                const mainCar=[v.brand,v.model].filter(Boolean).join(' ');
+                const subCar=[v.engine,v.fuel,v.year].filter(Boolean).join(' · ');
+                return `<span class="client-veh-pill" title="${esc([v.plate,mainCar,subCar].filter(Boolean).join(' · '))}">
                   <span class="plate-tag">${esc(v.plate||'N/D')}</span>
-                  ${details?`<span>${esc(details)}</span>`:''}
-                  ${extra?`<span class="mini">(${esc(extra)})</span>`:''}
+                  ${mainCar?`<strong class="client-veh-model">${esc(mainCar)}</strong>`:''}
+                  ${subCar?`<span class="mini">${esc(subCar)}</span>`:''}
                 </span>`;
               }).join('')}
             </div>`:''}
-          ${c.notes?`<div class="mini" style="color:#fbbf24">🔒 ${esc(c.notes)}</div>`:''}
-          <div class="client-card-actions">
-            <div class="client-actions-group">
-              ${telHref(c.phone)?`<a class="call-btn sm" href="${telHref(c.phone)}" title="Chiama ${esc(c.name)}">📞 Chiama</a>`:''}
+
+          ${c.notes?`<div class="client-note-line">🔒 ${esc(c.notes)}</div>`:''}
+
+          <div class="client-card-foot">
+            <div class="client-foot-group">
               <button type="button" class="sm" onclick="useClient('${c.id}')">Usa nel doc</button>
+              ${telLink?`<a class="call-btn sm" href="${telLink}" title="Chiama ${esc(c.name)}">📞 Chiama</a>`:''}
             </div>
-            <div class="client-actions-group">
+            <div class="client-foot-group">
               <button type="button" class="secondary sm" onclick="newClientForm('${c.id}')">Modifica</button>
               <button type="button" class="danger-ghost sm" onclick="removeClient('${c.id}')" title="Elimina cliente">✕</button>
             </div>
           </div>
         </div>`;
       }).join('')
-    : '<p class="muted">Nessun cliente trovato. Premi <b>+ Nuovo Cliente</b>.</p>';
+    : '<p class="muted">Nessun cliente trovato. Passa al menù <b>Aggiungi cliente</b> per inserirne uno.</p>';
 }
 
 function clearHomeSearch(){
